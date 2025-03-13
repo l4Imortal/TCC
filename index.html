@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Controle de Estoque</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
@@ -18,7 +19,7 @@
                 <li><a href="fornecedores.html">Fornecedores</a></li>
                 <li><a href="entradas.html">Entradas</a></li>
                 <li><a href="saidas.html">Saídas</a></li>
-                <li><a href="#">Usuários</a></li>
+                <li><a href="usuarios.html">Usuários</a></li>
                 <li><a href="#">Logs de Atividades</a></li>
             </ul>
         </nav>
@@ -30,11 +31,67 @@
                 <div class="box green">Investimento: R$ 517,00, Retorno Previsto: R$ 1.412,35, Margem de Lucro: 63,39%</div>
             </section>
             <section class="charts">
-                <div class="chart" id="entradas-saidas">Entradas e Saídas Últimos 10 Dias</div>
-                <div class="chart" id="atividades-sistema">Atividades no Sistema Últimos 10 Dias</div>
+                <div class="chart">
+                    <canvas id="entradasSaidasChart"></canvas>
+                </div>
+                <div class="chart">
+                    <canvas id="atividadesSistemaChart"></canvas>
+                </div>
             </section>
         </main>
     </div>
-    <script src="scripts.js"></script>
+    <script>
+        const ctx1 = document.getElementById('entradasSaidasChart').getContext('2d');
+        const entradasSaidasChart = new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: ['Dia 1', 'Dia 2', 'Dia 3', 'Dia 4', 'Dia 5', 'Dia 6', 'Dia 7', 'Dia 8', 'Dia 9', 'Dia 10'],
+                datasets: [{
+                    label: 'Entradas',
+                    data: [12, 19, 3, 5, 2, 3, 7, 8, 6, 4],
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Saídas',
+                    data: [8, 11, 5, 6, 4, 7, 8, 9, 5, 3],
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        const ctx2 = document.getElementById('atividadesSistemaChart').getContext('2d');
+        const atividadesSistemaChart = new Chart(ctx2, {
+            type: 'line',
+            data: {
+                labels: ['Dia 1', 'Dia 2', 'Dia 3', 'Dia 4', 'Dia 5', 'Dia 6', 'Dia 7', 'Dia 8', 'Dia 9', 'Dia 10'],
+                datasets: [{
+                    label: 'Atividades',
+                    data: [3, 2, 2, 6, 4, 3, 5, 6, 3, 4],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1,
+                    fill: true
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 </html>

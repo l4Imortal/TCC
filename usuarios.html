@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Controle de Estoque</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Login - Controle de Estoque</h1>
+        </header>
+        <main>
+            <section class="login-form">
+                <form action="login.html" method="post">
+                    <label for="username">Usuário:</label>
+                    <input type="text" id="username" name="username" required>
+                    
+                    <label for="password">Senha:</label>
+                    <input type="password" id="password" name="password" required>
+                    
+                    <button type="submit">Login</button>
+                </form>
+                <div class="extra-options">
+                    <button onclick="window.location.href='criar_usuario.html'">Criar Usuário</button>
+                    <button onclick="window.location.href='esqueci_senha.html'">Esqueci Minha Senha</button>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
