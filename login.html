@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Controle de Estoque</title>
+    <title>Controle de Estoque - Login</title>
     <link rel="stylesheet" href="styles.css">
     <style>
         body {
@@ -16,18 +16,19 @@
         }
         .container {
             width: 100%;
-            padding: 0;
+            max-width: 1200px;
+            padding: 20px;
         }
         header, nav, main {
-            margin-bottom: 1px;
+            margin-bottom: 20px;
         }
         nav ul {
             list-style-type: none;
-            padding: 1px;
+            padding: 0;
         }
         nav ul li {
             display: inline;
-            margin-right: 1px;
+            margin-right: 10px;
         }
         .login-container {
             width: 400px;
@@ -78,7 +79,7 @@
         <main>
             <section class="login-container">
                 <div class="login-form">
-                    <form action="login.html" method="post">
+                    <form action="dashboard.html" method="post">
                         <label for="username">Usuário:</label>
                         <input type="text" id="username" name="username" required>
                         
