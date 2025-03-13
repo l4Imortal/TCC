@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Estoque</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Página Inicial - Controle de Estoque</h1>
+        </header>
+        <nav>
+            <ul>
+                <li><a href="produtos.html">Produtos</a></li>
+                <li><a href="categorias.html">Categorias</a></li>
+                <li><a href="fornecedores.html">Fornecedores</a></li>
+                <li><a href="entradas.html">Entradas</a></li>
+                <li><a href="saidas.html">Saídas</a></li>
+                <li><a href="#">Usuários</a></li>
+                <li><a href="#">Logs de Atividades</a></li>
+            </ul>
+        </nav>
+        <main>
+            <section class="summary">
+                <div class="box blue">4 Produtos Cadastrados, 19 Itens no Estoque</div>
+                <div class="box red">2 Produtos Com Estoque Zerado</div>
+                <div class="box yellow">3 Produtos Com Estoque Mínimo</div>
+                <div class="box green">Investimento: R$ 517,00, Retorno Previsto: R$ 1.412,35, Margem de Lucro: 63,39%</div>
+            </section>
+            <section class="charts">
+                <div class="chart" id="entradas-saidas">Entradas e Saídas Últimos 10 Dias</div>
+                <div class="chart" id="atividades-sistema">Atividades no Sistema Últimos 10 Dias</div>
+            </section>
+        </main>
+    </div>
+    <script src="scripts.js"></script>
+</body>
+</html>
