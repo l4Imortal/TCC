@@ -25,16 +25,7 @@
         <main>
             <section class="entries">
                 <h2>Entradas de Produtos</h2>
-                <form id="entradaForm">
-                    <label for="produto">Produto:</label>
-                    <input type="text" id="produto" name="produto" required><br>
-                    <label for="quantidade">Quantidade:</label>
-                    <input type="number" id="quantidade" name="quantidade" required><br>
-                    <label for="data">Data:</label>
-                    <input type="date" id="data" name="data" required><br>
-                    <button type="submit">Adicionar Entrada</button>
-                </form>
-                <table id="entradasTable">
+                <table>
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -62,24 +53,5 @@
         </main>
     </div>
     <script src="scripts.js"></script>
-    <script>
-        document.getElementById('entradaForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const produto = document.getElementById('produto').value;
-            const quantidade = document.getElementById('quantidade').value;
-            const data = document.getElementById('data').value;
-            const table = document.getElementById('entradasTable').getElementsByTagName('tbody')[0];
-            const newRow = table.insertRow();
-            const idCell = newRow.insertCell(0);
-            const produtoCell = newRow.insertCell(1);
-            const quantidadeCell = newRow.insertCell(2);
-            const dataCell = newRow.insertCell(3);
-            idCell.textContent = table.rows.length;
-            produtoCell.textContent = produto;
-            quantidadeCell.textContent = quantidade;
-            dataCell.textContent = data;
-            document.getElementById('entradaForm').reset();
-        });
-    </script>
 </body>
 </html>
