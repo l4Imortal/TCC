@@ -1,85 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Entradas - Controle de Estoque</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      nav {
+        background-color: rgba(0, 0, 0, 0.747);
+        color: white;
+      }
+      nav ul {
+        list-style-type: none;
+        padding: 0;
+      }
+      nav ul li {
+        display: inline;
+        margin-right: 10px;
+      }
+      nav ul li a {
+        color: white;
+        text-decoration: none;
+      }
+      .center-table {
+        margin: 20px auto;
+        border-collapse: collapse;
+        width: 80%;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        background-color: #ddd; /* Light gray background */
+      }
+      .center-table th {
+        background-color: white; /* White background for headers */
+        padding: 10px;
+        text-align: center;
+        border-right: 1px solid #ddd; /* White bar between categories */
+      }
+      .center-table th:last-child {
+        border-right: none; /* Remove border from the last header */
+      }
+      .center-table td {
+        padding: 8px;
+        text-align: center;
+      }
+      .center-table th:nth-child(1),
+      .center-table td:nth-child(1) {
+        width: 8%;
+      }
+      .center-table th:nth-child(2),
+      .center-table td:nth-child(2) {
+        width: 8%;
+      }
+      .center-table th:nth-child(3),
+      .center-table td:nth-child(3) {
+        width: 15%;
+      }
+      .center-table th:nth-child(4),
+      .center-table td:nth-child(4) {
+        width: 15%;
+      }
+      .center-table th:nth-child(5),
+      .center-table td:nth-child(5) {
+        width: 12%;
+      }
+      .center-table th:nth-child(6),
+      .center-table td:nth-child(6) {
+        width: 12%;
+      }
+      .center-table th:nth-child(7),
+      .center-table td:nth-child(7) {
+        width: 20%;
+      }
+      .button-container button {
+        padding: 8px 16px;
+        background-color: white;
+        color: black;
+        border: 1px solid black;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+      .button-container button:hover {
+        background-color: #f0f0f0;
+      }
+    </style>
+  </head>
+  <body>
     <div class="container">
-        <header>
-            <h1>Entradas - Controle de Estoque</h1>
-        </header>
-        <nav>
-            <ul>
-                <li><a href="index.html">Página Inicial</a></li>
-                <li><a href="produtos.html">Produtos</a></li>
-                <li><a href="categorias.html">Categorias</a></li>
-                <li><a href="fornecedores.html">Fornecedores</a></li>
-                <li><a href="saidas.html">Saídas</a></li>
-                <li><a href="usuarios.html">Usuários</a></li>
-                <li><a href="logs.html">Logs de Atividades</a></li>
-            </ul>
-        </nav>
-        <main>
-            <section class="entries">
-                <h2>Entradas de Produtos</h2>
-                <form id="entradaForm">
-                    <label for="produto">Produto:</label>
-                    <input type="text" id="produto" name="produto" required><br>
-                    <label for="quantidade">Quantidade:</label>
-                    <input type="number" id="quantidade" name="quantidade" required><br>
-                    <label for="data">Data:</label>
-                    <input type="date" id="data" name="data" required><br>
-                    <button type="submit">Adicionar Entrada</button>
-                </form>
-                <table id="entradasTable">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Produto</th>
-                            <th>Quantidade</th>
-                            <th>Data</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>Produto A</td>
-                            <td>10</td>
-                            <td>10/03/2025</td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>Produto B</td>
-                            <td>5</td>
-                            <td>11/03/2025</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </section>
-        </main>
+      <header>
+        <h1>Entradas - Controle de Estoque</h1>
+      </header>
+      <nav>
+        <ul>
+          <li><a href="index.html">Página Inicial</a></li>
+          <li><a href="produtos.html">Produtos</a></li>
+          <li><a href="categorias.html">Categorias</a></li>
+          <li><a href="fornecedores.html">Fornecedores</a></li>
+          <li><a href="entradas.html">Entradas</a></li>
+          <li><a href="saidas.html">Saídas</a></li>
+          <li><a href="usuarios.html">Usuários</a></li>
+          <li><a href="logs.html">Logs de Atividades</a></li>
+        </ul>
+      </nav>
+      <main>
+        <section class="product-info">
+          <table class="center-table">
+            <thead>
+              <tr>
+                <th colspan="7">
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: center;
+                    "
+                  >
+                    <h2 style="margin: 0">Informações dos Produtos</h2>
+                    <a href="novo_produto.html">
+                      <button>Novo Produto</button>
+                    </a>
+                  </div>
+                </th>
+              </tr>
+              <tr>
+                <th>Foto</th>
+                <th>COD</th>
+                <th>Produto</th>
+                <th>Categoria</th>
+                <th>Unidade</th>
+                <th>Data</th>
+                <th>Fornecedor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <img src="path/to/image1.jpg" alt="Produto A" width="50" />
+                </td>
+                <td>001</td>
+                <td>Produto A</td>
+                <td>Categoria 1</td>
+                <td>Unidade 1</td>
+                <td>10/03/2025</td>
+                <td>Fornecedor A</td>
+              </tr>
+              <tr>
+                <td>
+                  <img src="path/to/image2.jpg" alt="Produto B" width="50" />
+                </td>
+                <td>002</td>
+                <td>Produto B</td>
+                <td>Categoria 2</td>
+                <td>Unidade 2</td>
+                <td>11/03/2025</td>
+                <td>Fornecedor B</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </main>
     </div>
     <script src="scripts.js"></script>
-    <script>
-        document.getElementById('entradaForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const produto = document.getElementById('produto').value;
-            const quantidade = document.getElementById('quantidade').value;
-            const data = document.getElementById('data').value;
-            const table = document.getElementById('entradasTable').getElementsByTagName('tbody')[0];
-            const newRow = table.insertRow();
-            const idCell = newRow.insertCell(0);
-            const produtoCell = newRow.insertCell(1);
-            const quantidadeCell = newRow.insertCell(2);
-            const dataCell = newRow.insertCell(3);
-            idCell.textContent = table.rows.length;
-            produtoCell.textContent = produto;
-            quantidadeCell.textContent = quantidade;
-            dataCell.textContent = data;
-            document.getElementById('entradaForm').reset();
-        });
-    </script>
-</body>
+  </body>
 </html>

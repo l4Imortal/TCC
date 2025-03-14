@@ -1,99 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login - Controle de Estoque</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css" />
     <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100vh;
-            background-color: #f0f0f0;
-            margin: 0;
-        }
-        .container {
-            width: 100%;
-            padding: 0;
-        }
-        header, nav, main {
-            margin-bottom: 1px;
-        }
-        nav ul {
-            list-style-type: none;
-            padding: 1px;
-        }
-        nav ul li {
-            display: inline;
-            margin-right: 1px;
-        }
-        .login-container {
-            width: 400px;
-            padding: 20px;
-            background-color: #e0e0e0;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            margin: auto;
-        }
-        .login-form {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-        }
-        .login-form label, .login-form input, .login-form button {
-            margin-bottom: 10px;
-            width: 100%;
-        }
-        .extra-options {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-        }
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100vh;
+        background-color: #f0f0f0;
+        margin: 0;
+      }
+      .container {
+        width: 100%;
+        padding: 0;
+      }
+      header,
+      nav,
+      main {
+        margin-bottom: 1px;
+      }
+      nav ul {
+        list-style-type: none;
+        padding: 1px;
+      }
+      nav ul li {
+        display: inline;
+        margin-right: 1px;
+      }
+      .login-container {
+        width: 400px;
+        padding: 20px;
+        background-color: #e0e0e0;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        margin: auto;
+      }
+      .login-form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+      }
+      .login-form label,
+      .login-form input,
+      .login-form button {
+        margin-bottom: 10px;
+        width: 100%;
+      }
+      .extra-options {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <header>
-            <h1>Login - Controle de Estoque</h1>
-        </header>
-        <nav>
-            <ul>
-                <li><a href="index.html">Página Inicial</a></li>
-                <li><a href="produtos.html">Produtos</a></li>
-                <li><a href="categorias.html">Categorias</a></li>
-                <li><a href="fornecedores.html">Fornecedores</a></li>
-                <li><a href="entradas.html">Entradas</a></li>
-                <li><a href="saidas.html">Saídas</a></li>
-                <li><a href="usuarios.html">Usuários</a></li>
-                <li><a href="admistrador.html">Admistrador</a></li>
-            </ul>
-        </nav>
-        <main>
-            <section class="login-container">
-                <div class="login-form">
-                    <form action="login.html" method="post">
-                        <label for="username">Usuário:</label>
-                        <input type="text" id="username" name="username" required>
-                        
-                        <label for="password">Senha:</label>
-                        <input type="password" id="password" name="password" required>
-                        
-                        <button type="submit">Login</button>
-                    </form>
-                    <div class="extra-options">
-                        <button onclick="window.location.href='criar_usuario.html'">Criar Usuário</button>
-                        <button onclick="window.location.href='esqueci_senha.html'">Esqueci Minha Senha</button>
-                    </div>
-                </div>
-            </section>
-        </main>
+      <header>
+        <h1>Login - Controle de Estoque</h1>
+      </header>
+      <nav>
+        <ul>
+          <li><a href="index.html">Página Inicial</a></li>
+          <li><a href="produtos.html">Produtos</a></li>
+          <li><a href="categorias.html">Categorias</a></li>
+          <li><a href="fornecedores.html">Fornecedores</a></li>
+          <li><a href="entradas.html">Entradas</a></li>
+          <li><a href="saidas.html">Saídas</a></li>
+          <li><a href="usuarios.html">Usuários</a></li>
+          <li><a href="administrador.html">Administrador</a></li>
+        </ul>
+      </nav>
+      <main>
+        <section class="login-container">
+          <div class="login-form">
+            <form action="login.html" method="post">
+              <label for="username">Usuário:</label>
+              <input type="text" id="username" name="username" required />
+
+              <label for="password">Senha:</label>
+              <input type="password" id="password" name="password" required />
+
+              <button type="submit">Login</button>
+            </form>
+            <div class="extra-options">
+              <button onclick="window.location.href='criar_usuario.html'">
+                Criar Usuário
+              </button>
+              <button onclick="window.location.href='esqueci_senha.html'">
+                Esqueci Minha Senha
+              </button>
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
-</body>
+  </body>
 </html>

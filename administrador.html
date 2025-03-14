@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Administrador - Controle de Estoque</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100vh;
+        background-color: #f0f0f0;
+        margin: 0;
+      }
+      .container {
+        width: 100%;
+        padding: 0;
+      }
+      header,
+      nav,
+      main {
+        margin-bottom: 1px;
+      }
+      nav ul {
+        list-style-type: none;
+        padding: 0;
+      }
+      nav ul li {
+        display: inline;
+        margin-right: 1px;
+      }
+      .admin-options {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .option-box {
+        background-color: #dcdcdc;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.466);
+      }
+      .user-table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+      }
+      .user-table th,
+      .user-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+      .user-table th {
+        background-color: #f2f2f2;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Administrador - Controle de Estoque</h1>
+      </header>
+      <nav>
+        <ul>
+          <li><a href="index.html">Início</a></li>
+          <li><a href="produtos.html">Produtos</a></li>
+          <li><a href="categorias.html">Categorias</a></li>
+          <li><a href="fornecedores.html">Fornecedores</a></li>
+          <li><a href="entradas.html">Entradas</a></li>
+          <li><a href="saidas.html">Saídas</a></li>
+          <li><a href="usuarios.html">Usuários</a></li>
+          <li><a href="administrador.html">Administrador</a></li>
+        </ul>
+      </nav>
+      <main>
+        <section class="admin-options">
+          <div class="option-box">
+            <h2>Gerenciar Usuários</h2>
+            <button onclick="window.location.href='gerenciar_usuarios.html'">
+              Ir para Gerenciamento de Usuários
+            </button>
+            <table class="user-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nome de Usuário</th>
+                  <th>Email</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Aqui você pode adicionar os usuários cadastrados -->
+                <tr>
+                  <td>1</td>
+                  <td>admin</td>
+                  <td>admin@example.com</td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>usuario1</td>
+                  <td>usuario1@example.com</td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>usuario2</td>
+                  <td>usuario2@example.com</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="option-box">
+            <h2>Configurações</h2>
+            <button onclick="window.location.href='configuracoes.html'">
+              Ir para Configurações
+            </button>
+          </div>
+          <div class="option-box">
+            <h2>Relatórios</h2>
+            <button onclick="window.location.href='relatorios.html'">
+              Ir para Relatórios
+            </button>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
