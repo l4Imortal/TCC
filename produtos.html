@@ -3,9 +3,27 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Entradas - Controle de Estoque</title>
+    <title>Produtos - Controle de Estoque</title>
     <link rel="stylesheet" href="styles.css" />
     <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        width: 90%;
+        margin: 0 auto;
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      header {
+        text-align: center;
+        margin: 20px 0;
+      }
       nav {
         background-color: rgba(0, 0, 0, 0.747);
         color: white;
@@ -13,82 +31,102 @@
       nav ul {
         list-style-type: none;
         padding: 0;
+        display: flex;
+        justify-content: center;
+        background-color: #333;
+        margin: 0;
       }
       nav ul li {
-        display: inline;
-        margin-right: 10px;
+        margin: 0;
       }
       nav ul li a {
         color: white;
         text-decoration: none;
+        padding: 15px 20px;
+        display: block;
+      }
+      nav ul li a:hover {
+        background-color: #575757;
+      }
+      main {
+        margin: 20px 0;
+      }
+      .product-info {
+        text-align: center;
+      }
+      .product-info h2 {
+        margin-bottom: 20px;
+      }
+      .table-container {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 20px;
+        background-color: #f9f9f9;
       }
       .center-table {
-        margin: 20px auto;
+        width: 100%;
         border-collapse: collapse;
-        width: 80%;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+        border-radius: 8px;
         overflow: hidden;
-        background-color: #ddd; /* Light gray background */
       }
-      .center-table th {
-        background-color: white; /* White background for headers */
+      .center-table th,
+      .center-table td {
+        border: 1px solid #ddd;
         padding: 10px;
         text-align: center;
-        border-right: 1px solid #ddd; /* White bar between categories */
       }
-      .center-table th:last-child {
-        border-right: none; /* Remove border from the last header */
+      .center-table th {
+        background-color: #f2f2f2;
       }
-      .center-table td {
-        padding: 8px;
-        text-align: center;
+      .center-table tbody tr:nth-child(even) {
+        background-color: #f9f9f9;
       }
-      .center-table th:nth-child(1),
-      .center-table td:nth-child(1) {
-        width: 8%;
+      .center-table tbody tr:hover {
+        background-color: #f1f1f1;
       }
-      .center-table th:nth-child(2),
-      .center-table td:nth-child(2) {
-        width: 8%;
+      .button-container {
+        text-align: right;
+        margin-bottom: 20px;
       }
-      .center-table th:nth-child(3),
-      .center-table td:nth-child(3) {
-        width: 15%;
-      }
-      .center-table th:nth-child(4),
-      .center-table td:nth-child(4) {
-        width: 15%;
-      }
-      .center-table th:nth-child(5),
-      .center-table td:nth-child(5) {
-        width: 12%;
-      }
-      .center-table th:nth-child(6),
-      .center-table td:nth-child(6) {
-        width: 12%;
-      }
-      .center-table th:nth-child(7),
-      .center-table td:nth-child(7) {
-        width: 20%;
-      }
-      .button-container button {
-        padding: 8px 16px;
-        background-color: white;
-        color: black;
-        border: 1px solid black;
-        cursor: pointer;
+      .button-container a {
+        text-decoration: none;
+        padding: 10px 20px;
+        background-color: #4caf50;
+        color: white;
         border-radius: 5px;
+        border: none;
+        cursor: pointer;
       }
-      .button-container button:hover {
-        background-color: #f0f0f0;
+      .button-container a:hover {
+        background-color: #45a049;
+      }
+      .button-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .button-container h2 {
+        margin: 0;
+      }
+      .button-container a {
+        text-decoration: none;
+        padding: 10px 20px;
+        background-color: #4caf50;
+        color: white;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+      }
+      .button-container a:hover {
+        background-color: #45a049;
       }
     </style>
   </head>
   <body>
     <div class="container">
       <header>
-        <h1>Entradas - Controle de Estoque</h1>
+        <h1>Produtos - Controle de Estoque</h1>
       </header>
       <nav>
         <ul>
@@ -104,59 +142,95 @@
       </nav>
       <main>
         <section class="product-info">
-          <table class="center-table">
-            <thead>
-              <tr>
-                <th colspan="7">
-                  <div
-                    style="
-                      display: flex;
-                      justify-content: space-between;
-                      align-items: center;
-                    "
-                  >
-                    <h2 style="margin: 0">Informações dos Produtos</h2>
-                    <a href="novo_produto.html">
-                      <button>Novo Produto</button>
-                    </a>
-                  </div>
-                </th>
-              </tr>
-              <tr>
-                <th>Foto</th>
-                <th>COD</th>
-                <th>Produto</th>
-                <th>Categoria</th>
-                <th>Unidade</th>
-                <th>Data</th>
-                <th>Fornecedor</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>
-                  <img src="path/to/image1.jpg" alt="Produto A" width="50" />
-                </td>
-                <td>001</td>
-                <td>Produto A</td>
-                <td>Categoria 1</td>
-                <td>Unidade 1</td>
-                <td>10/03/2025</td>
-                <td>Fornecedor A</td>
-              </tr>
-              <tr>
-                <td>
-                  <img src="path/to/image2.jpg" alt="Produto B" width="50" />
-                </td>
-                <td>002</td>
-                <td>Produto B</td>
-                <td>Categoria 2</td>
-                <td>Unidade 2</td>
-                <td>11/03/2025</td>
-                <td>Fornecedor B</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="button-container">
+            <h2>Lista de Produtos</h2>
+            <a href="novo_produto.html">Novo Produto</a>
+          </div>
+          <div class="table-container">
+            <table class="center-table">
+              <thead>
+                <tr>
+                  <th>Foto</th>
+                  <th>COD</th>
+                  <th>Produto</th>
+                  <th>Categoria</th>
+                  <th>UN</th>
+                  <th>Data</th>
+                  <th>Fornecedor</th>
+                  <th>Compra</th>
+                  <th>Venda</th>
+                  <th>Estoque</th>
+                  <th>Estoque Mínimo</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <img src="path/to/image1.jpg" alt="Produto A" width="50" />
+                  </td>
+                  <td>001</td>
+                  <td>Produto A</td>
+                  <td>Categoria 1</td>
+                  <td>UN</td>
+                  <td>10/03/2025</td>
+                  <td>Fornecedor A</td>
+                  <td>R$ 80,00</td>
+                  <td>R$ 100,00</td>
+                  <td>50</td>
+                  <td>10</td>
+                  <td>
+                    <a href="#"
+                      ><img
+                        src="icons/edit.png"
+                        alt="Editar"
+                        width="20"
+                        height="20"
+                    /></a>
+                    <a href="#"
+                      ><img
+                        src="icons/delete.png"
+                        alt="Excluir"
+                        width="20"
+                        height="20"
+                    /></a>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <img src="path/to/image2.jpg" alt="Produto B" width="50" />
+                  </td>
+                  <td>002</td>
+                  <td>Produto B</td>
+                  <td>Categoria 2</td>
+                  <td>UN</td>
+                  <td>11/03/2025</td>
+                  <td>Fornecedor B</td>
+                  <td>R$ 120,00</td>
+                  <td>R$ 150,00</td>
+                  <td>30</td>
+                  <td>20</td>
+                  <td>
+                    <a href="#"
+                      ><img
+                        src="icons/edit.png"
+                        alt="Editar"
+                        width="20"
+                        height="20"
+                    /></a>
+                    <a href="#"
+                      ><img
+                        src="icons/delete.png"
+                        alt="Excluir"
+                        width="20"
+                        height="20"
+                    /></a>
+                  </td>
+                </tr>
+                <!-- Adicione mais linhas conforme necessário -->
+              </tbody>
+            </table>
+          </div>
         </section>
       </main>
     </div>
