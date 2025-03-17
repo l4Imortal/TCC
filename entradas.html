@@ -1,57 +1,124 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Entradas - Controle de Estoque</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+            background-color: #333;
+        }
+        nav ul li {
+            flex: 1;
+        }
+        nav ul li a {
+            text-decoration: none;
+            color: white;
+            display: block;
+            text-align: center;
+            padding: 10px;
+        }
+        nav ul li a:hover {
+            background-color: #575757;
+        }
+        .container {
+            padding: 20px;
+        }
+        .add-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .add-button:hover {
+            background-color: #45a049;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            text-align: left;
+            padding: 8px;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        footer {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
+    <header>
+        <h1>Entradas - Controle de Estoque</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="index.html">Página Inicial</a></li>
+            <li><a href="produtos.html">Produtos</a></li>
+            <li><a href="categorias.html">Categorias</a></li>
+            <li><a href="fornecedores.html">Fornecedores</a></li>
+            <li><a href="saidas.html">Saídas</a></li>
+            <li><a href="usuarios.html">Usuários</a></li>
+            <li><a href="logs.html">Logs de Atividades</a></li>
+        </ul>
+    </nav>
     <div class="container">
-        <header>
-            <h1>Entradas - Controle de Estoque</h1>
-        </header>
-        <nav>
-            <ul>
-                <li><a href="index.html">Página Inicial</a></li>
-                <li><a href="produtos.html">Produtos</a></li>
-                <li><a href="categorias.html">Categorias</a></li>
-                <li><a href="fornecedores.html">Fornecedores</a></li>
-                <li><a href="saidas.html">Saídas</a></li>
-                <li><a href="usuarios.html">Usuários</a></li>
-                <li><a href="logs.html">Logs de Atividades</a></li>
-            </ul>
-        </nav>
-        <main>
-            <section class="entries">
-                <h2>Entradas de Produtos</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Produto</th>
-                            <th>Quantidade</th>
-                            <th>Data</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>Produto A</td>
-                            <td>10</td>
-                            <td>10/03/2025</td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>Produto B</td>
-                            <td>5</td>
-                            <td>11/03/2025</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </section>
-        </main>
+        <h2>Entradas de Produtos</h2>
+        <button class="add-button">Nova Entrada</button>
+        <table>
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Produto</th>
+                    <th>Quantidade</th>
+                    <th>Fornecedor</th>
+                    <th>Data Entrada</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>Notebook</td>
+                    <td>10</td>
+                    <td>Fornecedor A</td>
+                    <td>15/03/2025</td>
+                    <td>
+                        <a href="#">Editar</a> | 
+                        <a href="#">Excluir</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Mouse</td>
+                    <td>50</td>
+                    <td>Fornecedor B</td>
+                    <td>16/03/2025</td>
+                    <td>
+                        <a href="#">Editar</a> | 
+                        <a href="#">Excluir</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
-    <script src="scripts.js"></script>
+    <footer>
+        <p>&copy; 2025 - Controle de Estoque</p>
+    </footer>
 </body>
 </html>

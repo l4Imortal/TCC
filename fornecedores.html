@@ -1,54 +1,145 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fornecedores - Controle de Estoque</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: white;
+            color: black;
+            padding: 10px 15px;
+            text-align: center;
+        }
+        nav {
+            background-color: #333;
+            overflow: hidden;
+        }
+        nav ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            display: flex;
+        }
+        nav ul li {
+            flex: 1;
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 14px 20px;
+            text-align: center;
+        }
+        nav ul li a:hover {
+            background-color: #575757;
+        }
+        .container {
+            padding: 20px;
+        }
+        .add-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .add-button:hover {
+            background-color: #45a049;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .actions a {
+            margin-right: 10px;
+            text-decoration: none;
+            color: blue;
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #f1f1f1;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
+    <header>
+        <h1>Fornecedores - Controle de Estoque</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="index.html">Página Inicial</a></li>
+            <li><a href="produtos.html">Produtos</a></li>
+            <li><a href="fornecedores.html">Fornecedores</a></li>
+            <li><a href="entradas.html">Entradas</a></li>
+            <li><a href="saidas.html">Saídas</a></li>
+            <li><a href="usuarios.html">Usuários</a></li>
+            <li><a href="logs.html">Logs de Atividades</a></li>
+        </ul>
+    </nav>
     <div class="container">
-        <header>
-            <h1>Fornecedores - Controle de Estoque</h1>
-        </header>
-        <nav>
-            <ul>
-                <li><a href="index.html">Página Inicial</a></li>
-                <li><a href="produtos.html">Produtos</a></li>
-                <li><a href="categorias.html">Categorias</a></li>
-                <li><a href="entradas.html">Entradas</a></li>
-                <li><a href="saidas.html">Saídas</a></li>
-                <li><a href="usuarios.html">Usuários</a></li>
-                <li><a href="#">Logs de Atividades</a></li>
-            </ul>
-        </nav>
-        <main>
-            <section class="suppliers">
-                <h2>Lista de Fornecedores</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nome</th>
-                            <th>Contato</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>Fornecedor X</td>
-                            <td>(00) 0000-0000</td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>Fornecedor Y</td>
-                            <td>(00) 0000-0000</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </section>
-        </main>
+        <h2>Lista de Fornecedores</h2>
+        <button class="add-button">Novo Fornecedor</button>
+        <table>
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Nome</th>
+                    <th>Cidade</th>
+                    <th>Estado</th>
+                    <th>Contato</th>
+                    <th>Data Cadastro</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>8</td>
+                    <td>Fornecedor X</td>
+                    <td>São Paulo</td>
+                    <td>SP</td>
+                    <td>(11) 1111-1111</td>
+                    <td>07/11/2023</td>
+                    <td class="actions">
+                        <a href="#">Editar</a>
+                        <a href="#">Excluir</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>15</td>
+                    <td>Fornecedor Y</td>
+                    <td>Rio de Janeiro</td>
+                    <td>RJ</td>
+                    <td>(21) 2222-2222</td>
+                    <td>21/09/2023</td>
+                    <td class="actions">
+                        <a href="#">Editar</a>
+                        <a href="#">Excluir</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
-    <script src="scripts.js"></script>
+    <footer>
+        <p>&copy; 2025 - Controle de Estoque</p>
+    </footer>
 </body>
 </html>
