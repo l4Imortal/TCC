@@ -6,6 +6,138 @@
     <title>Controle de Estoque</title>
     <link rel="stylesheet" href="styles.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      /* Estilo geral */
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f9f9f9;
+      }
+
+      .container {
+        width: 90%;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      header h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 20px;
+      }
+
+      /* Navegação */
+      nav ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        justify-content: space-around;
+        background-color: #333;
+        border-radius: 8px;
+      }
+
+      nav ul li a {
+        display: block;
+        padding: 10px 20px;
+        color: #fff;
+        text-decoration: none;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+      }
+
+      nav ul li a:hover {
+        background-color: #555;
+      }
+
+      /* Resumo */
+      .summary {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+
+      .box {
+        flex: 1;
+        min-width: 300px;
+        padding: 20px;
+        border-radius: 8px;
+        color: #fff;
+        text-align: center;
+        font-weight: bold;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .box.blue {
+        background-color: #007bff;
+      }
+
+      .box.red {
+        background-color: #dc3545;
+      }
+
+      .box.yellow {
+        background-color: #ffc107;
+        color: #333;
+      }
+
+      .box.green {
+        background-color: #28a745;
+      }
+
+      /* Gráficos */
+      .charts {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-top: 20px;
+      }
+
+      .chart {
+        flex: 1;
+        min-width: 400px;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      canvas {
+        max-width: 100%;
+        height: auto;
+      }
+
+      /* Links sublinhados */
+      .box a {
+        text-decoration: underline;
+      }
+    </style>
+    <style>
+      /* Adiciona sublinhado nos textos dos botões azul, vermelho e amarelo */
+      .box a {
+        text-decoration: underline !important;
+      }
+    </style>
+    <style>
+      /* Estilo dos links nos botões */
+      .box.blue a {
+        color: #fff; /* Texto branco para o botão azul */
+      }
+
+      .box.red a {
+        color: #fff; /* Texto branco para o botão vermelho */
+      }
+
+      .box.yellow a {
+        color: #000; /* Texto preto para o botão amarelo */
+      }
+    </style>
   </head>
   <body>
     <div class="container">
@@ -20,22 +152,26 @@
           <li><a href="entradas.html">Entradas</a></li>
           <li><a href="saidas.html">Saídas</a></li>
           <li><a href="usuarios.html">Usuários</a></li>
-          <li><a href="administrador.html">Admistrador</a></li>
+          <li><a href="administrador.html">Administrador</a></li>
         </ul>
       </nav>
       <main>
         <section class="summary">
           <div class="box blue">
-            <a href="produtos.html" style="color: inherit; text-decoration: none;">
-              4 Produtos Cadastrados, 19 Itens no Estoque
-            </a>
+            <a id="produtosCadastradosLink" href="produtos.html"
+              >Carregando...</a
+            >
           </div>
           <div class="box red">
-            <a href="estoquezerado.html" style="color: inherit; text-decoration: none;">
-              2 Produtos Com Estoque Zerado
-            </a>
+            <a id="estoqueZeradoLink" href="produtos.html?filter=estoquezerado"
+              >Carregando...</a
+            >
           </div>
-          <div class="box yellow">3 Produtos Com Estoque Mínimo</div>
+          <div class="box yellow">
+            <a id="estoqueMinimoLink" href="produtos.html?filter=estoqueminimo"
+              >Carregando...</a
+            >
+          </div>
           <div class="box green">
             Investimento: R$ 517,00, Retorno Previsto: R$ 1.412,35, Margem de
             Lucro: 63,39%
@@ -51,87 +187,109 @@
         </section>
       </main>
     </div>
+    <script src="scripts.js"></script>
     <script>
-      const ctx1 = document
-        .getElementById("entradasSaidasChart")
-        .getContext("2d");
-      const entradasSaidasChart = new Chart(ctx1, {
-        type: "bar",
-        data: {
-          labels: [
-            "Dia 1",
-            "Dia 2",
-            "Dia 3",
-            "Dia 4",
-            "Dia 5",
-            "Dia 6",
-            "Dia 7",
-            "Dia 8",
-            "Dia 9",
-            "Dia 10",
-          ],
-          datasets: [
-            {
-              label: "Entradas",
-              data: [12, 19, 3, 5, 2, 3, 7, 8, 6, 4],
-              backgroundColor: "rgba(75, 192, 192, 0.2)",
-              borderColor: "rgba(75, 192, 192, 1)",
-              borderWidth: 1,
-            },
-            {
-              label: "Saídas",
-              data: [8, 11, 5, 6, 4, 7, 8, 9, 5, 3],
-              backgroundColor: "rgba(255, 99, 132, 0.2)",
-              borderColor: "rgba(255, 99, 132, 1)",
-              borderWidth: 1,
-            },
-          ],
-        },
-        options: {
-          scales: {
-            y: {
-              beginAtZero: true,
-            },
-          },
-        },
-      });
+      document.addEventListener("DOMContentLoaded", () => {
+        // Atualiza o botão azul com produtos cadastrados e itens no estoque
+        const produtosCadastrados =
+          localStorage.getItem("produtosCadastrados") || 0;
+        const totalItensEstoque =
+          localStorage.getItem("totalItensEstoque") || 0;
+        document.getElementById(
+          "produtosCadastradosLink"
+        ).textContent = `${produtosCadastrados} Produtos Cadastrados, ${totalItensEstoque} Itens no Estoque`;
 
-      const ctx2 = document
-        .getElementById("atividadesSistemaChart")
-        .getContext("2d");
-      const atividadesSistemaChart = new Chart(ctx2, {
-        type: "line",
-        data: {
-          labels: [
-            "Dia 1",
-            "Dia 2",
-            "Dia 3",
-            "Dia 4",
-            "Dia 5",
-            "Dia 6",
-            "Dia 7",
-            "Dia 8",
-            "Dia 9",
-            "Dia 10",
-          ],
-          datasets: [
-            {
-              label: "Atividades",
-              data: [3, 2, 2, 6, 4, 3, 5, 6, 3, 4],
-              backgroundColor: "rgba(54, 162, 235, 0.2)",
-              borderColor: "rgba(54, 162, 235, 1)",
-              borderWidth: 1,
-              fill: true,
-            },
-          ],
-        },
-        options: {
-          scales: {
-            y: {
-              beginAtZero: true,
+        // Atualiza o botão vermelho com produtos com estoque zerado
+        const zeradoCount = localStorage.getItem("produtosEstoqueZerado") || 0;
+        document.getElementById(
+          "estoqueZeradoLink"
+        ).textContent = `${zeradoCount} Produtos Com Estoque Zerado`;
+
+        // Atualiza o botão amarelo com produtos que atingiram o estoque mínimo
+        const minimoCount = localStorage.getItem("produtosEstoqueMinimo") || 0;
+        document.getElementById(
+          "estoqueMinimoLink"
+        ).textContent = `${minimoCount} Produtos Atingiram o Estoque Mínimo`;
+
+        // Gráfico de Entradas e Saídas
+        const ctx1 = document
+          .getElementById("entradasSaidasChart")
+          .getContext("2d");
+        new Chart(ctx1, {
+          type: "bar",
+          data: {
+            labels: [
+              "Dia 1",
+              "Dia 2",
+              "Dia 3",
+              "Dia 4",
+              "Dia 5",
+              "Dia 6",
+              "Dia 7",
+              "Dia 8",
+              "Dia 9",
+              "Dia 10",
+            ],
+            datasets: [
+              {
+                label: "Entradas",
+                data: [12, 19, 3, 5, 2, 3, 7, 8, 6, 4],
+                backgroundColor: "rgba(75, 192, 192, 0.2)",
+                borderColor: "rgba(75, 192, 192, 1)",
+                borderWidth: 1,
+              },
+              {
+                label: "Saídas",
+                data: [8, 11, 5, 6, 4, 7, 8, 9, 5, 3],
+                backgroundColor: "rgba(255, 99, 132, 0.2)",
+                borderColor: "rgba(255, 99, 132, 1)",
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            scales: {
+              y: { beginAtZero: true },
             },
           },
-        },
+        });
+
+        // Gráfico de Atividades do Sistema
+        const ctx2 = document
+          .getElementById("atividadesSistemaChart")
+          .getContext("2d");
+        new Chart(ctx2, {
+          type: "line",
+          data: {
+            labels: [
+              "Dia 1",
+              "Dia 2",
+              "Dia 3",
+              "Dia 4",
+              "Dia 5",
+              "Dia 6",
+              "Dia 7",
+              "Dia 8",
+              "Dia 9",
+              "Dia 10",
+            ],
+            datasets: [
+              {
+                label: "Atividades",
+                data: [3, 2, 2, 6, 4, 3, 5, 6, 3, 4],
+                backgroundColor: "rgba(54, 162, 235, 0.2)",
+                borderColor: "rgba(54, 162, 235, 1)",
+                borderWidth: 1,
+                fill: true,
+              },
+            ],
+          },
+          options: {
+            scales: {
+              y: { beginAtZero: true },
+            },
+          },
+        });
       });
     </script>
   </body>

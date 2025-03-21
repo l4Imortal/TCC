@@ -128,38 +128,59 @@
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
-        background-color: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         z-index: 1000;
+        width: 400px;
+        max-width: 90%;
       }
+
       .popup h3 {
         margin-top: 0;
+        font-size: 1.5rem;
+        color: #333;
+        text-align: center;
+        border-bottom: 2px solid #4caf50;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
       }
+
       .popup label {
         display: block;
         margin: 10px 0 5px;
+        font-weight: bold;
+        color: #555;
       }
+
       .popup input,
       .popup select {
         width: 100%;
-        padding: 8px;
-        margin-bottom: 10px;
+        padding: 10px;
+        margin-bottom: 15px;
         border: 1px solid #ddd;
-        border-radius: 5px;
+        border-radius: 8px;
+        font-size: 1rem;
+        box-sizing: border-box;
       }
+
       .popup button {
-        padding: 10px 20px;
+        width: 100%;
+        padding: 12px;
         background-color: #4caf50;
         color: white;
         border: none;
-        border-radius: 5px;
+        border-radius: 8px;
+        font-size: 1rem;
         cursor: pointer;
+        transition: background-color 0.3s ease;
       }
+
       .popup button:hover {
         background-color: #45a049;
       }
+
       .popup-overlay {
         display: none;
         position: fixed;
@@ -229,7 +250,7 @@
                   <td>Fornecedor A</td>
                   <td>R$ 80,00</td>
                   <td>R$ 100,00</td>
-                  <td>50</td>
+                  <td class="estoque">50</td>
                   <td>10</td>
                   <td>
                     <a href="#"
@@ -260,7 +281,7 @@
                   <td>Fornecedor B</td>
                   <td>R$ 120,00</td>
                   <td>R$ 150,00</td>
-                  <td>30</td>
+                  <td class="estoque">30</td>
                   <td>20</td>
                   <td>
                     <a href="#"
@@ -302,50 +323,186 @@
         <option value="CX">CX</option>
       </select>
       <label for="filterFornecedor">Fornecedor</label>
-      <input type="text" id="filterFornecedor" />
+      <select id="filterFornecedor">
+        <option value="">Selecione</option>
+      </select>
       <label for="filterEstoque">Estoque</label>
       <input type="text" id="filterEstoque" />
       <button id="applyFilter">Aplicar Filtro</button>
     </div>
     <script>
-      document.getElementById('filterButton').addEventListener('click', function () {
-        document.getElementById('popupOverlay').style.display = 'block';
-        document.getElementById('popup').style.display = 'block';
+      document
+        .getElementById("filterButton")
+        .addEventListener("click", function () {
+          document.getElementById("popupOverlay").style.display = "block";
+          document.getElementById("popup").style.display = "block";
+        });
+
+      document
+        .getElementById("popupOverlay")
+        .addEventListener("click", function () {
+          document.getElementById("popupOverlay").style.display = "none";
+          document.getElementById("popup").style.display = "none";
+        });
+
+      document
+        .getElementById("applyFilter")
+        .addEventListener("click", function () {
+          const cod = document.getElementById("filterCod").value.toLowerCase();
+          const produto = document
+            .getElementById("filterProduto")
+            .value.toLowerCase();
+          const categoria = document
+            .getElementById("filterCategoria")
+            .value.toLowerCase();
+          const un = document.getElementById("filterUn").value.toLowerCase();
+          const fornecedor = document
+            .getElementById("filterFornecedor")
+            .value.toLowerCase();
+          const estoque = document
+            .getElementById("filterEstoque")
+            .value.toLowerCase();
+
+          const rows = document.querySelectorAll(".center-table tbody tr");
+
+          rows.forEach((row) => {
+            const cells = row.querySelectorAll("td");
+            const codMatch = cells[1].textContent.toLowerCase().includes(cod);
+            const produtoMatch = cells[2].textContent
+              .toLowerCase()
+              .includes(produto);
+            const categoriaMatch = cells[3].textContent
+              .toLowerCase()
+              .includes(categoria);
+            const unMatch = cells[4].textContent.toLowerCase().includes(un);
+            const fornecedorMatch = cells[6].textContent
+              .toLowerCase()
+              .includes(fornecedor);
+            const estoqueMatch = estoque
+              ? cells[9].textContent.toLowerCase().includes(estoque)
+              : true;
+
+            if (
+              codMatch &&
+              produtoMatch &&
+              categoriaMatch &&
+              unMatch &&
+              fornecedorMatch &&
+              estoqueMatch
+            ) {
+              row.style.display = "";
+            } else {
+              row.style.display = "none";
+            }
+          });
+
+          document.getElementById("popupOverlay").style.display = "none";
+          document.getElementById("popup").style.display = "none";
+        });
+    </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const filter = urlParams.get("filter");
+
+        if (filter === "estoquezerado") {
+          // Filtrar a tabela para mostrar apenas produtos com estoque zerado
+          const rows = document.querySelectorAll("table tbody tr");
+          rows.forEach((row) => {
+            const estoque = parseInt(
+              row.querySelector(".estoque").textContent,
+              10
+            );
+            if (estoque !== 0) {
+              row.style.display = "none";
+            }
+          });
+        }
       });
+    </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const rows = document.querySelectorAll("table tbody tr");
+        let zeradoCount = 0;
 
-      document.getElementById('popupOverlay').addEventListener('click', function () {
-        document.getElementById('popupOverlay').style.display = 'none';
-        document.getElementById('popup').style.display = 'none';
-      });
-
-      document.getElementById('applyFilter').addEventListener('click', function () {
-        const cod = document.getElementById('filterCod').value.toLowerCase();
-        const produto = document.getElementById('filterProduto').value.toLowerCase();
-        const categoria = document.getElementById('filterCategoria').value.toLowerCase();
-        const un = document.getElementById('filterUn').value.toLowerCase();
-        const fornecedor = document.getElementById('filterFornecedor').value.toLowerCase();
-        const estoque = document.getElementById('filterEstoque').value.toLowerCase();
-
-        const rows = document.querySelectorAll('.center-table tbody tr');
-
-        rows.forEach(row => {
-          const cells = row.querySelectorAll('td');
-          const codMatch = cells[1].textContent.toLowerCase().includes(cod);
-          const produtoMatch = cells[2].textContent.toLowerCase().includes(produto);
-          const categoriaMatch = cells[3].textContent.toLowerCase().includes(categoria);
-          const unMatch = cells[4].textContent.toLowerCase().includes(un);
-          const fornecedorMatch = cells[6].textContent.toLowerCase().includes(fornecedor);
-          const estoqueMatch = cells[9].textContent.toLowerCase().includes(estoque);
-
-          if (codMatch && produtoMatch && categoriaMatch && unMatch && fornecedorMatch && estoqueMatch) {
-            row.style.display = '';
-          } else {
-            row.style.display = 'none';
+        rows.forEach((row) => {
+          const estoque = parseInt(
+            row.querySelector(".estoque").textContent,
+            10
+          );
+          if (estoque === 0) {
+            zeradoCount++;
           }
         });
 
-        document.getElementById('popupOverlay').style.display = 'none';
-        document.getElementById('popup').style.display = 'none';
+        // Armazena o número de produtos com estoque zerado no localStorage
+        localStorage.setItem("produtosEstoqueZerado", zeradoCount);
+      });
+    </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const fornecedorSelect = document.getElementById("filterFornecedor");
+        const rows = document.querySelectorAll(".center-table tbody tr");
+        const fornecedores = new Set();
+
+        // Coleta os valores únicos de fornecedores
+        rows.forEach((row) => {
+          const fornecedor = row.querySelectorAll("td")[6].textContent.trim();
+          fornecedores.add(fornecedor);
+        });
+
+        // Adiciona os valores únicos ao campo de seleção
+        fornecedores.forEach((value) => {
+          const option = document.createElement("option");
+          option.value = value;
+          option.textContent = value;
+          fornecedorSelect.appendChild(option);
+        });
+      });
+    </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const filter = urlParams.get("filter");
+
+        if (filter === "estoqueminimo") {
+          // Filtrar a tabela para mostrar apenas produtos com estoque mínimo
+          const rows = document.querySelectorAll("table tbody tr");
+          rows.forEach((row) => {
+            const estoque = parseInt(
+              row.querySelector(".estoque").textContent,
+              10
+            );
+            const estoqueMinimo = parseInt(
+              row.querySelectorAll("td")[10].textContent,
+              10
+            );
+
+            if (estoque > estoqueMinimo) {
+              row.style.display = "none";
+            }
+          });
+        }
+      });
+    </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const rows = document.querySelectorAll(".center-table tbody tr");
+        let produtosCadastrados = 0;
+        let totalItensEstoque = 0;
+
+        rows.forEach((row) => {
+          const estoque = parseInt(
+            row.querySelector(".estoque").textContent,
+            10
+          );
+          produtosCadastrados++;
+          totalItensEstoque += estoque;
+        });
+
+        // Armazena os valores no localStorage
+        localStorage.setItem("produtosCadastrados", produtosCadastrados);
+        localStorage.setItem("totalItensEstoque", totalItensEstoque);
       });
     </script>
   </body>

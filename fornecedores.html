@@ -1,145 +1,472 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fornecedores - StoQ</title>
+    <link rel="stylesheet" href="styles.css" />
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        header {
-            background-color: white;
-            color: black;
-            padding: 10px 15px;
-            text-align: center;
-        }
-        nav {
-            background-color: #333;
-            overflow: hidden;
-        }
-        nav ul {
-            margin: 0;
-            padding: 0;
-            list-style: none;
-            display: flex;
-        }
-        nav ul li {
-            flex: 1;
-        }
-        nav ul li a {
-            color: white;
-            text-decoration: none;
-            display: block;
-            padding: 14px 20px;
-            text-align: center;
-        }
-        nav ul li a:hover {
-            background-color: #575757;
-        }
-        .container {
-            padding: 20px;
-        }
-        .add-button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 15px;
-            text-decoration: none;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .add-button:hover {
-            background-color: #45a049;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            text-align: left;
-            padding: 8px;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        .actions a {
-            margin-right: 10px;
-            text-decoration: none;
-            color: blue;
-        }
-        footer {
-            text-align: center;
-            padding: 10px;
-            background-color: #f1f1f1;
-            margin-top: 20px;
-        }
+      /* Estilo geral */
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f9f9f9;
+        margin: 0;
+        padding: 0;
+      }
+
+      .container {
+        width: 90%;
+        margin: 20px auto;
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      header h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 20px;
+      }
+
+      nav ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        justify-content: space-around;
+        background-color: #333;
+        border-radius: 8px;
+      }
+
+      nav ul li a {
+        display: block;
+        padding: 10px 20px;
+        color: #fff;
+        text-decoration: none;
+        font-weight: bold;
+      }
+
+      nav ul li a:hover {
+        background-color: #575757;
+      }
+
+      .button-container {
+        text-align: right;
+        margin-bottom: 20px;
+      }
+
+      .button-container a {
+        text-decoration: none;
+        padding: 10px 20px;
+        background-color: #4caf50;
+        color: white;
+        border-radius: 5px;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+      }
+
+      .button-container a:hover {
+        background-color: #45a049;
+      }
+
+      .table-container {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 20px;
+        background-color: #f9f9f9;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 0;
+      }
+
+      th,
+      td {
+        border: 1px solid #ddd;
+        text-align: center;
+        padding: 10px;
+      }
+
+      th {
+        background-color: #333;
+        color: white;
+      }
+
+      tbody tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+
+      tbody tr:hover {
+        background-color: #f1f1f1;
+      }
+
+      td a {
+        margin-right: 10px;
+        text-decoration: none;
+        color: #007bff;
+        font-weight: bold;
+      }
+
+      td a:hover {
+        text-decoration: underline;
+      }
+
+      .popup-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7); /* Fundo mais escuro */
+        z-index: 999;
+      }
+
+      .popup {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 16px; /* Bordas mais arredondadas */
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); /* Sombra mais suave */
+        z-index: 1000;
+        width: 450px;
+        max-width: 90%;
+      }
+
+      .popup h3 {
+        margin-top: 0;
+        font-size: 1.8rem;
+        color: #333;
+        text-align: center;
+        border-bottom: 3px solid #4caf50; /* Linha decorativa */
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+      }
+
+      .popup label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+        color: #555;
+      }
+
+      .popup input {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 1rem;
+        box-sizing: border-box;
+        transition: border-color 0.3s ease;
+      }
+
+      .popup input:focus {
+        border-color: #4caf50; /* Destaque ao focar */
+        outline: none;
+      }
+
+      .popup-buttons {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .popup-buttons button {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+      }
+
+      .popup-buttons button[type="submit"] {
+        background-color: #4caf50;
+        color: white;
+        font-weight: bold;
+      }
+
+      .popup-buttons button[type="submit"]:hover {
+        background-color: #45a049;
+        transform: scale(1.05); /* Efeito de zoom */
+      }
+
+      .popup-buttons button[type="button"] {
+        background-color: #f44336;
+        color: white;
+        font-weight: bold;
+      }
+
+      .popup-buttons button[type="button"]:hover {
+        background-color: #e53935;
+        transform: scale(1.05); /* Efeito de zoom */
+      }
     </style>
-</head>
-<body>
-    <header>
-        <h1>Fornecedores - StoQ</h1>
-    </header>
-    <nav>
-        <ul>
-            <li><a href="index.html">Página Inicial</a></li>
-            <li><a href="produtos.html">Produtos</a></li>
-            <li><a href="fornecedores.html">Fornecedores</a></li>
-            <li><a href="entradas.html">Entradas</a></li>
-            <li><a href="saidas.html">Saídas</a></li>
-            <li><a href="usuarios.html">Usuários</a></li>
-            <li><a href="logs.html">Logs de Atividades</a></li>
-        </ul>
-    </nav>
+  </head>
+  <body>
     <div class="container">
+      <header>
+        <h1>Fornecedores - StoQ</h1>
+      </header>
+      <nav>
+        <ul>
+          <li><a href="index.html">Página Inicial</a></li>
+          <li><a href="produtos.html">Produtos</a></li>
+          <li><a href="fornecedores.html">Fornecedores</a></li>
+          <li><a href="entradas.html">Entradas</a></li>
+          <li><a href="saidas.html">Saídas</a></li>
+          <li><a href="usuarios.html">Usuários</a></li>
+          <li><a href="logs.html">Logs de Atividades</a></li>
+        </ul>
+      </nav>
+      <main>
         <h2>Lista de Fornecedores</h2>
-        <button class="add-button">Novo Fornecedor</button>
-        <table>
+        <div class="button-container">
+          <a href="#">Novo Fornecedor</a>
+        </div>
+        <div class="table-container">
+          <table>
             <thead>
-                <tr>
-                    <th>Código</th>
-                    <th>Nome</th>
-                    <th>Cidade</th>
-                    <th>Estado</th>
-                    <th>Contato</th>
-                    <th>Data Cadastro</th>
-                    <th>Ações</th>
-                </tr>
+              <tr>
+                <th>Código</th>
+                <th>Nome</th>
+                <th>CNPJ</th>
+                <th>Cidade</th>
+                <th>Estado</th>
+                <th>E-mail</th>
+                <th>Contato</th>
+                <th>Data Cadastro</th>
+                <th>Ações</th>
+              </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>8</td>
-                    <td>Fornecedor X</td>
-                    <td>São Paulo</td>
-                    <td>SP</td>
-                    <td>(11) 1111-1111</td>
-                    <td>07/11/2023</td>
-                    <td class="actions">
-                        <a href="#">Editar</a>
-                        <a href="#">Excluir</a>
-                    </td>
-                </tr>
-                <tr>
-                    <td>15</td>
-                    <td>Fornecedor Y</td>
-                    <td>Rio de Janeiro</td>
-                    <td>RJ</td>
-                    <td>(21) 2222-2222</td>
-                    <td>21/09/2023</td>
-                    <td class="actions">
-                        <a href="#">Editar</a>
-                        <a href="#">Excluir</a>
-                    </td>
-                </tr>
+              <tr>
+                <td>8</td>
+                <td>Fornecedor X</td>
+                <td>12.345.678/0001-90</td>
+                <td>São Paulo</td>
+                <td>SP</td>
+                <td>fornecedorx@email.com</td>
+                <td>(11) 1111-1111</td>
+                <td>07/11/2023</td>
+                <td>
+                  <a href="#">Editar</a>
+                  <a href="#">Excluir</a>
+                </td>
+              </tr>
+              <tr>
+                <td>15</td>
+                <td>Fornecedor Y</td>
+                <td>98.765.432/0001-10</td>
+                <td>Rio de Janeiro</td>
+                <td>RJ</td>
+                <td>fornecedory@email.com</td>
+                <td>(21) 2222-2222</td>
+                <td>21/09/2023</td>
+                <td>
+                  <a href="#">Editar</a>
+                  <a href="#">Excluir</a>
+                </td>
+              </tr>
             </tbody>
-        </table>
+          </table>
+        </div>
+      </main>
     </div>
-    <footer>
-        <p>&copy; 2025 - Controle de Estoque</p>
-    </footer>
-</body>
+    <div class="popup-overlay" id="popupOverlay"></div>
+    <div class="popup" id="popup">
+      <h3>Cadastrar Novo Fornecedor</h3>
+      <form id="novoFornecedorForm">
+        <label for="codigoFornecedor">Código</label>
+        <input type="text" id="codigoFornecedor" readonly />
+
+        <label for="nomeFornecedor">Nome</label>
+        <input
+          type="text"
+          id="nomeFornecedor"
+          placeholder="Digite o nome do fornecedor"
+          required
+        />
+
+        <label for="cidadeFornecedor">Cidade</label>
+        <input
+          type="text"
+          id="cidadeFornecedor"
+          placeholder="Digite a cidade"
+          required
+        />
+
+        <label for="estadoFornecedor">Estado</label>
+        <input
+          type="text"
+          id="estadoFornecedor"
+          placeholder="Digite o estado"
+          required
+        />
+
+        <label for="cnpjFornecedor">CNPJ</label>
+        <input
+          type="text"
+          id="cnpjFornecedor"
+          placeholder="Digite o CNPJ"
+          required
+        />
+
+        <label for="emailFornecedor">E-mail</label>
+        <input
+          type="email"
+          id="emailFornecedor"
+          placeholder="Digite o e-mail"
+          required
+        />
+
+        <label for="contatoFornecedor">Número de Contato</label>
+        <input
+          type="text"
+          id="contatoFornecedor"
+          placeholder="Digite o número de contato"
+          required
+        />
+
+        <div class="popup-buttons">
+          <button type="submit">Cadastrar</button>
+          <button type="button" id="fecharPopup">Cancelar</button>
+        </div>
+      </form>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const novoFornecedorButton = document.querySelector(
+          ".button-container a"
+        );
+        const popupOverlay = document.getElementById("popupOverlay");
+        const popup = document.getElementById("popup");
+        const fecharPopupButton = document.getElementById("fecharPopup");
+        const codigoFornecedorInput =
+          document.getElementById("codigoFornecedor");
+        const novoFornecedorForm =
+          document.getElementById("novoFornecedorForm");
+        const tabelaBody = document.querySelector("table tbody");
+
+        const estadoInput = document.getElementById("estadoFornecedor");
+        const cnpjInput = document.getElementById("cnpjFornecedor");
+        const emailInput = document.getElementById("emailFornecedor");
+        const contatoInput = document.getElementById("contatoFornecedor");
+
+        // Função para gerar número aleatório de 3 dígitos
+        function gerarCodigoAleatorio() {
+          return Math.floor(100 + Math.random() * 900);
+        }
+
+        // Máscara para o CNPJ
+        function formatarCNPJ(value) {
+          return value
+            .replace(/\D/g, "") // Remove caracteres não numéricos
+            .replace(/^(\d{2})(\d)/, "$1.$2") // Adiciona o primeiro ponto
+            .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3") // Adiciona o segundo ponto
+            .replace(/\.(\d{3})(\d)/, ".$1/$2") // Adiciona a barra
+            .replace(/(\d{4})(\d)/, "$1-$2") // Adiciona o traço
+            .slice(0, 18); // Limita o tamanho
+        }
+
+        // Máscara para o número de contato
+        function formatarContato(value) {
+          return value
+            .replace(/\D/g, "") // Remove caracteres não numéricos
+            .replace(/^(\d{2})(\d)/, "($1) $2") // Adiciona parênteses no DDD
+            .replace(/(\d{4,5})(\d{4})$/, "$1-$2") // Adiciona o traço
+            .slice(0, 15); // Limita o tamanho
+        }
+
+        // Validação do estado (apenas siglas)
+        estadoInput.addEventListener("input", () => {
+          estadoInput.value = estadoInput.value
+            .toUpperCase()
+            .replace(/[^A-Z]/g, "")
+            .slice(0, 2);
+        });
+
+        // Aplicar máscara no CNPJ
+        cnpjInput.addEventListener("input", () => {
+          cnpjInput.value = formatarCNPJ(cnpjInput.value);
+        });
+
+        // Validação do e-mail
+        emailInput.addEventListener("input", () => {
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(emailInput.value)) {
+            emailInput.setCustomValidity("Por favor, insira um e-mail válido.");
+          } else {
+            emailInput.setCustomValidity("");
+          }
+        });
+
+        // Aplicar máscara no número de contato
+        contatoInput.addEventListener("input", () => {
+          contatoInput.value = formatarContato(contatoInput.value);
+        });
+
+        // Abrir o pop-up
+        novoFornecedorButton.addEventListener("click", (e) => {
+          e.preventDefault();
+          codigoFornecedorInput.value = gerarCodigoAleatorio();
+          popupOverlay.style.display = "block";
+          popup.style.display = "block";
+        });
+
+        // Fechar o pop-up
+        fecharPopupButton.addEventListener("click", () => {
+          popupOverlay.style.display = "none";
+          popup.style.display = "none";
+        });
+
+        // Cadastrar novo fornecedor
+        novoFornecedorForm.addEventListener("submit", (e) => {
+          e.preventDefault();
+
+          const codigo = codigoFornecedorInput.value;
+          const nome = document.getElementById("nomeFornecedor").value;
+          const cidade = document.getElementById("cidadeFornecedor").value;
+          const estado = estadoInput.value;
+          const cnpj = cnpjInput.value;
+          const email = emailInput.value;
+          const contato = contatoInput.value;
+
+          // Adicionar nova linha na tabela
+          const novaLinha = document.createElement("tr");
+          novaLinha.innerHTML = `
+            <td>${codigo}</td>
+            <td>${nome}</td>
+            <td>${cnpj}</td>
+            <td>${cidade}</td>
+            <td>${estado}</td>
+            <td>${email}</td>
+            <td>${contato}</td>
+            <td>${new Date().toLocaleDateString()}</td>
+            <td>
+              <a href="#">Editar</a>
+              <a href="#">Excluir</a>
+            </td>
+          `;
+          tabelaBody.appendChild(novaLinha);
+
+          // Fechar o pop-up
+          popupOverlay.style.display = "none";
+          popup.style.display = "none";
+
+          // Limpar o formulário
+          novoFornecedorForm.reset();
+        });
+      });
+    </script>
+  </body>
 </html>

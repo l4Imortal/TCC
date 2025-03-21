@@ -6,53 +6,63 @@
     <title>Categorias - StoQ</title>
     <link rel="stylesheet" href="styles.css" />
     <style>
+      /* Estilo geral */
       body {
         font-family: Arial, sans-serif;
-        background-color: #f4f4f4;
+        background-color: #f9f9f9;
         margin: 0;
         padding: 0;
       }
+
       .container {
-        width: 90%;
-        margin: 0 auto;
+        width: 90%; /* Aumente a largura máxima */
+        margin: 20px auto;
         background-color: white;
         padding: 20px;
         border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       }
+
       header {
         text-align: center;
-        margin: 20px 0;
+        margin-bottom: 20px;
       }
+
+      header h1 {
+        font-size: 1.8rem;
+        color: #333;
+      }
+
+      /* Estilo da navegação */
       nav ul {
         list-style-type: none;
         padding: 0;
+        margin: 0;
         display: flex;
         justify-content: center;
         background-color: #333;
-        margin: 0;
+        border-radius: 8px;
+        overflow: hidden;
       }
+
       nav ul li {
         margin: 0;
       }
+
       nav ul li a {
         color: white;
         text-decoration: none;
         padding: 15px 20px;
         display: block;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
       }
+
       nav ul li a:hover {
         background-color: #575757;
       }
-      main {
-        margin: 20px 0;
-      }
-      .categories {
-        text-align: center;
-      }
-      .categories h2 {
-        margin-bottom: 20px;
-      }
+
+      /* Estilo da tabela */
       table {
         width: 100%;
         border-collapse: collapse;
@@ -60,46 +70,228 @@
         border-radius: 8px;
         overflow: hidden;
       }
+
       table,
       th,
       td {
         border: 1px solid #ddd;
       }
+
       th,
       td {
         padding: 10px;
         text-align: center;
       }
+
       th {
-        background-color: #f2f2f2;
+        background-color: #333;
+        color: white;
       }
+
       tbody tr:nth-child(even) {
         background-color: #f9f9f9;
       }
+
       tbody tr:hover {
         background-color: #f1f1f1;
       }
+
+      /* Estilo dos botões */
       .button-container {
         text-align: right;
         margin-bottom: 20px;
       }
+
       .button-container a {
         text-decoration: none;
         padding: 10px 20px;
         background-color: #4caf50;
         color: white;
         border-radius: 5px;
-        border: none;
-        cursor: pointer;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
       }
+
       .button-container a:hover {
         background-color: #45a049;
       }
+
+      /* Estilo do contêiner da tabela */
       .table-container {
         border: 1px solid #ddd;
         border-radius: 8px;
         padding: 20px;
         background-color: #f9f9f9;
+      }
+
+      /* Estilo dos ícones de ação */
+      td a {
+        margin: 0 5px;
+        text-decoration: none;
+        color: #007bff;
+        font-weight: bold;
+      }
+
+      td a:hover {
+        text-decoration: underline;
+      }
+
+      td a img {
+        vertical-align: middle;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+      }
+
+      td a img:hover {
+        transform: scale(1.2);
+      }
+
+      /* Estilo do popup */
+      .popup-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: none;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .popup {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 300px;
+        display: none;
+      }
+
+      .popup h3 {
+        margin-top: 0;
+      }
+
+      .popup-buttons {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .popup-buttons button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .popup-buttons button[type="submit"] {
+        background-color: #4caf50;
+        color: white;
+      }
+
+      .popup-buttons button[type="submit"]:hover {
+        background-color: #45a049;
+      }
+
+      .popup-buttons button[type="button"] {
+        background-color: #f44336;
+        color: white;
+      }
+
+      .popup-buttons button[type="button"]:hover {
+        background-color: #e53935;
+      }
+
+      /* Estilo do overlay */
+      .popup-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6); /* Fundo mais escuro */
+        z-index: 999;
+      }
+
+      /* Estilo do pop-up */
+      .popup {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 12px; /* Bordas mais arredondadas */
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Sombra mais suave */
+        z-index: 1000;
+        width: 400px;
+        max-width: 90%;
+      }
+
+      .popup h3 {
+        margin-top: 0;
+        font-size: 1.8rem;
+        color: #333;
+        text-align: center;
+        border-bottom: 2px solid #4caf50; /* Linha decorativa */
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+      }
+
+      .popup label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+        color: #555;
+      }
+
+      .popup input {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 1rem;
+        box-sizing: border-box;
+      }
+
+      .popup-buttons {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .popup-buttons button {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .popup-buttons button[type="submit"] {
+        background-color: #4caf50;
+        color: white;
+        font-weight: bold;
+      }
+
+      .popup-buttons button[type="submit"]:hover {
+        background-color: #45a049;
+      }
+
+      .popup-buttons button[type="button"] {
+        background-color: #f44336;
+        color: white;
+        font-weight: bold;
+      }
+
+      .popup-buttons button[type="button"]:hover {
+        background-color: #e53935;
       }
     </style>
   </head>
@@ -189,6 +381,85 @@
         </section>
       </main>
     </div>
+    <div class="popup-overlay" id="popupOverlay"></div>
+    <div class="popup" id="popup">
+      <h3>Cadastrar Nova Categoria</h3>
+      <form id="novaCategoriaForm">
+        <label for="codigoCategoria">Código</label>
+        <input type="text" id="codigoCategoria" readonly />
+        <label for="nomeCategoria">Nome da Categoria</label>
+        <input
+          type="text"
+          id="nomeCategoria"
+          placeholder="Digite o nome da categoria"
+          required
+        />
+        <div class="popup-buttons">
+          <button type="submit">Cadastrar</button>
+          <button type="button" id="fecharPopup">Cancelar</button>
+        </div>
+      </form>
+    </div>
     <script src="scripts.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const novaCategoriaButton = document.querySelector(
+          ".button-container a"
+        );
+        const popupOverlay = document.getElementById("popupOverlay");
+        const popup = document.getElementById("popup");
+        const fecharPopupButton = document.getElementById("fecharPopup");
+        const codigoCategoriaInput = document.getElementById("codigoCategoria");
+        const nomeCategoriaInput = document.getElementById("nomeCategoria");
+        const novaCategoriaForm = document.getElementById("novaCategoriaForm");
+        const tabelaBody = document.querySelector("table tbody");
+
+        // Função para gerar número aleatório de 3 dígitos
+        function gerarCodigoAleatorio() {
+          return Math.floor(100 + Math.random() * 900);
+        }
+
+        // Abrir o pop-up
+        novaCategoriaButton.addEventListener("click", (e) => {
+          e.preventDefault();
+          codigoCategoriaInput.value = gerarCodigoAleatorio();
+          nomeCategoriaInput.value = ""; // Limpa o campo de nome
+          popupOverlay.style.display = "block";
+          popup.style.display = "block";
+        });
+
+        // Fechar o pop-up
+        fecharPopupButton.addEventListener("click", () => {
+          popupOverlay.style.display = "none";
+          popup.style.display = "none";
+        });
+
+        // Cadastrar nova categoria
+        novaCategoriaForm.addEventListener("submit", (e) => {
+          e.preventDefault();
+
+          const codigo = codigoCategoriaInput.value;
+          const nome = nomeCategoriaInput.value;
+
+          // Adicionar nova linha na tabela
+          const novaLinha = document.createElement("tr");
+          novaLinha.innerHTML = `
+            <td>${tabelaBody.children.length + 1}</td>
+            <td>${codigo}</td>
+            <td>${nome}</td>
+            <td>${new Date().toLocaleDateString()}</td>
+            <td>
+              <a href="#"><img src="icons/edit.png" alt="Editar" width="20" height="20" /> Editar</a>
+              <a href="#"><img src="icons/delete.png" alt="Excluir" width="20" height="20" /> Excluir</a>
+            </td>
+          `;
+          tabelaBody.appendChild(novaLinha);
+
+          // Fechar o pop-up
+          popupOverlay.style.display = "none";
+          popup.style.display = "none";
+        });
+      });
+    </script>
   </body>
 </html>
