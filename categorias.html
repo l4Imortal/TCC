@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Categorias - StoQ</title>
     <link rel="stylesheet" href="styles.css" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      rel="stylesheet"
+    />
     <style>
       /* Estilo geral */
       body {
@@ -293,6 +297,21 @@
       .popup-buttons button[type="button"]:hover {
         background-color: #e53935;
       }
+
+      .edit-button,
+      .delete-button {
+        margin: 0 5px;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .edit-button i:hover {
+        color: #45a049; /* Cor ao passar o mouse no botão de editar */
+      }
+
+      .delete-button i:hover {
+        color: #c82333; /* Cor ao passar o mouse no botão de excluir */
+      }
     </style>
   </head>
   <body>
@@ -336,20 +355,22 @@
                   <td>AJUDA HUMANITARIA</td>
                   <td>07/11/2023</td>
                   <td>
-                    <a href="#"
-                      ><img
-                        src="icons/edit.png"
-                        alt="Editar"
-                        width="20"
-                        height="20"
-                    /></a>
-                    <a href="#"
-                      ><img
-                        src="icons/delete.png"
-                        alt="Excluir"
-                        width="20"
-                        height="20"
-                    /></a>
+                    <a href="#" class="edit-button">
+                      <i
+                        class="fas fa-edit"
+                        style="color: #4caf50; font-size: 20px"
+                      ></i>
+                    </a>
+                    <a
+                      href="#"
+                      class="delete-button"
+                      onclick="confirmDelete(event)"
+                    >
+                      <i
+                        class="fas fa-trash"
+                        style="color: #dc3545; font-size: 20px"
+                      ></i>
+                    </a>
                   </td>
                 </tr>
                 <tr>
@@ -358,20 +379,22 @@
                   <td>ALIMENTOS</td>
                   <td>21/09/2023</td>
                   <td>
-                    <a href="#"
-                      ><img
-                        src="icons/edit.png"
-                        alt="Editar"
-                        width="20"
-                        height="20"
-                    /></a>
-                    <a href="#"
-                      ><img
-                        src="icons/delete.png"
-                        alt="Excluir"
-                        width="20"
-                        height="20"
-                    /></a>
+                    <a href="#" class="edit-button">
+                      <i
+                        class="fas fa-edit"
+                        style="color: #4caf50; font-size: 20px"
+                      ></i>
+                    </a>
+                    <a
+                      href="#"
+                      class="delete-button"
+                      onclick="confirmDelete(event)"
+                    >
+                      <i
+                        class="fas fa-trash"
+                        style="color: #dc3545; font-size: 20px"
+                      ></i>
+                    </a>
                   </td>
                 </tr>
                 <!-- Adicione mais linhas conforme necessário -->
@@ -449,8 +472,12 @@
             <td>${nome}</td>
             <td>${new Date().toLocaleDateString()}</td>
             <td>
-              <a href="#"><img src="icons/edit.png" alt="Editar" width="20" height="20" /> Editar</a>
-              <a href="#"><img src="icons/delete.png" alt="Excluir" width="20" height="20" /> Excluir</a>
+              <a href="#" class="edit-button">
+                <i class="fas fa-edit" style="color: #4caf50; font-size: 20px;"></i>
+              </a>
+              <a href="#" class="delete-button" onclick="confirmDelete(event)">
+                <i class="fas fa-trash" style="color: #dc3545; font-size: 20px;"></i>
+              </a>
             </td>
           `;
           tabelaBody.appendChild(novaLinha);
@@ -460,6 +487,17 @@
           popup.style.display = "none";
         });
       });
+
+      function confirmDelete(event) {
+        event.preventDefault(); // Evita o comportamento padrão do link
+        const confirmation = confirm(
+          "Você tem certeza que deseja excluir esta categoria?"
+        );
+        if (confirmation) {
+          // Aqui você pode adicionar a lógica para excluir a categoria
+          alert("Categoria excluída com sucesso!");
+        }
+      }
     </script>
   </body>
 </html>

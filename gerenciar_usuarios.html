@@ -1,135 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gerenciar Usuários - Controle de Estoque</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css" />
     <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100vh;
-            background-color: #f0f0f0;
-            margin: 0;
-        }
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            padding: 20px;
-        }
-        header, nav, main {
-            margin-bottom: 20px;
-        }
-        nav ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        nav ul li {
-            display: inline;
-            margin-right: 10px;
-        }
-        .user-management {
-            background-color: #e0e0e0;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .user-management h2, .user-management button {
-            width: 100%;
-            margin-bottom: 10px;
-        }
-        .user-table {
-            width: 100%;
-            margin-top: 20px;
-            border-collapse: collapse;
-        }
-        .user-table th, .user-table td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        .user-table th {
-            background-color: #f2f2f2;
-        }
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100vh;
+        background-color: #f0f0f0;
+        margin: 0;
+      }
+      .container {
+        width: 100%;
+        max-width: 1200px;
+        padding: 20px;
+      }
+      header,
+      nav,
+      main {
+        margin-bottom: 20px;
+      }
+      nav ul {
+        list-style-type: none;
+        padding: 0;
+      }
+      nav ul li {
+        display: inline;
+        margin-right: 10px;
+      }
+      .user-management {
+        background-color: #e0e0e0;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .user-management h2,
+      .user-management button {
+        width: 100%;
+        margin-bottom: 10px;
+      }
+      .user-table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+      }
+      .user-table th,
+      .user-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+      .user-table th {
+        background-color: #f2f2f2;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <header>
-            <h1>Gerenciar Usuários - Controle de Estoque</h1>
-        </header>
-        <nav>
-            <ul>
-                <li><a href="index.html">Início</a></li>
-                <li><a href="produtos.html">Produtos</a></li>
-                <li><a href="categorias.html">Categorias</a></li>
-                <li><a href="fornecedores.html">Fornecedores</a></li>
-                <li><a href="entradas.html">Entradas</a></li>
-                <li><a href="saidas.html">Saídas</a></li>
-                <li><a href="usuarios.html">Usuários</a></li>
-                <li><a href="administrador.html">Administrador</a></li>
-            </ul>
-        </nav>
-        <main>
-            <section class="user-management">
-                <h2>Usuários Cadastrados</h2>
-                <button onclick="window.location.href='criar_usuario.html'">Criar Novo Usuário</button>
-                <table class="user-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nome de Usuário</th>
-                            <th>Email</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Aqui você pode adicionar os usuários cadastrados -->
-                        <tr>
-                            <td>1</td>
-                            <td>admin</td>
-                            <td>admin@example.com</td>
-                            <td>
-                                <button onclick="window.location.href='editar_usuario.html?id=1'">Editar</button>
-                                <button onclick="excluirUsuario(1)">Excluir</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>usuario1</td>
-                            <td>usuario1@example.com</td>
-                            <td>
-                                <button onclick="window.location.href='editar_usuario.html?id=2'">Editar</button>
-                                <button onclick="excluirUsuario(2)">Excluir</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>usuario2</td>
-                            <td>usuario2@example.com</td>
-                            <td>
-                                <button onclick="window.location.href='editar_usuario.html?id=3'">Editar</button>
-                                <button onclick="excluirUsuario(3)">Excluir</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </section>
-        </main>
+      <header>
+        <h1>Gerenciar Usuários - Controle de Estoque</h1>
+      </header>
+      <nav>
+        <ul>
+          <li><a href="index.html">Início</a></li>
+          <li><a href="produtos.html">Produtos</a></li>
+          <li><a href="categorias.html">Categorias</a></li>
+          <li><a href="fornecedores.html">Fornecedores</a></li>
+          <li><a href="entradas.html">Entradas</a></li>
+          <li><a href="saidas.html">Saídas</a></li>
+          <li><a href="administrador.html">Administrador</a></li>
+        </ul>
+      </nav>
+      <main>
+        <section class="user-management">
+          <h2>Usuários Cadastrados</h2>
+          <button onclick="window.location.href='criar_usuario.html'">
+            Criar Novo Usuário
+          </button>
+          <table class="user-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nome de Usuário</th>
+                <th>Email</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Aqui você pode adicionar os usuários cadastrados -->
+              <tr>
+                <td>1</td>
+                <td>admin</td>
+                <td>admin@example.com</td>
+                <td>
+                  <button
+                    onclick="window.location.href='editar_usuario.html?id=1'"
+                  >
+                    Editar
+                  </button>
+                  <button onclick="excluirUsuario(1)">Excluir</button>
+                </td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>usuario1</td>
+                <td>usuario1@example.com</td>
+                <td>
+                  <button
+                    onclick="window.location.href='editar_usuario.html?id=2'"
+                  >
+                    Editar
+                  </button>
+                  <button onclick="excluirUsuario(2)">Excluir</button>
+                </td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>usuario2</td>
+                <td>usuario2@example.com</td>
+                <td>
+                  <button
+                    onclick="window.location.href='editar_usuario.html?id=3'"
+                  >
+                    Editar
+                  </button>
+                  <button onclick="excluirUsuario(3)">Excluir</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </main>
     </div>
     <script>
-        function excluirUsuario(id) {
-            if (confirm('Tem certeza de que deseja excluir este usuário?')) {
-                // Lógica para excluir o usuário
-                console.log(`Usuário com ID ${id} excluído.`);
-            }
+      function excluirUsuario(id) {
+        if (confirm("Tem certeza de que deseja excluir este usuário?")) {
+          // Lógica para excluir o usuário
+          console.log(`Usuário com ID ${id} excluído.`);
         }
+      }
     </script>
-</body>
+  </body>
 </html>
