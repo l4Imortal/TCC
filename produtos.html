@@ -131,17 +131,19 @@
         top: 50%;
         transform: translate(-50%, -50%);
         background-color: #ffffff;
-        padding: 30px;
+        padding: 20px;
         border-radius: 12px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         z-index: 1000;
-        width: 400px;
-        max-width: 90%;
+        width: 90%;
+        max-width: 400px;
+        max-height: 90%;
+        overflow-y: auto;
       }
 
       .popup h3 {
         margin-top: 0;
-        font-size: 1.5rem;
+        font-size: 1.2rem;
         color: #333;
         text-align: center;
         border-bottom: 2px solid #4caf50;
@@ -159,17 +161,17 @@
       .popup input,
       .popup select {
         width: 100%;
-        padding: 10px;
-        margin-bottom: 15px;
+        padding: 8px;
+        margin-bottom: 10px;
         border: 1px solid #ddd;
         border-radius: 8px;
-        font-size: 1rem;
+        font-size: 0.9rem;
         box-sizing: border-box;
       }
 
       .popup button {
         width: 100%;
-        padding: 12px;
+        padding: 10px;
         background-color: #4caf50;
         color: white;
         border: none;
@@ -247,7 +249,7 @@
           <div class="button-container">
             <h2>Lista de Produtos</h2>
             <div>
-              <a href="novo_produto.html">Novo Produto</a>
+              <a href="#" id="novoProdutoButton">Novo Produto</a>
               <a href="#" id="filterButton">Filtrar</a>
             </div>
           </div>
@@ -270,73 +272,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>
-                    <img src="path/to/image1.jpg" alt="Produto A" width="50" />
-                  </td>
-                  <td>001</td>
-                  <td>Produto A</td>
-                  <td>Categoria 1</td>
-                  <td>UN</td>
-                  <td>10/03/2025</td>
-                  <td>Fornecedor A</td>
-                  <td>R$ 80,00</td>
-                  <td>R$ 100,00</td>
-                  <td class="estoque">50</td>
-                  <td>10</td>
-                  <td>
-                    <a href="#" class="edit-button">
-                      <i
-                        class="fas fa-edit"
-                        style="color: #4caf50; font-size: 20px"
-                      ></i>
-                    </a>
-                    <a
-                      href="#"
-                      class="delete-button"
-                      onclick="confirmDelete(event)"
-                    >
-                      <i
-                        class="fas fa-trash"
-                        style="color: #dc3545; font-size: 20px"
-                      ></i>
-                    </a>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <img src="path/to/image2.jpg" alt="Produto B" width="50" />
-                  </td>
-                  <td>002</td>
-                  <td>Produto B</td>
-                  <td>Categoria 2</td>
-                  <td>UN</td>
-                  <td>11/03/2025</td>
-                  <td>Fornecedor B</td>
-                  <td>R$ 120,00</td>
-                  <td>R$ 150,00</td>
-                  <td class="estoque">30</td>
-                  <td>20</td>
-                  <td>
-                    <a href="#" class="edit-button">
-                      <i
-                        class="fas fa-edit"
-                        style="color: #4caf50; font-size: 20px"
-                      ></i>
-                    </a>
-                    <a
-                      href="#"
-                      class="delete-button"
-                      onclick="confirmDelete(event)"
-                    >
-                      <i
-                        class="fas fa-trash"
-                        style="color: #dc3545; font-size: 20px"
-                      ></i>
-                    </a>
-                  </td>
-                </tr>
-                <!-- Adicione mais linhas conforme necessário -->
+                <!-- Linhas da tabela serão adicionadas aqui -->
               </tbody>
             </table>
           </div>
@@ -366,198 +302,179 @@
       <input type="text" id="filterEstoque" />
       <button id="applyFilter">Aplicar Filtro</button>
     </div>
+    <div class="popup-overlay" id="novoProdutoPopupOverlay"></div>
+    <div class="popup" id="novoProdutoPopup">
+      <h3>Cadastrar Novo Produto</h3>
+      <label for="novoProdutoFoto">Foto</label>
+      <input type="text" id="novoProdutoFoto" placeholder="URL da foto" />
+      <label for="novoProdutoCod">COD</label>
+      <input type="text" id="novoProdutoCod" />
+      <label for="novoProdutoNome">Produto</label>
+      <input type="text" id="novoProdutoNome" />
+      <label for="novoProdutoCategoria">Categoria</label>
+      <input type="text" id="novoProdutoCategoria" />
+      <label for="novoProdutoUn">UN</label>
+      <select id="novoProdutoUn">
+        <option value="">Selecione</option>
+        <option value="UN">UN</option>
+        <option value="CX">CX</option>
+      </select>
+      <label for="novoProdutoData">Data</label>
+      <input type="date" id="novoProdutoData" />
+      <label for="novoProdutoFornecedor">Fornecedor</label>
+      <input type="text" id="novoProdutoFornecedor" />
+      <label for="novoProdutoCompra">Preço de Compra</label>
+      <input type="text" id="novoProdutoCompra" />
+      <label for="novoProdutoVenda">Preço de Venda</label>
+      <input type="text" id="novoProdutoVenda" />
+      <label for="novoProdutoEstoque">Estoque</label>
+      <input type="text" id="novoProdutoEstoque" />
+      <label for="novoProdutoEstoqueMinimo">Estoque Mínimo</label>
+      <input type="text" id="novoProdutoEstoqueMinimo" />
+      <button id="cadastrarProduto">Cadastrar Produto</button>
+    </div>
     <script>
-      document
-        .getElementById("filterButton")
-        .addEventListener("click", function () {
-          document.getElementById("popupOverlay").style.display = "block";
-          document.getElementById("popup").style.display = "block";
-        });
-
-      document
-        .getElementById("popupOverlay")
-        .addEventListener("click", function () {
-          document.getElementById("popupOverlay").style.display = "none";
-          document.getElementById("popup").style.display = "none";
-        });
-
-      document
-        .getElementById("applyFilter")
-        .addEventListener("click", function () {
-          const cod = document.getElementById("filterCod").value.toLowerCase();
-          const produto = document
-            .getElementById("filterProduto")
-            .value.toLowerCase();
-          const categoria = document
-            .getElementById("filterCategoria")
-            .value.toLowerCase();
-          const un = document.getElementById("filterUn").value.toLowerCase();
-          const fornecedor = document
-            .getElementById("filterFornecedor")
-            .value.toLowerCase();
-          const estoque = document
-            .getElementById("filterEstoque")
-            .value.toLowerCase();
-
-          const rows = document.querySelectorAll(".center-table tbody tr");
-
-          rows.forEach((row) => {
-            const cells = row.querySelectorAll("td");
-            const codMatch = cells[1].textContent.toLowerCase().includes(cod);
-            const produtoMatch = cells[2].textContent
-              .toLowerCase()
-              .includes(produto);
-            const categoriaMatch = cells[3].textContent
-              .toLowerCase()
-              .includes(categoria);
-            const unMatch = cells[4].textContent.toLowerCase().includes(un);
-            const fornecedorMatch = cells[6].textContent
-              .toLowerCase()
-              .includes(fornecedor);
-            const estoqueMatch = estoque
-              ? cells[9].textContent.toLowerCase().includes(estoque)
-              : true;
-
-            if (
-              codMatch &&
-              produtoMatch &&
-              categoriaMatch &&
-              unMatch &&
-              fornecedorMatch &&
-              estoqueMatch
-            ) {
-              row.style.display = "";
-            } else {
-              row.style.display = "none";
-            }
-          });
-
-          document.getElementById("popupOverlay").style.display = "none";
-          document.getElementById("popup").style.display = "none";
-        });
-    </script>
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const filter = urlParams.get("filter");
-
-        if (filter === "estoquezerado") {
-          // Filtrar a tabela para mostrar apenas produtos com estoque zerado
-          const rows = document.querySelectorAll("table tbody tr");
-          rows.forEach((row) => {
-            const estoque = parseInt(
-              row.querySelector(".estoque").textContent,
-              10
-            );
-            if (estoque !== 0) {
-              row.style.display = "none";
-            }
-          });
-        }
+      document.getElementById("filterButton").addEventListener("click", function () {
+        document.getElementById("popupOverlay").style.display = "block";
+        document.getElementById("popup").style.display = "block";
       });
-    </script>
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const rows = document.querySelectorAll("table tbody tr");
-        let zeradoCount = 0;
+
+      document.getElementById("popupOverlay").addEventListener("click", function () {
+        document.getElementById("popupOverlay").style.display = "none";
+        document.getElementById("popup").style.display = "none";
+      });
+
+      document.getElementById("applyFilter").addEventListener("click", function () {
+        const cod = document.getElementById("filterCod").value.toLowerCase();
+        const produto = document.getElementById("filterProduto").value.toLowerCase();
+        const categoria = document.getElementById("filterCategoria").value.toLowerCase();
+        const un = document.getElementById("filterUn").value.toLowerCase();
+        const fornecedor = document.getElementById("filterFornecedor").value.toLowerCase();
+        const estoque = document.getElementById("filterEstoque").value.toLowerCase();
+
+        const rows = document.querySelectorAll(".center-table tbody tr");
 
         rows.forEach((row) => {
-          const estoque = parseInt(
-            row.querySelector(".estoque").textContent,
-            10
-          );
-          if (estoque === 0) {
-            zeradoCount++;
+          const cells = row.querySelectorAll("td");
+          const codMatch = cells[1].textContent.toLowerCase().includes(cod);
+          const produtoMatch = cells[2].textContent.toLowerCase().includes(produto);
+          const categoriaMatch = cells[3].textContent.toLowerCase().includes(categoria);
+          const unMatch = cells[4].textContent.toLowerCase().includes(un);
+          const fornecedorMatch = cells[6].textContent.toLowerCase().includes(fornecedor);
+          const estoqueMatch = estoque ? cells[9].textContent.toLowerCase().includes(estoque) : true;
+
+          if (codMatch && produtoMatch && categoriaMatch && unMatch && fornecedorMatch && estoqueMatch) {
+            row.style.display = "";
+          } else {
+            row.style.display = "none";
           }
         });
 
-        // Armazena o número de produtos com estoque zerado no localStorage
-        localStorage.setItem("produtosEstoqueZerado", zeradoCount);
+        document.getElementById("popupOverlay").style.display = "none";
+        document.getElementById("popup").style.display = "none";
       });
-    </script>
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const fornecedorSelect = document.getElementById("filterFornecedor");
-        const rows = document.querySelectorAll(".center-table tbody tr");
-        const fornecedores = new Set();
 
-        // Coleta os valores únicos de fornecedores
-        rows.forEach((row) => {
-          const fornecedor = row.querySelectorAll("td")[6].textContent.trim();
-          fornecedores.add(fornecedor);
+      document.getElementById("novoProdutoButton").addEventListener("click", function () {
+        document.getElementById("novoProdutoPopupOverlay").style.display = "block";
+        document.getElementById("novoProdutoPopup").style.display = "block";
+      });
+
+      document.getElementById("novoProdutoPopupOverlay").addEventListener("click", function () {
+        document.getElementById("novoProdutoPopupOverlay").style.display = "none";
+        document.getElementById("novoProdutoPopup").style.display = "none";
+      });
+
+      document.getElementById("cadastrarProduto").addEventListener("click", function () {
+        const foto = document.getElementById("novoProdutoFoto").value;
+        const cod = document.getElementById("novoProdutoCod").value;
+        const nome = document.getElementById("novoProdutoNome").value;
+        const categoria = document.getElementById("novoProdutoCategoria").value;
+        const un = document.getElementById("novoProdutoUn").value;
+        const data = document.getElementById("novoProdutoData").value;
+        const fornecedor = document.getElementById("novoProdutoFornecedor").value;
+        const compra = document.getElementById("novoProdutoCompra").value;
+        const venda = document.getElementById("novoProdutoVenda").value;
+        const estoque = document.getElementById("novoProdutoEstoque").value;
+        const estoqueMinimo = document.getElementById("novoProdutoEstoqueMinimo").value;
+
+        const produtos = JSON.parse(localStorage.getItem("produtos")) || [];
+        produtos.push({
+          foto,
+          cod,
+          nome,
+          categoria,
+          un,
+          data,
+          fornecedor,
+          compra,
+          venda,
+          estoque,
+          estoqueMinimo,
         });
+        localStorage.setItem("produtos", JSON.stringify(produtos));
 
-        // Adiciona os valores únicos ao campo de seleção
-        fornecedores.forEach((value) => {
-          const option = document.createElement("option");
-          option.value = value;
-          option.textContent = value;
-          fornecedorSelect.appendChild(option);
-        });
+        document.getElementById("novoProdutoPopupOverlay").style.display = "none";
+        document.getElementById("novoProdutoPopup").style.display = "none";
+
+        // Atualiza a tabela com o novo produto
+        const tbody = document.querySelector(".center-table tbody");
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td><img src="${foto}" alt="${nome}" width="50"></td>
+          <td>${cod}</td>
+          <td>${nome}</td>
+          <td>${categoria}</td>
+          <td>${un}</td>
+          <td>${data}</td>
+          <td>${fornecedor}</td>
+          <td>R$ ${compra}</td>
+          <td>R$ ${venda}</td>
+          <td class="estoque">${estoque}</td>
+          <td>${estoqueMinimo}</td>
+          <td>
+            <a href="#" class="edit-button"><i class="fas fa-edit" style="color: #4caf50; font-size: 20px"></i></a>
+            <a href="#" class="delete-button" onclick="confirmDelete(event)"><i class="fas fa-trash" style="color: #dc3545; font-size: 20px"></i></a>
+          </td>
+        `;
+        tbody.appendChild(row);
       });
-    </script>
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const filter = urlParams.get("filter");
 
-        if (filter === "estoqueminimo") {
-          // Filtrar a tabela para mostrar apenas produtos com estoque mínimo
-          const rows = document.querySelectorAll("table tbody tr");
-          rows.forEach((row) => {
-            const estoque = parseInt(
-              row.querySelector(".estoque").textContent,
-              10
-            );
-            const estoqueMinimo = parseInt(
-              row.querySelectorAll("td")[10].textContent,
-              10
-            );
-
-            if (estoque > estoqueMinimo) {
-              row.style.display = "none";
-            }
-          });
-        }
-      });
-    </script>
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const rows = document.querySelectorAll(".center-table tbody tr");
-        let produtosCadastrados = 0;
-        let totalItensEstoque = 0;
-
-        rows.forEach((row) => {
-          const estoque = parseInt(
-            row.querySelector(".estoque").textContent,
-            10
-          );
-          produtosCadastrados++;
-          totalItensEstoque += estoque;
-        });
-
-        // Armazena os valores no localStorage
-        localStorage.setItem("produtosCadastrados", produtosCadastrados);
-        localStorage.setItem("totalItensEstoque", totalItensEstoque);
-      });
-    </script>
-    <script>
       function confirmDelete(event) {
         event.preventDefault(); // Evita o comportamento padrão do link
-        const confirmation = confirm(
-          "Você tem certeza que deseja excluir este item?"
-        );
+        const confirmation = confirm("Você tem certeza que deseja excluir este item?");
         if (confirmation) {
           // Aqui você pode adicionar a lógica para excluir o item
           alert("Item excluído com sucesso!");
         }
       }
-    </script>
-    <script>
-      // Verifica se o usuário está logado
-      if (localStorage.getItem("loggedIn") !== "true") {
-        window.location.href = "login.html"; // Redireciona para a página de login
-      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const produtos = JSON.parse(localStorage.getItem("produtos")) || [];
+        const tbody = document.querySelector(".center-table tbody");
+        tbody.innerHTML = ""; // Limpa a tabela antes de preencher os dados
+
+        produtos.forEach((produto) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td><img src="${produto.foto}" alt="${produto.nome}" width="50"></td>
+            <td>${produto.cod}</td>
+            <td>${produto.nome}</td>
+            <td>${produto.categoria}</td>
+            <td>${produto.un}</td>
+            <td>${produto.data}</td>
+            <td>${produto.fornecedor}</td>
+            <td>R$ ${produto.compra}</td>
+            <td>R$ ${produto.venda}</td>
+            <td class="estoque">${produto.estoque}</td>
+            <td>${produto.estoqueMinimo}</td>
+            <td>
+              <a href="#" class="edit-button"><i class="fas fa-edit" style="color: #4caf50; font-size: 20px"></i></a>
+              <a href="#" class="delete-button" onclick="confirmDelete(event)"><i class="fas fa-trash" style="color: #dc3545; font-size: 20px"></i></a>
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+      });
     </script>
   </body>
 </html>
