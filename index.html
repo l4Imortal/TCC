@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Controle de Estoque</title>
+    <title>StoQ - Página Inicial</title>
     <link rel="stylesheet" href="styles.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -24,10 +24,38 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       }
 
-      header h1 {
-        text-align: center;
-        color: #333;
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         margin-bottom: 20px;
+      }
+
+      header h1 {
+        color: #333;
+      }
+
+      .user-info {
+        text-align: right;
+      }
+
+      .user-info span {
+        font-size: 1em;
+        color: #555;
+        margin-right: 10px;
+      }
+
+      .user-info a {
+        text-decoration: none;
+        color: #007bff;
+        font-weight: bold;
+        margin-left: 10px;
+        cursor: pointer;
+        transition: color 0.3s ease;
+      }
+
+      .user-info a:hover {
+        color: #0056b3;
       }
 
       /* Navegação */
@@ -67,7 +95,6 @@
         min-width: 300px;
         padding: 20px;
         border-radius: 8px;
-        color: #fff;
         text-align: center;
         font-weight: bold;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -75,19 +102,22 @@
 
       .box.blue {
         background-color: #007bff;
+        color: #fff !important; /* Fonte branca */
       }
 
       .box.red {
         background-color: #dc3545;
+        color: #fff !important; /* Fonte branca */
       }
 
       .box.yellow {
         background-color: #ffc107;
-        color: #333;
+        color: #000 !important; /* Fonte preta */
       }
 
       .box.green {
         background-color: #28a745;
+        color: #fff !important; /* Fonte branca */
       }
 
       /* Gráficos */
@@ -112,37 +142,17 @@
         max-width: 100%;
         height: auto;
       }
-
-      /* Links sublinhados */
-      .box a {
-        text-decoration: underline;
-      }
-    </style>
-    <style>
-      /* Adiciona sublinhado nos textos dos botões azul, vermelho e amarelo */
-      .box a {
-        text-decoration: underline !important;
-      }
-    </style>
-    <style>
-      /* Estilo dos links nos botões */
-      .box.blue a {
-        color: #fff; /* Texto branco para o botão azul */
-      }
-
-      .box.red a {
-        color: #fff; /* Texto branco para o botão vermelho */
-      }
-
-      .box.yellow a {
-        color: #000; /* Texto preto para o botão amarelo */
-      }
     </style>
   </head>
   <body>
     <div class="container">
       <header>
         <h1>StoQ - Página Inicial</h1>
+        <div class="user-info">
+          <span>Seja bem-vindo, admin!</span>
+          <a id="accountButton" href="administrador.html">Conta</a>
+          <a id="logoutButton">Sair</a>
+        </div>
       </header>
       <nav>
         <ul>
@@ -151,7 +161,6 @@
           <li><a href="fornecedores.html">Fornecedores</a></li>
           <li><a href="entradas.html">Entradas</a></li>
           <li><a href="saidas.html">Saídas</a></li>
-          <li><a href="administrador.html">Administrador</a></li>
         </ul>
       </nav>
       <main>
@@ -187,6 +196,18 @@
       </main>
     </div>
     <script src="scripts.js"></script>
+    <script>
+      // Verifica se o usuário está logado
+      if (localStorage.getItem("loggedIn") !== "true") {
+        window.location.href = "login.html"; // Redireciona para a página de login
+      }
+
+      // Adiciona funcionalidade ao botão de logout
+      document.getElementById("logoutButton").addEventListener("click", () => {
+        localStorage.removeItem("loggedIn"); // Remove o estado de login
+        window.location.href = "login.html"; // Redireciona para a página de login
+      });
+    </script>
     <script>
       document.addEventListener("DOMContentLoaded", () => {
         // Atualiza o botão azul com produtos cadastrados e itens no estoque

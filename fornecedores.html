@@ -390,6 +390,11 @@
       </form>
     </div>
     <script>
+      // Verifica se o usuário está logado
+      if (localStorage.getItem("loggedIn") !== "true") {
+        window.location.href = "login.html"; // Redireciona para a página de login
+      }
+
       document.addEventListener("DOMContentLoaded", () => {
         const novoFornecedorButton = document.querySelector(
           ".button-container a"

@@ -1,100 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle de Estoque - Login</title>
-    <link rel="stylesheet" href="styles.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StoQ - Gerenciador de Estoque</title>
     <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100vh;
-            background-color: #f0f0f0;
-            margin: 0;
-        }
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            padding: 20px;
-        }
-        header, nav, main {
-            margin-bottom: 20px;
-        }
-        nav ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        nav ul li {
-            display: inline;
-            margin-right: 10px;
-        }
-        .login-container {
-            width: 400px;
-            padding: 20px;
-            background-color: #e0e0e0;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            margin: auto;
-        }
-        .login-form {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-        }
-        .login-form label, .login-form input, .login-form button {
-            margin-bottom: 10px;
-            width: 100%;
-        }
-        .extra-options {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #007bff, #6c757d);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        color: #fff;
+      }
+
+      .login-container {
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        width: 350px;
+        text-align: center;
+      }
+
+      .login-container h1 {
+        margin-bottom: 20px;
+        color: #333;
+        font-size: 1.8em;
+      }
+
+      .login-container p {
+        margin-bottom: 20px;
+        color: #555;
+        font-size: 0.9em;
+      }
+
+      .login-container input {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 1em;
+      }
+
+      .login-container button {
+        width: 100%;
+        padding: 12px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-size: 1em;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .login-container button:hover {
+        background-color: #0056b3;
+      }
+
+      .error {
+        color: red;
+        font-size: 0.9em;
+        margin-top: 10px;
+      }
+
+      footer {
+        position: absolute;
+        bottom: 10px;
+        text-align: center;
+        width: 100%;
+        font-size: 0.8em;
+        color: #ddd;
+      }
     </style>
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>Login - Controle de Estoque</h1>
-        </header>
-        <nav>
-            <ul>
-                <li><a href="index.html">Página Inicial</a></li>
-                <li><a href="produtos.html">Produtos</a></li>
-                <li><a href="categorias.html">Categorias</a></li>
-                <li><a href="fornecedores.html">Fornecedores</a></li>
-                <li><a href="entradas.html">Entradas</a></li>
-                <li><a href="saidas.html">Saídas</a></li>
-                <li><a href="usuarios.html">Usuários</a></li>
-                <li><a href="admistrador.html">Admistrador</a></li>
-            </ul>
-        </nav>
-        <main>
-            <section class="login-container">
-                <div class="login-form">
-                    <form action="dashboard.html" method="post">
-                        <label for="username">Usuário:</label>
-                        <input type="text" id="username" name="username" required>
-                        
-                        <label for="password">Senha:</label>
-                        <input type="password" id="password" name="password" required>
-                        
-                        <button type="submit">Login</button>
-                    </form>
-                    <div class="extra-options">
-                        <button onclick="window.location.href='criar_usuario.html'">Criar Usuário</button>
-                        <button onclick="window.location.href='esqueci_senha.html'">Esqueci Minha Senha</button>
-                    </div>
-                </div>
-            </section>
-        </main>
+  </head>
+  <body>
+    <div class="login-container">
+      <h1>StoQ - Gerenciador de Estoque</h1>
+      <p>Faça login para acessar o sistema</p>
+      <input type="text" id="username" placeholder="Usuário" />
+      <input type="password" id="password" placeholder="Senha" />
+      <button id="loginButton">Entrar</button>
+      <div class="error" id="errorMessage"></div>
     </div>
-</body>
+    <footer>© 2025 StoQ - Todos os direitos reservados</footer>
+    <script>
+      document.getElementById("loginButton").addEventListener("click", () => {
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+
+        // Verifica se o usuário e senha são "admin"
+        if (username === "admin" && password === "admin") {
+          localStorage.setItem("loggedIn", "true"); // Salva o estado de login
+          window.location.href = "index.html"; // Redireciona para a página inicial
+        } else {
+          document.getElementById("errorMessage").textContent =
+            "Usuário ou senha inválidos!";
+        }
+      });
+    </script>
+  </body>
 </html>
