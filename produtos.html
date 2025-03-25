@@ -99,6 +99,7 @@
         border-radius: 5px;
         border: none;
         cursor: pointer;
+        margin-right: 10px; /* Espaçamento entre os botões */
       }
       .button-container a:hover {
         background-color: #45a049;
@@ -123,7 +124,7 @@
       .button-container a:hover {
         background-color: #45a049;
       }
-      /* Estilos para o pop-up */
+      /* Estilo atualizado para o pop-up */
       .popup {
         display: none;
         position: fixed;
@@ -131,58 +132,88 @@
         top: 50%;
         transform: translate(-50%, -50%);
         background-color: #ffffff;
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
         z-index: 1000;
         width: 90%;
-        max-width: 400px;
+        max-width: 600px;
         max-height: 90%;
         overflow-y: auto;
+        font-family: Arial, sans-serif;
       }
 
       .popup h3 {
         margin-top: 0;
-        font-size: 1.2rem;
+        font-size: 1.8rem;
         color: #333;
         text-align: center;
-        border-bottom: 2px solid #4caf50;
+        border-bottom: 3px solid #4caf50;
         padding-bottom: 10px;
         margin-bottom: 20px;
       }
 
+      .popup form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+
       .popup label {
-        display: block;
-        margin: 10px 0 5px;
         font-weight: bold;
         color: #555;
+        margin-bottom: 5px;
       }
 
       .popup input,
       .popup select {
         width: 100%;
-        padding: 8px;
-        margin-bottom: 10px;
+        padding: 10px;
         border: 1px solid #ddd;
         border-radius: 8px;
-        font-size: 0.9rem;
+        font-size: 1rem;
         box-sizing: border-box;
+        background-color: #f9f9f9;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .popup input:focus,
+      .popup select:focus {
+        border-color: #4caf50;
+        box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
+        outline: none;
+        background-color: #ffffff;
       }
 
       .popup button {
-        width: 100%;
-        padding: 10px;
+        padding: 12px 20px;
         background-color: #4caf50;
         color: white;
         border: none;
         border-radius: 8px;
         font-size: 1rem;
         cursor: pointer;
-        transition: background-color 0.3s ease;
+        transition: background-color 0.3s ease, transform 0.2s ease;
       }
 
       .popup button:hover {
         background-color: #45a049;
+        transform: scale(1.05);
+      }
+
+      .popup .button-group {
+        grid-column: span 2;
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+      }
+
+      #cancelarProduto {
+        background-color: #dc3545;
+      }
+
+      #cancelarProduto:hover {
+        background-color: #c82333;
       }
 
       .popup-overlay {
@@ -221,6 +252,162 @@
 
       .delete-button i:hover {
         color: #c82333; /* Cor ao passar o mouse no botão de excluir */
+      }
+
+      .button-group {
+        grid-column: span 2;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .button-group button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      #cadastrarProduto {
+        background-color: #4caf50;
+        color: white;
+      }
+
+      #cadastrarProduto:hover {
+        background-color: #45a049;
+      }
+
+      #cancelarProduto {
+        background-color: #dc3545;
+        color: white;
+      }
+
+      #cancelarProduto:hover {
+        background-color: #c82333;
+      }
+
+      input[type="file"] {
+        padding: 5px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 1rem;
+        background-color: #f9f9f9;
+        cursor: pointer;
+      }
+
+      input[type="file"]:focus {
+        border-color: #4caf50;
+        outline: none;
+      }
+
+      #confirmPopup {
+        display: none;
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+        width: 90%;
+        max-width: 400px;
+        text-align: center;
+      }
+
+      #confirmPopup p {
+        margin: 20px 0;
+        font-size: 1rem;
+        color: #333;
+      }
+
+      #confirmPopup .button-group {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      #confirmPopup .button-group button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      #confirmarCadastro {
+        background-color: #4caf50;
+        color: white;
+      }
+
+      #confirmarCadastro:hover {
+        background-color: #45a049;
+      }
+
+      #cancelarCadastro {
+        background-color: #dc3545;
+        color: white;
+      }
+
+      #cancelarCadastro:hover {
+        background-color: #c82333;
+      }
+
+      /* Estilo para o pop-up de exclusão */
+      #deletePopup {
+        display: none;
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+        width: 90%;
+        max-width: 400px;
+        text-align: center;
+      }
+
+      #deletePopup p {
+        margin: 20px 0;
+        font-size: 1rem;
+        color: #333;
+      }
+
+      #deletePopup .button-group {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      #deletePopup .button-group button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      #confirmDelete {
+        background-color: #4caf50;
+        color: white;
+      }
+
+      #confirmDelete:hover {
+        background-color: #45a049;
+      }
+
+      #cancelDelete {
+        background-color: #dc3545;
+        color: white;
+      }
+
+      #cancelDelete:hover {
+        background-color: #c82333;
       }
     </style>
     <link
@@ -305,175 +492,397 @@
     <div class="popup-overlay" id="novoProdutoPopupOverlay"></div>
     <div class="popup" id="novoProdutoPopup">
       <h3>Cadastrar Novo Produto</h3>
-      <label for="novoProdutoFoto">Foto</label>
-      <input type="text" id="novoProdutoFoto" placeholder="URL da foto" />
-      <label for="novoProdutoCod">COD</label>
-      <input type="text" id="novoProdutoCod" />
-      <label for="novoProdutoNome">Produto</label>
-      <input type="text" id="novoProdutoNome" />
-      <label for="novoProdutoCategoria">Categoria</label>
-      <input type="text" id="novoProdutoCategoria" />
-      <label for="novoProdutoUn">UN</label>
-      <select id="novoProdutoUn">
-        <option value="">Selecione</option>
-        <option value="UN">UN</option>
-        <option value="CX">CX</option>
-      </select>
-      <label for="novoProdutoData">Data</label>
-      <input type="date" id="novoProdutoData" />
-      <label for="novoProdutoFornecedor">Fornecedor</label>
-      <input type="text" id="novoProdutoFornecedor" />
-      <label for="novoProdutoCompra">Preço de Compra</label>
-      <input type="text" id="novoProdutoCompra" />
-      <label for="novoProdutoVenda">Preço de Venda</label>
-      <input type="text" id="novoProdutoVenda" />
-      <label for="novoProdutoEstoque">Estoque</label>
-      <input type="text" id="novoProdutoEstoque" />
-      <label for="novoProdutoEstoqueMinimo">Estoque Mínimo</label>
-      <input type="text" id="novoProdutoEstoqueMinimo" />
-      <button id="cadastrarProduto">Cadastrar Produto</button>
+      <form>
+        <label for="novoProdutoFoto">Foto</label>
+        <input type="file" id="novoProdutoFoto" accept="image/*" />
+
+        <label for="novoProdutoCod">COD</label>
+        <input type="text" id="novoProdutoCod" />
+
+        <label for="novoProdutoNome">Produto</label>
+        <input type="text" id="novoProdutoNome" />
+
+        <label for="novoProdutoCategoria">Categoria</label>
+        <input type="text" id="novoProdutoCategoria" />
+
+        <label for="novoProdutoUn">UN</label>
+        <select id="novoProdutoUn">
+          <option value="">Selecione</option>
+          <option value="UN">UN</option>
+          <option value="CX">CX</option>
+        </select>
+
+        <label for="novoProdutoFornecedor">Fornecedor</label>
+        <input type="text" id="novoProdutoFornecedor" />
+
+        <label for="novoProdutoCompra">Preço de Compra</label>
+        <input type="text" id="novoProdutoCompra" />
+
+        <label for="novoProdutoVenda">Preço de Venda</label>
+        <input type="text" id="novoProdutoVenda" />
+
+        <label for="novoProdutoEstoque">Estoque</label>
+        <input type="number" id="novoProdutoEstoque" />
+
+        <label for="novoProdutoEstoqueMinimo">Estoque Mínimo</label>
+        <input type="number" id="novoProdutoEstoqueMinimo" />
+
+        <div class="button-group">
+          <button id="cadastrarProduto">Cadastrar Produto</button>
+          <button type="button" id="cancelarProduto">Cancelar</button>
+        </div>
+      </form>
+    </div>
+    <div class="popup-overlay" id="confirmPopupOverlay"></div>
+    <div class="popup" id="confirmPopup">
+      <h3>Confirmação</h3>
+      <p>
+        Você verificou todos os dados e tem certeza que deseja cadastrar este
+        produto?
+      </p>
+      <div class="button-group">
+        <button id="confirmarCadastro">Sim</button>
+        <button id="cancelarCadastro">Não</button>
+      </div>
+    </div>
+    <div class="popup-overlay" id="deletePopupOverlay"></div>
+    <div class="popup" id="deletePopup">
+      <h3>Confirmação</h3>
+      <p>Tem certeza que deseja remover este item da tabela?</p>
+      <div class="button-group">
+        <button id="confirmDelete">Sim</button>
+        <button id="cancelDelete">Não</button>
+      </div>
     </div>
     <script>
-      document.getElementById("filterButton").addEventListener("click", function () {
-        document.getElementById("popupOverlay").style.display = "block";
-        document.getElementById("popup").style.display = "block";
+      document
+        .getElementById("filterButton")
+        .addEventListener("click", function () {
+          document.getElementById("popupOverlay").style.display = "block";
+          document.getElementById("popup").style.display = "block";
+        });
+
+      document
+        .getElementById("popupOverlay")
+        .addEventListener("click", function () {
+          document.getElementById("popupOverlay").style.display = "none";
+          document.getElementById("popup").style.display = "none";
+        });
+
+      document
+        .getElementById("applyFilter")
+        .addEventListener("click", function () {
+          const cod = document.getElementById("filterCod").value.toLowerCase();
+          const produto = document
+            .getElementById("filterProduto")
+            .value.toLowerCase();
+          const categoria = document
+            .getElementById("filterCategoria")
+            .value.toLowerCase();
+          const un = document.getElementById("filterUn").value.toLowerCase();
+          const fornecedor = document
+            .getElementById("filterFornecedor")
+            .value.toLowerCase();
+          const estoque = document
+            .getElementById("filterEstoque")
+            .value.toLowerCase();
+
+          const rows = document.querySelectorAll(".center-table tbody tr");
+
+          rows.forEach((row) => {
+            const cells = row.querySelectorAll("td");
+            const codMatch = cells[1].textContent.toLowerCase().includes(cod);
+            const produtoMatch = cells[2].textContent
+              .toLowerCase()
+              .includes(produto);
+            const categoriaMatch = cells[3].textContent
+              .toLowerCase()
+              .includes(categoria);
+            const unMatch = cells[4].textContent.toLowerCase().includes(un);
+            const fornecedorMatch = cells[6].textContent
+              .toLowerCase()
+              .includes(fornecedor);
+            const estoqueMatch = estoque
+              ? cells[9].textContent.toLowerCase().includes(estoque)
+              : true;
+
+            if (
+              codMatch &&
+              produtoMatch &&
+              categoriaMatch &&
+              unMatch &&
+              fornecedorMatch &&
+              estoqueMatch
+            ) {
+              row.style.display = "";
+            } else {
+              row.style.display = "none";
+            }
+          });
+
+          document.getElementById("popupOverlay").style.display = "none";
+          document.getElementById("popup").style.display = "none";
+        });
+
+      document
+        .getElementById("novoProdutoButton")
+        .addEventListener("click", function () {
+          // Exibir o pop-up de cadastro de produto
+          document.getElementById("novoProdutoPopupOverlay").style.display =
+            "block";
+          document.getElementById("novoProdutoPopup").style.display = "block";
+        });
+
+      document
+        .getElementById("cancelarProduto")
+        .addEventListener("click", function () {
+          // Fechar o pop-up de cadastro de produto
+          document.getElementById("novoProdutoPopupOverlay").style.display =
+            "none";
+          document.getElementById("novoProdutoPopup").style.display = "none";
+        });
+
+      document.addEventListener("DOMContentLoaded", () => {
+        // Mostrar pop-up de confirmação ao clicar em "Cadastrar Produto"
+        document
+          .getElementById("cadastrarProduto")
+          .addEventListener("click", (e) => {
+            e.preventDefault(); // Evita o envio do formulário
+            const fotoInput = document.getElementById("novoProdutoFoto");
+            const foto = fotoInput.files[0]
+              ? URL.createObjectURL(fotoInput.files[0])
+              : ""; // Obter URL da imagem ou vazio
+            const cod = document.getElementById("novoProdutoCod").value;
+            const nome = document.getElementById("novoProdutoNome").value;
+            const categoria = document.getElementById(
+              "novoProdutoCategoria"
+            ).value;
+            const un = document.getElementById("novoProdutoUn").value;
+            const fornecedor = document.getElementById(
+              "novoProdutoFornecedor"
+            ).value;
+            let compra = document.getElementById("novoProdutoCompra").value;
+            let venda = document.getElementById("novoProdutoVenda").value;
+            const estoque = document.getElementById("novoProdutoEstoque").value;
+            const estoqueMinimo = document.getElementById(
+              "novoProdutoEstoqueMinimo"
+            ).value;
+            const data = new Date().toLocaleDateString("pt-BR"); // Data atual no formato dd/mm/aaaa
+
+            // Adicionar ",00" automaticamente se não houver
+            if (!compra.includes(",")) compra += ",00";
+            if (!venda.includes(",")) venda += ",00";
+
+            // Atualizar tabela
+            const tbody = document.querySelector(".center-table tbody");
+            const row = document.createElement("tr");
+            row.innerHTML = `
+              <td><img src="${foto}" alt="${nome}" width="50"></td>
+              <td>${cod}</td>
+              <td>${nome}</td>
+              <td>${categoria}</td>
+              <td>${un}</td>
+              <td>${data}</td>
+              <td>${fornecedor}</td>
+              <td>R$ ${compra}</td>
+              <td>R$ ${venda}</td>
+              <td class="estoque">${estoque}</td>
+              <td>${estoqueMinimo}</td>
+              <td>
+                <a href="#" class="edit-button"><i class="fas fa-edit" style="color: #4caf50; font-size: 20px"></i></a>
+                <a href="#" class="delete-button"><i class="fas fa-trash" style="color: #dc3545; font-size: 20px"></i></a>
+              </td>
+            `;
+            tbody.appendChild(row);
+
+            // Fechar pop-ups
+            document.getElementById("novoProdutoPopupOverlay").style.display =
+              "none";
+            document.getElementById("novoProdutoPopup").style.display = "none";
+
+            // Limpar formulário
+            document.querySelector("#novoProdutoPopup form").reset();
+          });
       });
 
-      document.getElementById("popupOverlay").addEventListener("click", function () {
-        document.getElementById("popupOverlay").style.display = "none";
-        document.getElementById("popup").style.display = "none";
+      document.addEventListener("DOMContentLoaded", () => {
+        const tbody = document.querySelector(".center-table tbody");
+
+        // Função para salvar os dados no LocalStorage
+        function salvarProdutosNoLocalStorage() {
+          const produtos = [];
+          tbody.querySelectorAll("tr").forEach((row) => {
+            const cells = row.querySelectorAll("td");
+            produtos.push({
+              foto: cells[0].querySelector("img")?.src || "",
+              cod: cells[1].textContent,
+              nome: cells[2].textContent,
+              categoria: cells[3].textContent,
+              un: cells[4].textContent,
+              data: cells[5].textContent,
+              fornecedor: cells[6].textContent,
+              compra: cells[7].textContent,
+              venda: cells[8].textContent,
+              estoque: cells[9].textContent,
+              estoqueMinimo: cells[10].textContent,
+            });
+          });
+          localStorage.setItem("produtos", JSON.stringify(produtos));
+        }
+
+        // Função para carregar os dados do LocalStorage
+        function carregarProdutosDoLocalStorage() {
+          const produtos = JSON.parse(localStorage.getItem("produtos")) || [];
+          produtos.forEach((produto) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+              <td><img src="${produto.foto}" alt="${produto.nome}" width="50"></td>
+              <td>${produto.cod}</td>
+              <td>${produto.nome}</td>
+              <td>${produto.categoria}</td>
+              <td>${produto.un}</td>
+              <td>${produto.data}</td>
+              <td>${produto.fornecedor}</td>
+              <td>${produto.compra}</td>
+              <td>${produto.venda}</td>
+              <td class="estoque">${produto.estoque}</td>
+              <td>${produto.estoqueMinimo}</td>
+              <td>
+                <a href="#" class="edit-button"><i class="fas fa-edit" style="color: #4caf50; font-size: 20px"></i></a>
+                <a href="#" class="delete-button"><i class="fas fa-trash" style="color: #dc3545; font-size: 20px"></i></a>
+              </td>
+            `;
+            tbody.appendChild(row);
+          });
+        }
+
+        // Carregar os produtos ao carregar a página
+        carregarProdutosDoLocalStorage();
+
+        // Adicionar evento ao botão "Cadastrar Produto"
+        document
+          .getElementById("cadastrarProduto")
+          .addEventListener("click", (e) => {
+            e.preventDefault(); // Evita o envio do formulário
+            const fotoInput = document.getElementById("novoProdutoFoto");
+            const foto = fotoInput.files[0]
+              ? URL.createObjectURL(fotoInput.files[0])
+              : ""; // Obter URL da imagem ou vazio
+            const cod = document.getElementById("novoProdutoCod").value;
+            const nome = document.getElementById("novoProdutoNome").value;
+            const categoria = document.getElementById(
+              "novoProdutoCategoria"
+            ).value;
+            const un = document.getElementById("novoProdutoUn").value;
+            const fornecedor = document.getElementById(
+              "novoProdutoFornecedor"
+            ).value;
+            let compra = document.getElementById("novoProdutoCompra").value;
+            let venda = document.getElementById("novoProdutoVenda").value;
+            const estoque = document.getElementById("novoProdutoEstoque").value;
+            const estoqueMinimo = document.getElementById(
+              "novoProdutoEstoqueMinimo"
+            ).value;
+            const data = new Date().toLocaleDateString("pt-BR"); // Data atual no formato dd/mm/aaaa
+
+            // Adicionar ",00" automaticamente se não houver
+            if (!compra.includes(",")) compra += ",00";
+            if (!venda.includes(",")) venda += ",00";
+
+            // Atualizar tabela
+            const row = document.createElement("tr");
+            row.innerHTML = `
+              <td><img src="${foto}" alt="${nome}" width="50"></td>
+              <td>${cod}</td>
+              <td>${nome}</td>
+              <td>${categoria}</td>
+              <td>${un}</td>
+              <td>${data}</td>
+              <td>${fornecedor}</td>
+              <td>R$ ${compra}</td>
+              <td>R$ ${venda}</td>
+              <td class="estoque">${estoque}</td>
+              <td>${estoqueMinimo}</td>
+              <td>
+                <a href="#" class="edit-button"><i class="fas fa-edit" style="color: #4caf50; font-size: 20px"></i></a>
+                <a href="#" class="delete-button"><i class="fas fa-trash" style="color: #dc3545; font-size: 20px"></i></a>
+              </td>
+            `;
+            tbody.appendChild(row);
+
+            // Salvar no LocalStorage
+            salvarProdutosNoLocalStorage();
+
+            // Fechar pop-ups
+            document.getElementById("novoProdutoPopupOverlay").style.display =
+              "none";
+            document.getElementById("novoProdutoPopup").style.display = "none";
+
+            // Limpar formulário
+            document.querySelector("#novoProdutoPopup form").reset();
+          });
       });
 
-      document.getElementById("applyFilter").addEventListener("click", function () {
-        const cod = document.getElementById("filterCod").value.toLowerCase();
-        const produto = document.getElementById("filterProduto").value.toLowerCase();
-        const categoria = document.getElementById("filterCategoria").value.toLowerCase();
-        const un = document.getElementById("filterUn").value.toLowerCase();
-        const fornecedor = document.getElementById("filterFornecedor").value.toLowerCase();
-        const estoque = document.getElementById("filterEstoque").value.toLowerCase();
+      document.addEventListener("DOMContentLoaded", () => {
+        const tbody = document.querySelector(".center-table tbody");
+        let rowToDelete = null; // Linha a ser excluída
 
-        const rows = document.querySelectorAll(".center-table tbody tr");
+        // Função para salvar os dados no LocalStorage
+        function salvarProdutosNoLocalStorage() {
+          const produtos = [];
+          tbody.querySelectorAll("tr").forEach((row) => {
+            const cells = row.querySelectorAll("td");
+            produtos.push({
+              foto: cells[0].querySelector("img")?.src || "",
+              cod: cells[1].textContent,
+              nome: cells[2].textContent,
+              categoria: cells[3].textContent,
+              un: cells[4].textContent,
+              data: cells[5].textContent,
+              fornecedor: cells[6].textContent,
+              compra: cells[7].textContent,
+              venda: cells[8].textContent,
+              estoque: cells[9].textContent,
+              estoqueMinimo: cells[10].textContent,
+            });
+          });
+          localStorage.setItem("produtos", JSON.stringify(produtos));
+        }
 
-        rows.forEach((row) => {
-          const cells = row.querySelectorAll("td");
-          const codMatch = cells[1].textContent.toLowerCase().includes(cod);
-          const produtoMatch = cells[2].textContent.toLowerCase().includes(produto);
-          const categoriaMatch = cells[3].textContent.toLowerCase().includes(categoria);
-          const unMatch = cells[4].textContent.toLowerCase().includes(un);
-          const fornecedorMatch = cells[6].textContent.toLowerCase().includes(fornecedor);
-          const estoqueMatch = estoque ? cells[9].textContent.toLowerCase().includes(estoque) : true;
-
-          if (codMatch && produtoMatch && categoriaMatch && unMatch && fornecedorMatch && estoqueMatch) {
-            row.style.display = "";
-          } else {
-            row.style.display = "none";
+        // Evento para abrir o pop-up de exclusão
+        tbody.addEventListener("click", (e) => {
+          if (e.target.closest(".delete-button")) {
+            e.preventDefault();
+            rowToDelete = e.target.closest("tr"); // Obter a linha a ser excluída
+            document.getElementById("deletePopupOverlay").style.display =
+              "block";
+            document.getElementById("deletePopup").style.display = "block";
           }
         });
 
-        document.getElementById("popupOverlay").style.display = "none";
-        document.getElementById("popup").style.display = "none";
-      });
+        // Evento para confirmar exclusão
+        document
+          .getElementById("confirmDelete")
+          .addEventListener("click", () => {
+            if (rowToDelete) {
+              rowToDelete.remove(); // Remover a linha da tabela
+              salvarProdutosNoLocalStorage(); // Atualizar o LocalStorage
+              rowToDelete = null; // Resetar a linha a ser excluída
+            }
+            document.getElementById("deletePopupOverlay").style.display =
+              "none";
+            document.getElementById("deletePopup").style.display = "none";
+          });
 
-      document.getElementById("novoProdutoButton").addEventListener("click", function () {
-        document.getElementById("novoProdutoPopupOverlay").style.display = "block";
-        document.getElementById("novoProdutoPopup").style.display = "block";
-      });
-
-      document.getElementById("novoProdutoPopupOverlay").addEventListener("click", function () {
-        document.getElementById("novoProdutoPopupOverlay").style.display = "none";
-        document.getElementById("novoProdutoPopup").style.display = "none";
-      });
-
-      document.getElementById("cadastrarProduto").addEventListener("click", function () {
-        const foto = document.getElementById("novoProdutoFoto").value;
-        const cod = document.getElementById("novoProdutoCod").value;
-        const nome = document.getElementById("novoProdutoNome").value;
-        const categoria = document.getElementById("novoProdutoCategoria").value;
-        const un = document.getElementById("novoProdutoUn").value;
-        const data = document.getElementById("novoProdutoData").value;
-        const fornecedor = document.getElementById("novoProdutoFornecedor").value;
-        const compra = document.getElementById("novoProdutoCompra").value;
-        const venda = document.getElementById("novoProdutoVenda").value;
-        const estoque = document.getElementById("novoProdutoEstoque").value;
-        const estoqueMinimo = document.getElementById("novoProdutoEstoqueMinimo").value;
-
-        const produtos = JSON.parse(localStorage.getItem("produtos")) || [];
-        produtos.push({
-          foto,
-          cod,
-          nome,
-          categoria,
-          un,
-          data,
-          fornecedor,
-          compra,
-          venda,
-          estoque,
-          estoqueMinimo,
-        });
-        localStorage.setItem("produtos", JSON.stringify(produtos));
-
-        document.getElementById("novoProdutoPopupOverlay").style.display = "none";
-        document.getElementById("novoProdutoPopup").style.display = "none";
-
-        // Atualiza a tabela com o novo produto
-        const tbody = document.querySelector(".center-table tbody");
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td><img src="${foto}" alt="${nome}" width="50"></td>
-          <td>${cod}</td>
-          <td>${nome}</td>
-          <td>${categoria}</td>
-          <td>${un}</td>
-          <td>${data}</td>
-          <td>${fornecedor}</td>
-          <td>R$ ${compra}</td>
-          <td>R$ ${venda}</td>
-          <td class="estoque">${estoque}</td>
-          <td>${estoqueMinimo}</td>
-          <td>
-            <a href="#" class="edit-button"><i class="fas fa-edit" style="color: #4caf50; font-size: 20px"></i></a>
-            <a href="#" class="delete-button" onclick="confirmDelete(event)"><i class="fas fa-trash" style="color: #dc3545; font-size: 20px"></i></a>
-          </td>
-        `;
-        tbody.appendChild(row);
-      });
-
-      function confirmDelete(event) {
-        event.preventDefault(); // Evita o comportamento padrão do link
-        const confirmation = confirm("Você tem certeza que deseja excluir este item?");
-        if (confirmation) {
-          // Aqui você pode adicionar a lógica para excluir o item
-          alert("Item excluído com sucesso!");
-        }
-      }
-
-      document.addEventListener("DOMContentLoaded", () => {
-        const produtos = JSON.parse(localStorage.getItem("produtos")) || [];
-        const tbody = document.querySelector(".center-table tbody");
-        tbody.innerHTML = ""; // Limpa a tabela antes de preencher os dados
-
-        produtos.forEach((produto) => {
-          const row = document.createElement("tr");
-          row.innerHTML = `
-            <td><img src="${produto.foto}" alt="${produto.nome}" width="50"></td>
-            <td>${produto.cod}</td>
-            <td>${produto.nome}</td>
-            <td>${produto.categoria}</td>
-            <td>${produto.un}</td>
-            <td>${produto.data}</td>
-            <td>${produto.fornecedor}</td>
-            <td>R$ ${produto.compra}</td>
-            <td>R$ ${produto.venda}</td>
-            <td class="estoque">${produto.estoque}</td>
-            <td>${produto.estoqueMinimo}</td>
-            <td>
-              <a href="#" class="edit-button"><i class="fas fa-edit" style="color: #4caf50; font-size: 20px"></i></a>
-              <a href="#" class="delete-button" onclick="confirmDelete(event)"><i class="fas fa-trash" style="color: #dc3545; font-size: 20px"></i></a>
-            </td>
-          `;
-          tbody.appendChild(row);
-        });
+        // Evento para cancelar exclusão
+        document
+          .getElementById("cancelDelete")
+          .addEventListener("click", () => {
+            rowToDelete = null; // Resetar a linha a ser excluída
+            document.getElementById("deletePopupOverlay").style.display =
+              "none";
+            document.getElementById("deletePopup").style.display = "none";
+          });
       });
     </script>
   </body>
