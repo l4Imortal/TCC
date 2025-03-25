@@ -17,50 +17,70 @@
       }
 
       .login-container {
-        background-color: rgba(255, 255, 255, 0.9);
-        padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-        width: 350px;
+        background-color: rgba(255, 255, 255, 0.95);
+        padding: 40px;
+        border-radius: 16px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        width: 400px;
         text-align: center;
+        animation: fadeIn 0.8s ease-in-out;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
       }
 
       .login-container h1 {
-        margin-bottom: 20px;
+        margin-bottom: 10px;
         color: #333;
-        font-size: 1.8em;
+        font-size: 2em;
+        font-weight: bold;
       }
 
       .login-container p {
-        margin-bottom: 20px;
+        margin-bottom: 10px;
         color: #555;
-        font-size: 0.9em;
+        font-size: 1em;
       }
 
       .login-container input {
         width: 100%;
-        padding: 12px;
+        padding: 14px;
         margin: 10px 0;
         border: 1px solid #ccc;
-        border-radius: 6px;
+        border-radius: 8px;
         font-size: 1em;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: border-color 0.3s ease;
+      }
+
+      .login-container input:focus {
+        border-color: #007bff;
+        outline: none;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
       }
 
       .login-container button {
         width: 100%;
-        padding: 12px;
+        padding: 14px;
         background-color: #007bff;
         color: #fff;
         border: none;
-        border-radius: 6px;
-        font-size: 1em;
+        border-radius: 8px;
+        font-size: 1.1em;
         font-weight: bold;
         cursor: pointer;
-        transition: background-color 0.3s ease;
+        transition: background-color 0.3s ease, transform 0.2s ease;
       }
 
       .login-container button:hover {
         background-color: #0056b3;
+        transform: scale(1.02);
+      }
+
+      .login-container button:active {
+        transform: scale(0.98);
       }
 
       .error {
@@ -76,6 +96,17 @@
         width: 100%;
         font-size: 0.8em;
         color: #ddd;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
     </style>
   </head>

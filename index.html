@@ -98,26 +98,58 @@
         text-align: center;
         font-weight: bold;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .box a {
+        text-decoration: none;
+        font-size: 1.2em;
+        font-weight: bold;
+        display: block;
+        color: inherit;
       }
 
       .box.blue {
         background-color: #007bff;
         color: #fff !important; /* Fonte branca */
+        border: 2px solid #0056b3;
       }
 
       .box.red {
         background-color: #dc3545;
         color: #fff !important; /* Fonte branca */
+        border: 2px solid #a71d2a;
       }
 
       .box.yellow {
         background-color: #ffc107;
         color: #000 !important; /* Fonte preta */
+        border: 2px solid #d39e00;
       }
 
       .box.green {
         background-color: #28a745;
         color: #fff !important; /* Fonte branca */
+      }
+
+      .box:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      .box.blue:hover {
+        background-color: #0056b3;
+        border-color: #003f7f;
+      }
+
+      .box.red:hover {
+        background-color: #a71d2a;
+        border-color: #7f0f1d;
+      }
+
+      .box.yellow:hover {
+        background-color: #d39e00;
+        border-color: #a67c00;
       }
 
       /* Gráficos */
@@ -142,16 +174,119 @@
         max-width: 100%;
         height: auto;
       }
+
+      /* Estilo do menu hambúrguer */
+      .menu-icon {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 30px;
+        height: 20px;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+      }
+
+      .menu-icon:hover {
+        transform: scale(1.1);
+      }
+
+      .menu-icon div {
+        height: 4px;
+        background-color: #333;
+        border-radius: 2px;
+        transition: transform 0.3s ease, opacity 0.3s ease, background-color 0.3s ease;
+      }
+
+      .menu-icon div:nth-child(1) {
+        transform-origin: top left;
+      }
+
+      .menu-icon div:nth-child(3) {
+        transform-origin: bottom left;
+      }
+
+      .menu-icon.open div:nth-child(1) {
+        transform: rotate(45deg);
+      }
+
+      .menu-icon.open div:nth-child(2) {
+        opacity: 0;
+      }
+
+      .menu-icon.open div:nth-child(3) {
+        transform: rotate(-45deg);
+      }
+
+      .menu {
+        position: relative;
+      }
+
+      .menu-content {
+        display: none;
+        position: absolute;
+        top: 40px;
+        right: 0;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 10px;
+        z-index: 1000;
+        animation: fadeIn 0.3s ease;
+      }
+
+      .menu-content a {
+        display: block;
+        padding: 10px;
+        text-decoration: none;
+        color: #007bff;
+        font-weight: bold;
+        transition: background-color 0.3s ease, color 0.3s ease;
+        cursor: pointer; /* Adicionado para corrigir o problema */
+      }
+
+      .menu-content a:hover {
+        background-color: #f1f1f1;
+        color: #0056b3;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Exibir o menu no modo responsivo */
+      @media (max-width: 768px) {
+        .menu-icon {
+          display: flex;
+        }
+
+        .user-info {
+          display: none;
+        }
+      }
     </style>
   </head>
   <body>
     <div class="container">
       <header>
         <h1>StoQ - Página Inicial</h1>
-        <div class="user-info">
-          <span>Seja bem-vindo, admin!</span>
-          <a id="accountButton" href="administrador.html">Conta</a>
-          <a id="logoutButton">Sair</a>
+        <div class="menu">
+          <div class="menu-icon" id="menuIcon">
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+          <div class="menu-content" id="menuContent">
+            <a href="administrador.html">Conta</a>
+            <a id="logoutButton">Sair</a>
+          </div>
         </div>
       </header>
       <nav>
@@ -310,6 +445,33 @@
             },
           },
         });
+      });
+    </script>
+    <script>
+      const menuIcon = document.getElementById("menuIcon");
+      const menuContent = document.getElementById("menuContent");
+
+      menuIcon.addEventListener("click", () => {
+        // Alterna a classe "open" para o ícone de hambúrguer
+        menuIcon.classList.toggle("open");
+
+        // Alterna a exibição do menu
+        menuContent.style.display =
+          menuContent.style.display === "block" ? "none" : "block";
+      });
+
+      // Fecha o menu ao clicar fora dele
+      document.addEventListener("click", (event) => {
+        if (!menuIcon.contains(event.target) && !menuContent.contains(event.target)) {
+          menuContent.style.display = "none";
+          menuIcon.classList.remove("open");
+        }
+      });
+
+      // Adiciona funcionalidade ao botão de logout
+      document.getElementById("logoutButton").addEventListener("click", () => {
+        localStorage.removeItem("loggedIn"); // Remove o estado de login
+        window.location.href = "login.html"; // Redireciona para a página de login
       });
     </script>
   </body>
