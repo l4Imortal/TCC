@@ -14,6 +14,18 @@
         height: 100vh;
         margin: 0;
         color: #fff;
+        position: relative;
+      }
+
+      .title-background {
+        position: absolute;
+        top: 20px;
+        text-align: center;
+        width: 100%;
+      }
+
+      .title-background img {
+        width: 150px; /* Ajuste conforme necessário */
       }
 
       .login-container {
@@ -29,13 +41,6 @@
         align-items: center;
         justify-content: center;
         gap: 20px;
-      }
-
-      .login-container h1 {
-        margin-bottom: 10px;
-        color: #333;
-        font-size: 2em;
-        font-weight: bold;
       }
 
       .login-container p {
@@ -111,8 +116,10 @@
     </style>
   </head>
   <body>
+    <div class="title-background">
+      <img src="img/logo-stoq.png" alt="StoQ Logo" />
+    </div>
     <div class="login-container">
-      <h1>StoQ - Gerenciador de Estoque</h1>
       <p>Faça login para acessar o sistema</p>
       <input type="text" id="username" placeholder="Usuário" />
       <input type="password" id="password" placeholder="Senha" />
