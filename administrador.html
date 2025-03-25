@@ -12,38 +12,28 @@
         background-color: #f4f4f4;
       }
 
-      nav {
-        display: flex;
-        background-color: #333;
-      }
-
       nav ul {
         list-style: none;
         padding: 0;
         margin: 0;
         display: flex;
-        width: 100%;
-      }
-
-      nav ul li {
-        flex: 1;
+        justify-content: space-around;
+        background-color: #333;
+        border-radius: 8px;
       }
 
       nav ul li a {
-        color: white;
-        text-decoration: none;
-        padding: 15px 20px;
         display: block;
-        font-family: Arial, sans-serif;
+        padding: 10px 20px;
+        color: #fff;
+        text-decoration: none;
         font-weight: bold;
-        border: 1px solid #ccc;
-        border-radius: 4px;
+        transition: background-color 0.3s ease;
       }
 
       nav ul li a:hover {
-        background-color: #575757;
+        background-color: #555;
       }
-
       .container {
         width: 90%;
         margin: 20px auto;
@@ -103,77 +93,73 @@
     </style>
   </head>
   <body>
-   <div class="container">
-      
-    <header>
-      <h1>Administrador - StoQ</h1>
-    </header>
-    <nav>
-      <ul>
-        <li><a href="index.html">Início</a></li>
-        <li><a href="produtos.html">Produtos</a></li>
-        <li><a href="categorias.html">Categorias</a></li>
-        <li><a href="fornecedores.html">Fornecedores</a></li>
-        <li><a href="entradas.html">Entradas</a></li>
-        <li><a href="saidas.html">Saídas</a></li>
-      </ul>
-    </nav>
     <div class="container">
       <header>
-        <h1>Administrador - Controle de Estoque</h1>
+        <h1>Administrador - StoQ</h1>
       </header>
-      <main>
-        <section class="admin-options">
-          <div class="option-box">
-            <h2>Gerenciar Usuários</h2>
-            <button onclick="window.location.href='gerenciar_usuarios.html'">
-              Ir para Gerenciamento de Usuários
-            </button>
-            <table>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Nome de Usuário</th>
-                  <th>Email</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>admin</td>
-                  <td>admin@example.com</td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>usuario1</td>
-                  <td>usuario1@example.com</td>
-                </tr>
-                <tr>
-                  <td>3</td>
-                  <td>usuario2</td>
-                  <td>usuario2@example.com</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="option-box">
-            <h2>Configurações</h2>
-            <button onclick="window.location.href='configuracoes.html'">
-              Ir para Configurações
-            </button>
-          </div>
-          <div class="option-box">
-            <h2>Relatórios</h2>
-            <button onclick="window.location.href='relatorios.html'">
-              Ir para Relatórios
-            </button>
-          </div>
-        </section>
-      </main>
+      <nav>
+        <ul>
+          <li><a href="index.html">Início</a></li>
+          <li><a href="produtos.html">Produtos</a></li>
+          <li><a href="categorias.html">Categorias</a></li>
+          <li><a href="fornecedores.html">Fornecedores</a></li>
+          <li><a href="entradas.html">Entradas</a></li>
+          <li><a href="saidas.html">Saídas</a></li>
+        </ul>
+      </nav>
+      <div class="container">
+        <header>
+          <h1>Administrador - Controle de Estoque</h1>
+        </header>
+        <main>
+          <section class="admin-options">
+            <div class="option-box">
+              <h2>Gerenciar Usuários</h2>
+              <button onclick="window.location.href='gerenciar_usuarios.html'">
+                Ir para Gerenciamento de Usuários
+              </button>
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Nome de Usuário</th>
+                    <th>Email</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>admin</td>
+                    <td>admin@example.com</td>
+                  </tr>
+                  <tr>
+                    <td>2</td>
+                    <td>usuario1</td>
+                    <td>usuario1@example.com</td>
+                  </tr>
+                  <tr>
+                    <td>3</td>
+                    <td>usuario2</td>
+                    <td>usuario2@example.com</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="option-box">
+              <h2>Configurações</h2>
+              <button onclick="window.location.href='configuracoes.html'">
+                Ir para Configurações
+              </button>
+            </div>
+            <div class="option-box">
+              <h2>Relatórios</h2>
+              <button onclick="window.location.href='relatorios.html'">
+                Ir para Relatórios
+              </button>
+            </div>
+          </section>
+        </main>
+      </div>
     </div>
-    <footer>
-      <p>© 2025 Controle de Estoque</p>
-    </footer>
-  </div>
   </body>
 </html>
