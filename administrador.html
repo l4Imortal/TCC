@@ -4,83 +4,124 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Administrador - Controle de Estoque</title>
-    <link rel="stylesheet" href="styles.css" />
     <style>
       body {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        height: 100vh;
-        background-color: #f0f0f0;
+        font-family: Arial, sans-serif;
         margin: 0;
-      }
-      .container {
-        width: 100%;
         padding: 0;
+        background-color: #f4f4f4;
       }
-      header,
-      nav,
-      main {
-        margin-bottom: 1px;
-      }
-      nav ul {
-        list-style-type: none;
-        padding: 0;
-      }
-      nav ul li {
-        display: inline;
-        margin-right: 1px;
-      }
-      .admin-options {
+
+      nav {
         display: flex;
-        flex-direction: column;
-        gap: 20px;
+        background-color: #333;
       }
-      .option-box {
-        background-color: #dcdcdc;
-        border-radius: 10px;
-        padding: 20px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.466);
-      }
-      .user-table {
+
+      nav ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
         width: 100%;
-        margin-top: 20px;
-        border-collapse: collapse;
       }
-      .user-table th,
-      .user-table td {
+
+      nav ul li {
+        flex: 1;
+      }
+
+      nav ul li a {
+        color: white;
+        text-decoration: none;
+        padding: 15px 20px;
+        display: block;
+        font-family: Arial, sans-serif;
+        font-weight: bold;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+
+      nav ul li a:hover {
+        background-color: #575757;
+      }
+
+      .container {
+        width: 90%;
+        margin: 20px auto;
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border: 2px solid #ccc;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+      }
+
+      table, th, td {
         border: 1px solid #ddd;
-        padding: 8px;
+      }
+
+      th, td {
+        padding: 10px;
         text-align: left;
       }
-      .user-table th {
+
+      th {
         background-color: #f2f2f2;
       }
-    </style>
-    <script>
-      // Verifica se o usuário está logado
-      if (localStorage.getItem("loggedIn") !== "true") {
-        window.location.href = "login.html"; // Redireciona para a página de login
+
+      .add-button, .option-box button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        text-decoration: none;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        transition: background-color 0.3s ease, transform 0.3s ease;
       }
-    </script>
+
+      .add-button:hover, .option-box button:hover {
+        background-color: #45a049;
+        transform: scale(1.05);
+      }
+
+      footer {
+        text-align: center;
+        padding: 10px;
+        background-color: #333;
+        color: white;
+        position: fixed;
+        width: 100%;
+        bottom: 0;
+      }
+    </style>
   </head>
   <body>
+   <div class="container">
+      
+    <header>
+      <h1>Administrador - StoQ</h1>
+    </header>
+    <nav>
+      <ul>
+        <li><a href="index.html">Início</a></li>
+        <li><a href="produtos.html">Produtos</a></li>
+        <li><a href="categorias.html">Categorias</a></li>
+        <li><a href="fornecedores.html">Fornecedores</a></li>
+        <li><a href="entradas.html">Entradas</a></li>
+        <li><a href="saidas.html">Saídas</a></li>
+      </ul>
+    </nav>
     <div class="container">
       <header>
         <h1>Administrador - Controle de Estoque</h1>
       </header>
-      <nav>
-        <ul>
-          <li><a href="index.html">Início</a></li>
-          <li><a href="produtos.html">Produtos</a></li>
-          <li><a href="categorias.html">Categorias</a></li>
-          <li><a href="fornecedores.html">Fornecedores</a></li>
-          <li><a href="entradas.html">Entradas</a></li>
-          <li><a href="saidas.html">Saídas</a></li>
-          <li><a href="usuarios.html">Usuários</a></li>
-          <li><a href="administrador.html">Administrador</a></li>
-        </ul>
-      </nav>
       <main>
         <section class="admin-options">
           <div class="option-box">
@@ -88,7 +129,7 @@
             <button onclick="window.location.href='gerenciar_usuarios.html'">
               Ir para Gerenciamento de Usuários
             </button>
-            <table class="user-table">
+            <table>
               <thead>
                 <tr>
                   <th>ID</th>
@@ -97,7 +138,6 @@
                 </tr>
               </thead>
               <tbody>
-                <!-- Aqui você pode adicionar os usuários cadastrados -->
                 <tr>
                   <td>1</td>
                   <td>admin</td>
@@ -131,5 +171,9 @@
         </section>
       </main>
     </div>
+    <footer>
+      <p>© 2025 Controle de Estoque</p>
+    </footer>
+  </div>
   </body>
 </html>
