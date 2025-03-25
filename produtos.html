@@ -503,7 +503,10 @@
         <input type="text" id="novoProdutoNome" />
 
         <label for="novoProdutoCategoria">Categoria</label>
-        <input type="text" id="novoProdutoCategoria" />
+        <select id="novoProdutoCategoria">
+          <option value="">Selecione</option>
+          <!-- Opções serão preenchidas dinamicamente -->
+        </select>
 
         <label for="novoProdutoUn">UN</label>
         <select id="novoProdutoUn">
@@ -513,7 +516,10 @@
         </select>
 
         <label for="novoProdutoFornecedor">Fornecedor</label>
-        <input type="text" id="novoProdutoFornecedor" />
+        <select id="novoProdutoFornecedor">
+          <option value="">Selecione</option>
+          <!-- Opções serão preenchidas dinamicamente -->
+        </select>
 
         <label for="novoProdutoCompra">Preço de Compra</label>
         <input type="text" id="novoProdutoCompra" />
@@ -882,6 +888,200 @@
             document.getElementById("deletePopupOverlay").style.display =
               "none";
             document.getElementById("deletePopup").style.display = "none";
+          });
+      });
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const categorias = new Set();
+        const fornecedores = new Set();
+
+        // Função para carregar categorias e fornecedores da tabela
+        function carregarCategoriasEFornecedores() {
+          const rows = document.querySelectorAll(".center-table tbody tr");
+          rows.forEach((row) => {
+            const cells = row.querySelectorAll("td");
+            categorias.add(cells[3].textContent.trim()); // Categoria
+            fornecedores.add(cells[6].textContent.trim()); // Fornecedor
+          });
+
+          // Preencher as opções de categorias
+          const categoriaSelect = document.getElementById(
+            "novoProdutoCategoria"
+          );
+          categoriaSelect.innerHTML = '<option value="">Selecione</option>';
+          categorias.forEach((categoria) => {
+            const option = document.createElement("option");
+            option.value = categoria;
+            option.textContent = categoria;
+            categoriaSelect.appendChild(option);
+          });
+
+          // Preencher as opções de fornecedores
+          const fornecedorSelect = document.getElementById(
+            "novoProdutoFornecedor"
+          );
+          fornecedorSelect.innerHTML = '<option value="">Selecione</option>';
+          fornecedores.forEach((fornecedor) => {
+            const option = document.createElement("option");
+            option.value = fornecedor;
+            option.textContent = fornecedor;
+            fornecedorSelect.appendChild(option);
+          });
+        }
+
+        // Carregar categorias e fornecedores ao carregar a página
+        carregarCategoriasEFornecedores();
+
+        // Atualizar categorias e fornecedores ao cadastrar um novo produto
+        document
+          .getElementById("cadastrarProduto")
+          .addEventListener("click", () => {
+            carregarCategoriasEFornecedores();
+          });
+      });
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const formatarValorReais = (valor) => {
+          // Remove caracteres não numéricos, exceto vírgula
+          valor = valor.replace(/[^\d,]/g, "");
+
+          // Garante que só exista uma vírgula
+          const partes = valor.split(",");
+          if (partes.length > 2) {
+            valor = partes[0] + "," + partes[1].slice(0, 2);
+          }
+
+          // Limita a entrada a dois dígitos após a vírgula
+          if (partes[1]) {
+            partes[1] = partes[1].slice(0, 2);
+          }
+
+          // Adiciona separadores de milhares
+          partes[0] = partes[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+          return partes.join(",");
+        };
+
+        const validarCampoReais = (campo) => {
+          campo.addEventListener("input", (e) => {
+            let valor = e.target.value.replace("R$ ", "").trim(); // Remove o prefixo R$ antes de formatar
+            const valorFormatado = formatarValorReais(valor);
+            e.target.value = `R$ ${valorFormatado}`; // Adiciona o prefixo R$ novamente
+          });
+
+          campo.addEventListener("focus", (e) => {
+            if (!e.target.value.startsWith("R$")) {
+              e.target.value = "R$ "; // Garante que o campo sempre comece com "R$ "
+            }
+          });
+
+          campo.addEventListener("blur", (e) => {
+            if (e.target.value === "R$ ") {
+              e.target.value = ""; // Limpa o campo se o usuário não digitou nada
+            }
+          });
+        };
+
+        // Aplica a validação nos campos de preço de compra e venda
+        const campoCompra = document.getElementById("novoProdutoCompra");
+        const campoVenda = document.getElementById("novoProdutoVenda");
+        validarCampoReais(campoCompra);
+        validarCampoReais(campoVenda);
+
+        // Função para adicionar ",00" automaticamente se necessário
+        const adicionarCentavos = (valor) => {
+          if (!valor.includes(",")) {
+            return valor + ",00";
+          }
+          const partes = valor.split(",");
+          if (partes[1].length === 0) {
+            return valor + "00";
+          } else if (partes[1].length === 1) {
+            return valor + "0";
+          }
+          return valor;
+        };
+
+        // Validação para aceitar apenas números nos campos de estoque e estoque mínimo
+        const validarCampoNumerico = (campo) => {
+          campo.addEventListener("input", (e) => {
+            e.target.value = e.target.value.replace(/\D/g, ""); // Remove qualquer caractere não numérico
+          });
+        };
+
+        // Aplica a validação nos campos de estoque e estoque mínimo
+        const campoEstoque = document.getElementById("novoProdutoEstoque");
+        const campoEstoqueMinimo = document.getElementById(
+          "novoProdutoEstoqueMinimo"
+        );
+        validarCampoNumerico(campoEstoque);
+        validarCampoNumerico(campoEstoqueMinimo);
+
+        // Evento para cadastrar o produto
+        document
+          .getElementById("cadastrarProduto")
+          .addEventListener("click", (e) => {
+            e.preventDefault(); // Evita o envio do formulário
+
+            const fotoInput = document.getElementById("novoProdutoFoto");
+            const foto = fotoInput.files[0]
+              ? URL.createObjectURL(fotoInput.files[0])
+              : ""; // Obter URL da imagem ou vazio
+            const cod = document.getElementById("novoProdutoCod").value;
+            const nome = document.getElementById("novoProdutoNome").value;
+            const categoria = document.getElementById(
+              "novoProdutoCategoria"
+            ).value;
+            const un = document.getElementById("novoProdutoUn").value;
+            const fornecedor = document.getElementById(
+              "novoProdutoFornecedor"
+            ).value;
+            let compra = document
+              .getElementById("novoProdutoCompra")
+              .value.replace("R$", "")
+              .trim();
+            let venda = document
+              .getElementById("novoProdutoVenda")
+              .value.replace("R$", "")
+              .trim();
+            const estoque = document.getElementById("novoProdutoEstoque").value;
+            const estoqueMinimo = document.getElementById(
+              "novoProdutoEstoqueMinimo"
+            ).value;
+            const data = new Date().toLocaleDateString("pt-BR"); // Data atual no formato dd/mm/aaaa
+
+            // Adicionar ",00" automaticamente se necessário
+            compra = adicionarCentavos(compra);
+            venda = adicionarCentavos(venda);
+
+            // Atualizar tabela
+            const tbody = document.querySelector(".center-table tbody");
+            const row = document.createElement("tr");
+            row.innerHTML = `
+            <td><img src="${foto}" alt="${nome}" width="50"></td>
+            <td>${cod}</td>
+            <td>${nome}</td>
+            <td>${categoria}</td>
+            <td>${un}</td>
+            <td>${data}</td>
+            <td>${fornecedor}</td>
+            <td>R$ ${compra}</td>
+            <td>R$ ${venda}</td>
+            <td class="estoque">${estoque}</td>
+            <td>${estoqueMinimo}</td>
+            <td>
+              <a href="#" class="edit-button"><i class="fas fa-edit" style="color: #4caf50; font-size: 20px"></i></a>
+              <a href="#" class="delete-button"><i class="fas fa-trash" style="color: #dc3545; font-size: 20px"></i></a>
+            </td>
+          `;
+            tbody.appendChild(row);
+
+            // Fechar pop-ups
+            document.getElementById("novoProdutoPopupOverlay").style.display =
+              "none";
+            document.getElementById("novoProdutoPopup").style.display = "none";
+
+            // Limpar formulário
+            document.querySelector("#novoProdutoPopup form").reset();
           });
       });
     </script>
