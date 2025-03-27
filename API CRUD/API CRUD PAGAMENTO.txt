@@ -1,0 +1,96 @@
+const express = require('express');
+const mysql = require('mysql2');
+const bodyParser = require('body-parser');
+
+const app = express();
+const port = 3000;
+
+app.use(bodyParser.json());
+
+const db = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: 'password',
+    database: 'escola'
+});
+
+db.connect(err => {
+    if (err) {
+        console.error('Erro ao conectar ao banco de dados:', err);
+        return;
+    }
+    console.log('Conectado ao banco de dados');
+});
+
+// Criar um novo pagamento
+app.post('/pagamentos', (req, res) => {
+    const { id_aluno, data_pagamento, valor_pago, forma_pagamento, referencia, status } = req.body;
+    const sql = 'INSERT INTO Pagamento (id_aluno, data_pagamento, valor_pago, forma_pagamento, referencia, status) VALUES (?, ?, ?, ?, ?, ?)';
+    db.query(sql, [id_aluno, data_pagamento, valor_pago, forma_pagamento, referencia, status], (err, result) => {
+        if (err) {
+            res.status(500).send(err);
+            return;
+        }
+        res.status(201).send({ id: result.insertId, id_aluno, data_pagamento, valor_pago, forma_pagamento, referencia, status });
+    });
+});
+
+// Obter todos os pagamentos
+app.get('/pagamentos', (req, res) => {
+    const sql = 'SELECT * FROM Pagamento';
+    db.query(sql, (err, results) => {
+        if (err) {
+            res.status(500).send(err);
+            return;
+        }
+        res.send(results);
+    });
+});
+
+// Obter um pagamento por ID
+app.get('/pagamentos/:id', (req, res) => {
+    const { id } = req.params;
+    const sql = 'SELECT * FROM Pagamento WHERE id_pagamento = ?';
+    db.query(sql, [id], (err, results) => {
+        if (err) {
+            res.status(500).send(err);
+            return;
+        }
+        if (results.length === 0) {
+            res.status(404).send({ message: 'Pagamento não encontrado' });
+            return;
+        }
+        res.send(results[0]);
+    });
+});
+
+// Atualizar um pagamento
+app.put('/pagamentos/:id', (req, res) => {
+    const { id } = req.params;
+    const { id_aluno, data_pagamento, valor_pago, forma_pagamento, referencia, status } = req.body;
+    const sql = 'UPDATE Pagamento SET id_aluno = ?, data_pagamento = ?, valor_pago = ?, forma_pagamento = ?, referencia = ?, status = ? WHERE id_pagamento = ?';
+    db.query(sql, [id_aluno, data_pagamento, valor_pago, forma_pagamento, referencia, status, id], (err, result) => {
+        if (err) {
+            res.status(500).send(err);
+            return;
+        }
+        res.send({ message: 'Pagamento atualizado com sucesso' });
+    });
+});
+
+// Deletar um pagamento
+app.delete('/pagamentos/:id', (req, res) => {
+    const { id } = req.params;
+    const sql = 'DELETE FROM Pagamento WHERE id_pagamento = ?';
+    db.query(sql, [id], (err, result) => {
+        if (err) {
+            res.status(500).send(err);
+            return;
+        }
+        res.send({ message: 'Pagamento deletado com sucesso' });
+    });
+});
+
+app.listen(port, () => {
+    console.log(`Servidor rodando na porta ${port}`);
+});
