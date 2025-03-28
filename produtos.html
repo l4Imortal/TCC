@@ -428,7 +428,6 @@
           <li><a href="fornecedores.html">Fornecedores</a></li>
           <li><a href="entradas.html">Entradas</a></li>
           <li><a href="saidas.html">Saídas</a></li>
-          <li><a href="logs.html">Logs de Atividades</a></li>
         </ul>
       </nav>
       <main>
@@ -829,6 +828,33 @@
           localStorage.setItem("produtos", JSON.stringify(produtos));
         }
 
+      // Carregar os produtos ao carregar a página
+      carregarProdutosDoLocalStorage();
+// Função para carregar os dados do LocalStorage
+function carregarProdutosDoLocalStorage() {
+        const produtos = JSON.parse(localStorage.getItem("produtos")) || [];
+        produtos.forEach((produto) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+              <td><img src="${produto.foto}" alt="${produto.nome}" width="50"></td>
+              <td>${produto.cod}</td>
+              <td>${produto.nome}</td>
+              <td>${produto.categoria}</td>
+              <td>${produto.un}</td>
+              <td>${produto.data}</td>
+              <td>${produto.fornecedor}</td>
+              <td>${produto.compra}</td>
+              <td>${produto.venda}</td>
+              <td class="estoque">${produto.estoque}</td>
+              <td>${produto.estoqueMinimo}</td>
+              <td>
+                <a href="#" class="edit-button"><i class="fas fa-edit" style="color: #4caf50; font-size: 20px"></i></a>
+                <a href="#" class="delete-button"><i class="fas fa-trash" style="color: #dc3545; font-size: 20px"></i></a>
+              </td>
+            `;
+          tbody.appendChild(row);
+        });
+      }
         // Evento para abrir o pop-up de exclusão
         tbody.addEventListener("click", (e) => {
           if (e.target.closest(".delete-button")) {
