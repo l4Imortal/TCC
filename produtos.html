@@ -711,37 +711,12 @@
           });
       });
 
-      document.addEventListener("DOMContentLoaded", () => {
-        const tbody = document.querySelector(".center-table tbody");
-
-        // Função para salvar os dados no LocalStorage
-        function salvarProdutosNoLocalStorage() {
-          const produtos = [];
-          tbody.querySelectorAll("tr").forEach((row) => {
-            const cells = row.querySelectorAll("td");
-            produtos.push({
-              foto: cells[0].querySelector("img")?.src || "",
-              cod: cells[1].textContent,
-              nome: cells[2].textContent,
-              categoria: cells[3].textContent,
-              un: cells[4].textContent,
-              data: cells[5].textContent,
-              fornecedor: cells[6].textContent,
-              compra: cells[7].textContent,
-              venda: cells[8].textContent,
-              estoque: cells[9].textContent,
-              estoqueMinimo: cells[10].textContent,
-            });
-          });
-          localStorage.setItem("produtos", JSON.stringify(produtos));
-        }
-
-        // Função para carregar os dados do LocalStorage
-        function carregarProdutosDoLocalStorage() {
-          const produtos = JSON.parse(localStorage.getItem("produtos")) || [];
-          produtos.forEach((produto) => {
-            const row = document.createElement("tr");
-            row.innerHTML = `
+      // Função para carregar os dados do LocalStorage
+      function carregarProdutosDoLocalStorage() {
+        const produtos = JSON.parse(localStorage.getItem("produtos")) || [];
+        produtos.forEach((produto) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
               <td><img src="${produto.foto}" alt="${produto.nome}" width="50"></td>
               <td>${produto.cod}</td>
               <td>${produto.nome}</td>
@@ -758,46 +733,46 @@
                 <a href="#" class="delete-button"><i class="fas fa-trash" style="color: #dc3545; font-size: 20px"></i></a>
               </td>
             `;
-            tbody.appendChild(row);
-          });
-        }
+          tbody.appendChild(row);
+        });
+      }
 
-        // Carregar os produtos ao carregar a página
-        carregarProdutosDoLocalStorage();
+      // Carregar os produtos ao carregar a página
+      carregarProdutosDoLocalStorage();
 
-        // Adicionar evento ao botão "Cadastrar Produto"
-        document
-          .getElementById("cadastrarProduto")
-          .addEventListener("click", (e) => {
-            e.preventDefault(); // Evita o envio do formulário
-            const fotoInput = document.getElementById("novoProdutoFoto");
-            const foto = fotoInput.files[0]
-              ? URL.createObjectURL(fotoInput.files[0])
-              : ""; // Obter URL da imagem ou vazio
-            const cod = document.getElementById("novoProdutoCod").value;
-            const nome = document.getElementById("novoProdutoNome").value;
-            const categoria = document.getElementById(
-              "novoProdutoCategoria"
-            ).value;
-            const un = document.getElementById("novoProdutoUn").value;
-            const fornecedor = document.getElementById(
-              "novoProdutoFornecedor"
-            ).value;
-            let compra = document.getElementById("novoProdutoCompra").value;
-            let venda = document.getElementById("novoProdutoVenda").value;
-            const estoque = document.getElementById("novoProdutoEstoque").value;
-            const estoqueMinimo = document.getElementById(
-              "novoProdutoEstoqueMinimo"
-            ).value;
-            const data = new Date().toLocaleDateString("pt-BR"); // Data atual no formato dd/mm/aaaa
+      // Adicionar evento ao botão "Cadastrar Produto"
+      document
+        .getElementById("cadastrarProduto")
+        .addEventListener("click", (e) => {
+          e.preventDefault(); // Evita o envio do formulário
+          const fotoInput = document.getElementById("novoProdutoFoto");
+          const foto = fotoInput.files[0]
+            ? URL.createObjectURL(fotoInput.files[0])
+            : ""; // Obter URL da imagem ou vazio
+          const cod = document.getElementById("novoProdutoCod").value;
+          const nome = document.getElementById("novoProdutoNome").value;
+          const categoria = document.getElementById(
+            "novoProdutoCategoria"
+          ).value;
+          const un = document.getElementById("novoProdutoUn").value;
+          const fornecedor = document.getElementById(
+            "novoProdutoFornecedor"
+          ).value;
+          let compra = document.getElementById("novoProdutoCompra").value;
+          let venda = document.getElementById("novoProdutoVenda").value;
+          const estoque = document.getElementById("novoProdutoEstoque").value;
+          const estoqueMinimo = document.getElementById(
+            "novoProdutoEstoqueMinimo"
+          ).value;
+          const data = new Date().toLocaleDateString("pt-BR"); // Data atual no formato dd/mm/aaaa
 
-            // Adicionar ",00" automaticamente se não houver
-            if (!compra.includes(",")) compra += ",00";
-            if (!venda.includes(",")) venda += ",00";
+          // Adicionar ",00" automaticamente se não houver
+          if (!compra.includes(",")) compra += ",00";
+          if (!venda.includes(",")) venda += ",00";
 
-            // Atualizar tabela
-            const row = document.createElement("tr");
-            row.innerHTML = `
+          // Atualizar tabela
+          const row = document.createElement("tr");
+          row.innerHTML = `
               <td><img src="${foto}" alt="${nome}" width="50"></td>
               <td>${cod}</td>
               <td>${nome}</td>
@@ -814,20 +789,19 @@
                 <a href="#" class="delete-button"><i class="fas fa-trash" style="color: #dc3545; font-size: 20px"></i></a>
               </td>
             `;
-            tbody.appendChild(row);
+          tbody.appendChild(row);
 
-            // Salvar no LocalStorage
-            salvarProdutosNoLocalStorage();
+          // Salvar no LocalStorage
+          salvarProdutosNoLocalStorage();
 
-            // Fechar pop-ups
-            document.getElementById("novoProdutoPopupOverlay").style.display =
-              "none";
-            document.getElementById("novoProdutoPopup").style.display = "none";
+          // Fechar pop-ups
+          document.getElementById("novoProdutoPopupOverlay").style.display =
+            "none";
+          document.getElementById("novoProdutoPopup").style.display = "none";
 
-            // Limpar formulário
-            document.querySelector("#novoProdutoPopup form").reset();
-          });
-      });
+          // Limpar formulário
+          document.querySelector("#novoProdutoPopup form").reset();
+        });
 
       document.addEventListener("DOMContentLoaded", () => {
         const tbody = document.querySelector(".center-table tbody");
@@ -1016,47 +990,39 @@
         validarCampoNumerico(campoEstoque);
         validarCampoNumerico(campoEstoqueMinimo);
 
-        // Evento para cadastrar o produto
-        document
-          .getElementById("cadastrarProduto")
-          .addEventListener("click", (e) => {
-            e.preventDefault(); // Evita o envio do formulário
+        const fotoInput = document.getElementById("novoProdutoFoto");
+        const foto = fotoInput.files[0]
+          ? URL.createObjectURL(fotoInput.files[0])
+          : ""; // Obter URL da imagem ou vazio
+        const cod = document.getElementById("novoProdutoCod").value;
+        const nome = document.getElementById("novoProdutoNome").value;
+        const categoria = document.getElementById("novoProdutoCategoria").value;
+        const un = document.getElementById("novoProdutoUn").value;
+        const fornecedor = document.getElementById(
+          "novoProdutoFornecedor"
+        ).value;
+        let compra = document
+          .getElementById("novoProdutoCompra")
+          .value.replace("R$", "")
+          .trim();
+        let venda = document
+          .getElementById("novoProdutoVenda")
+          .value.replace("R$", "")
+          .trim();
+        const estoque = document.getElementById("novoProdutoEstoque").value;
+        const estoqueMinimo = document.getElementById(
+          "novoProdutoEstoqueMinimo"
+        ).value;
+        const data = new Date().toLocaleDateString("pt-BR"); // Data atual no formato dd/mm/aaaa
 
-            const fotoInput = document.getElementById("novoProdutoFoto");
-            const foto = fotoInput.files[0]
-              ? URL.createObjectURL(fotoInput.files[0])
-              : ""; // Obter URL da imagem ou vazio
-            const cod = document.getElementById("novoProdutoCod").value;
-            const nome = document.getElementById("novoProdutoNome").value;
-            const categoria = document.getElementById(
-              "novoProdutoCategoria"
-            ).value;
-            const un = document.getElementById("novoProdutoUn").value;
-            const fornecedor = document.getElementById(
-              "novoProdutoFornecedor"
-            ).value;
-            let compra = document
-              .getElementById("novoProdutoCompra")
-              .value.replace("R$", "")
-              .trim();
-            let venda = document
-              .getElementById("novoProdutoVenda")
-              .value.replace("R$", "")
-              .trim();
-            const estoque = document.getElementById("novoProdutoEstoque").value;
-            const estoqueMinimo = document.getElementById(
-              "novoProdutoEstoqueMinimo"
-            ).value;
-            const data = new Date().toLocaleDateString("pt-BR"); // Data atual no formato dd/mm/aaaa
+        // Adicionar ",00" automaticamente se necessário
+        compra = adicionarCentavos(compra);
+        venda = adicionarCentavos(venda);
 
-            // Adicionar ",00" automaticamente se necessário
-            compra = adicionarCentavos(compra);
-            venda = adicionarCentavos(venda);
-
-            // Atualizar tabela
-            const tbody = document.querySelector(".center-table tbody");
-            const row = document.createElement("tr");
-            row.innerHTML = `
+        // Atualizar tabela
+        const tbody = document.querySelector(".center-table tbody");
+        const row = document.createElement("tr");
+        row.innerHTML = `
             <td><img src="${foto}" alt="${nome}" width="50"></td>
             <td>${cod}</td>
             <td>${nome}</td>
@@ -1073,16 +1039,15 @@
               <a href="#" class="delete-button"><i class="fas fa-trash" style="color: #dc3545; font-size: 20px"></i></a>
             </td>
           `;
-            tbody.appendChild(row);
+        tbody.appendChild(row);
 
-            // Fechar pop-ups
-            document.getElementById("novoProdutoPopupOverlay").style.display =
-              "none";
-            document.getElementById("novoProdutoPopup").style.display = "none";
+        // Fechar pop-ups
+        document.getElementById("novoProdutoPopupOverlay").style.display =
+          "none";
+        document.getElementById("novoProdutoPopup").style.display = "none";
 
-            // Limpar formulário
-            document.querySelector("#novoProdutoPopup form").reset();
-          });
+        // Limpar formulário
+        document.querySelector("#novoProdutoPopup form").reset();
       });
     </script>
   </body>
