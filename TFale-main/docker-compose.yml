@@ -1,0 +1,33 @@
+version: '3.8'
+services:
+  postgres:
+    build:
+      context: ./postgres
+    container_name: postgres_db_new
+    restart: always
+    environment:
+      POSTGRES_DB: escola
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  flask-app:
+    build:
+      context: ./flask-app
+    container_name: flask_api
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      - DATABASE_HOST=postgres
+      - DATABASE_NAME=escola
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=postgres
+    ports:
+      - "8000:8000"
+
+volumes:
+  postgres_data:
