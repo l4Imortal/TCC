@@ -1,34 +1,410 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Relatórios - Controle de Estoque</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <div class="container">
-      <header>
-        <h1>Relatórios - Controle de Estoque</h1>
-      </header>
-      <nav>
-        <ul>
-          <li><a href="index.html">Início</a></li>
-          <li><a href="produtos.html">Produtos</a></li>
-          <li><a href="categorias.html">Categorias</a></li>
-          <li><a href="fornecedores.html">Fornecedores</a></li>
-          <li><a href="entradas.html">Entradas</a></li>
-          <li><a href="saidas.html">Saídas</a></li>
-          <li><a href="administrador.html">Administrador</a></li>
-        </ul>
-      </nav>
-      <main>
-        <section class="reports">
-          <h2>Relatórios do Sistema</h2>
-          <!-- Adicione as opções de relatórios aqui -->
-          <button>Gerar Relatório</button>
-        </section>
-      </main>
-    </div>
-  </body>
-</html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Relatórios - Controle de Estoque</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .reports-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    
+    .report-card {
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .report-card h3 {
+      margin-top: 0;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;
+      color: #333;
+    }
+    
+    .filter-section {
+      background-color: #f0f0f0;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+    }
+    
+    .filter-section h4 {
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+    
+    .filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 10px;
+    }
+    
+    .filter-item {
+      flex: 1;
+      min-width: 200px;
+    }
+    
+    .filter-item label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    
+    .filter-item select, .filter-item input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    
+    .report-preview {
+      margin-top: 20px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    
+    .report-preview table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .report-preview th {
+      background-color: #f2f2f2;
+      padding: 10px;
+      text-align: left;
+      border-bottom: 2px solid #ddd;
+    }
+    
+    .report-preview td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    .report-preview tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    
+    .report-preview tr:hover {
+      background-color: #f0f0f0;
+    }
+    
+    .report-actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+    }
+    
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    
+    .btn-primary {
+      background-color: #4CAF50;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: #45a049;
+    }
+    
+    .btn-secondary {
+      background-color: #2196F3;
+      color: white;
+    }
+    
+    .btn-secondary:hover {
+      background-color: #0b7dda;
+    }
+    
+    .export-options {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .chart-container {
+      height: 300px;
+      margin-top: 20px;
+      background-color: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .chart-container img {
+      max-width: 100%;
+      max-height: 100%;
+    }
+    
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #ddd;
+      margin-bottom: 20px;
+    }
+    
+    .tab {
+      padding: 10px 20px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      border-bottom: none;
+      border-radius: 4px 4px 0 0;
+      margin-right: 5px;
+    }
+    
+    .tab.active {
+      background-color: #f9f9f9;
+      border-color: #ddd;
+      font-weight: bold;
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    .container {
+          width: 90%;
+          margin: 0 auto;
+          background-color: white;
+          padding: 20px;
+          border-radius: 8px;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Relatórios - Controle de Estoque</h1>
+    </header>
+    <nav>
+      <ul>
+        <li><a href="index.html">Início</a></li>
+        <li><a href="produtos.html">Produtos</a></li>
+        <li><a href="categorias.html">Categorias</a></li>
+        <li><a href="fornecedores.html">Fornecedores</a></li>
+        <li><a href="entradas.html">Entradas</a></li>
+        <li><a href="saidas.html">Saídas</a></li>
+        <li><a href="administrador.html">Administrador</a></li>
+      </ul>
+    </nav>
+    <main>
+      <section class="reports">
+        <h2>Relatórios do Sistema</h2>
+        
+        <div class="reports-container">
+          <!-- Tipos de Relatórios -->
+          <div class="report-card">
+            <h3>Selecione o Tipo de Relatório</h3>
+            <div class="tabs">
+              <div class="tab active" onclick="mudarTab('estoque')">Estoque Atual</div>
+              <div class="tab" onclick="mudarTab('movimentacoes')">Movimentações</div>
+              <div class="tab" onclick="mudarTab('produtos')">Produtos</div>
+              <div class="tab" onclick="mudarTab('vendas')">Vendas</div>
+              <div class="tab" onclick="mudarTab('fornecedores')">Fornecedores</div>
+            </div>
+            
+            <!-- Relatório de Estoque Atual -->
+            <div id="estoque-tab" class="tab-content active">
+              <div class="filter-section">
+                <h4>Filtros</h4>
+                <div class="filter-row">
+                  <div class="filter-item">
+                    <label for="estoque-categoria">Categoria:</label>
+                    <select id="estoque-categoria">
+                      <option value="">Todas as Categorias</option>
+                      <option value="1">Eletrônicos</option>
+                      <option value="2">Alimentos</option>
+                      <option value="3">Vestuário</option>
+                    </select>
+                  </div>
+                  <div class="filter-item">
+                    <label for="estoque-fornecedor">Fornecedor:</label>
+                    <select id="estoque-fornecedor">
+                      <option value="">Todos os Fornecedores</option>
+                      <option value="1">Fornecedor A</option>
+                      <option value="2">Fornecedor B</option>
+                      <option value="3">Fornecedor C</option>
+                    </select>
+                  </div>
+                  <div class="filter-item">
+                    <label for="estoque-status">Status:</label>
+                    <select id="estoque-status">
+                      <option value="">Todos</option>
+                      <option value="normal">Normal</option>
+                      <option value="baixo">Estoque Baixo</option>
+                      <option value="critico">Estoque Crítico</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="report-actions">
+                <button class="btn btn-primary" onclick="gerarRelatorioEstoque()">Gerar Relatório</button>
+                <div class="export-options">
+                  <button class="btn btn-secondary" onclick="exportarPDF()">Exportar PDF</button>
+                  <button class="btn btn-secondary" onclick="exportarExcel()">Exportar Excel</button>
+                  <button class="btn btn-secondary" onclick="imprimirRelatorio()">Imprimir</button>
+                </div>
+              </div>
+              
+              <div class="report-preview">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Produto</th>
+                      <th>Categoria</th>
+                      <th>Fornecedor</th>
+                      <th>Quantidade</th>
+                      <th>Valor Unitário</th>
+                      <th>Valor Total</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>1</td>
+                      <td>Smartphone X</td>
+                      <td>Eletrônicos</td>
+                      <td>Fornecedor A</td>
+                      <td>15</td>
+                      <td>R$ 1.200,00</td>
+                      <td>R$ 18.000,00</td>
+                      <td>Normal</td>
+                    </tr>
+                    <tr>
+                      <td>2</td>
+                      <td>Notebook Y</td>
+                      <td>Eletrônicos</td>
+                      <td>Fornecedor B</td>
+                      <td>5</td>
+                      <td>R$ 3.500,00</td>
+                      <td>R$ 17.500,00</td>
+                      <td>Baixo</td>
+                    </tr>
+                    <tr>
+                      <td>3</td>
+                      <td>Mouse Sem Fio</td>
+                      <td>Eletrônicos</td>
+                      <td>Fornecedor C</td>
+                      <td>30</td>
+                      <td>R$ 80,00</td>
+                      <td>R$ 2.400,00</td>
+                      <td>Normal</td>
+                    </tr>
+                    <tr>
+                      <td>4</td>
+                      <td>Teclado Mecânico</td>
+                      <td>Eletrônicos</td>
+                      <td>Fornecedor A</td>
+                      <td>2</td>
+                      <td>R$ 250,00</td>
+                      <td>R$ 500,00</td>
+                      <td>Crítico</td>
+                    </tr>
+                    <tr>
+                      <td>5</td>
+                      <td>Camiseta Polo</td>
+                      <td>Vestuário</td>
+                      <td>Fornecedor B</td>
+                      <td>25</td>
+                      <td>R$ 60,00</td>
+                      <td>R$ 1.500,00</td>
+                      <td>Normal</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              
+              <div class="chart-container">
+                <img src="https://via.placeholder.com/800x300?text=Gráfico+de+Estoque+por+Categoria" alt="Gráfico de Estoque">
+              </div>
+            </div>
+            
+            <!-- Relatório de Movimentações -->
+            <div id="movimentacoes-tab" class="tab-content">
+              <div class="filter-section">
+                <h4>Filtros</h4>
+                <div class="filter-row">
+                  <div class="filter-item">
+                    <label for="mov-data-inicio">Data Início:</label>
+                    <input type="date" id="mov-data-inicio">
+                  </div>
+                  <div class="filter-item">
+                    <label for="mov-data-fim">Data Fim:</label>
+                    <input type="date" id="mov-data-fim">
+                  </div>
+                  <div class="filter-item">
+                    <label for="mov-tipo">Tipo de Movimentação:</label>
+                    <select id="mov-tipo">
+                      <option value="">Todos</option>
+                      <option value="entrada">Entrada</option>
+                      <option value="saida">Saída</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="filter-row">
+                  <div class="filter-item">
+                    <label for="mov-produto">Produto:</label>
+                    <select id="mov-produto">
+                      <option value="">Todos os Produtos</option>
+                      <option value="1">Smartphone X</option>
+                      <option value="2">Notebook Y</option>
+                      <option value="3">Mouse Sem Fio</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="report-actions">
+                <button class="btn btn-primary" onclick="gerarRelatorioMovimentacoes()">Gerar Relatório</button>
+                <div class="export-options">
+                  <button class="btn btn-secondary" onclick="exportarPDF()">Exportar PDF</button>
+                  <button class="btn btn-secondary" onclick="exportarExcel()">Exportar Excel</button>
+                  <button class="btn btn-secondary" onclick="imprimirRelatorio()">Imprimir</button>
+                </div>
+              </div>
+              
+              <div class="report-preview">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Data</th>
+                      <th>Produto</th>
+                      <th>Tipo</th>
+                      <th>Quantidade</th>
+                      <th>Valor Unitário</th>
+                      <th>Valor Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>1</td>
+                      <td>21/03/2025</td>
+                      <td>Smartphone X</td>
+                      <td>Entrada</td>
+                      <td>10</td>
+                      <td>R$ 1.200,00</td>
+                      <td>R$ 12.000,00</td>
+                    </tr>
+                    <tr>
+                      <td>2</td>
+                      <td>21/03/2025</td>
+                      <td>Smartphone X</td>
+                      <td>Saída</td>

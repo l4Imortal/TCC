@@ -1,29 +1,192 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Criar Usuário - Controle de Estoque</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Criar Usuário - Controle de Estoque</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+    
+    .container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 20px auto;
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border: 2px solid #ccc;
+    }
+    
+    header {
+      background-color: #e0e0e0;
+      padding: 20px;
+      text-align: center;
+      border-bottom: 2px solid #ccc;
+      border-radius: 8px 8px 0 0;
+    }
+    
+    header h1 {
+      margin: 0;
+      color: #333;
+    }
+    
+    .create-user-form {
+      background-color: #e0e0e0;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    
+    input[type="text"],
+    input[type="password"],
+    input[type="email"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    
+    .button-group {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+      color: white;
+    }
+    
+    button[type="submit"] {
+      background-color: green;
+    }
+    
+    button[type="submit"]:hover {
+      background-color: #45a049;
+    }
+    
+    .cancel-button {
+      background-color: #f44336;
+    }
+    
+    .cancel-button:hover {
+      background-color: #d32f2f;
+    }
+    
+    .required {
+      color: red;
+    }
+    
+    .form-info {
+      background-color: #f8f8f8;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      border-left: 4px solid #2196F3;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Criar Usuário - Controle de Estoque</h1>
-        </header>
-        <main>
-            <section class="create-user-form">
-                <form action="criar_usuario.html" method="post">
-                    <label for="new-username">Usuário:</label>
-                    <input type="text" id="new-username" name="new-username" required>
-                    
-                    <label for="new-password">Senha:</label>
-                    <input type="password" id="new-password" name="new-password" required>
-                    
-                    <button type="submit">Criar Usuário</button>
-                </form>
-            </section>
-        </main>
-    </div>
+  <div class="container">
+    <header>
+      <h1>Criar Usuário - Controle de Estoque</h1>
+    </header>
+    <main>
+      <section class="create-user-form">
+        <div class="form-info">
+          <p>Preencha todos os campos obrigatórios para criar um novo usuário no sistema. Os campos marcados com <span class="required">*</span> são obrigatórios.</p>
+        </div>
+        
+        <form id="userForm" onsubmit="return validarFormulario()">
+          <div class="form-group">
+            <label for="nome">Nome Completo: <span class="required">*</span></label>
+            <input type="text" id="nome" name="nome" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="email">Email: <span class="required">*</span></label>
+            <input type="email" id="email" name="email" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="username">Nome de Usuário: <span class="required">*</span></label>
+            <input type="text" id="username" name="username" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="password">Senha: <span class="required">*</span></label>
+            <input type="password" id="password" name="password" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="confirm-password">Confirmar Senha: <span class="required">*</span></label>
+            <input type="password" id="confirm-password" name="confirm-password" required>
+          </div>
+          
+          <div class="button-group">
+            <button type="button" class="cancel-button" onclick="window.location.href='administrador.html'">Cancelar</button>
+            <button type="submit">Criar Usuário</button>
+          </div>
+        </form>
+      </section>
+    </main>
+  </div>
+  
+  <script>
+    function validarFormulario() {
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+      const email = document.getElementById('email').value;
+      
+      // Validar se as senhas coincidem
+      if (password !== confirmPassword) {
+        alert('As senhas não coincidem!');
+        return false;
+      }
+      
+      // Validar formato de email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        alert('Por favor, insira um email válido!');
+        return false;
+      }
+      
+      // Validar força da senha
+      if (password.length < 6) {
+        alert('A senha deve ter pelo menos 6 caracteres!');
+        return false;
+      }
+      
+      // Se tudo estiver correto, exibir mensagem de sucesso e redirecionar
+      alert('Usuário criado com sucesso!');
+      window.location.href = 'administrador.html'; // Redireciona para a página de administração
+      return false; // Impede o envio do formulário, já que estamos redirecionando manualmente
+    }
+  </script>
 </body>
 </html>
