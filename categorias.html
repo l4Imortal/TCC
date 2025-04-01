@@ -161,78 +161,22 @@
         display: none;
         justify-content: center;
         align-items: center;
+        z-index: 999;
       }
 
       .popup {
         background-color: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        width: 300px;
-        display: none;
-      }
-
-      .popup h3 {
-        margin-top: 0;
-      }
-
-      .popup-buttons {
-        display: flex;
-        justify-content: space-between;
-      }
-
-      .popup-buttons button {
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-      }
-
-      .popup-buttons button[type="submit"] {
-        background-color: #4caf50;
-        color: white;
-      }
-
-      .popup-buttons button[type="submit"]:hover {
-        background-color: #45a049;
-      }
-
-      .popup-buttons button[type="button"] {
-        background-color: #f44336;
-        color: white;
-      }
-
-      .popup-buttons button[type="button"]:hover {
-        background-color: #e53935;
-      }
-
-      /* Estilo do overlay */
-      .popup-overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.6); /* Fundo mais escuro */
-        z-index: 999;
-      }
-
-      /* Estilo do pop-up */
-      .popup {
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        width: 400px;
+        max-width: 90%;
         display: none;
         position: fixed;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        background-color: #ffffff;
-        padding: 30px;
-        border-radius: 12px; /* Bordas mais arredondadas */
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Sombra mais suave */
         z-index: 1000;
-        width: 400px;
-        max-width: 90%;
       }
 
       .popup h3 {
@@ -276,25 +220,28 @@
         font-size: 1rem;
         cursor: pointer;
         transition: background-color 0.3s ease;
-      }
-
-      .popup-buttons button[type="submit"] {
-        background-color: #4caf50;
-        color: white;
         font-weight: bold;
       }
 
-      .popup-buttons button[type="submit"]:hover {
+      .popup-buttons button[type="submit"],
+      .popup-buttons button.confirm-button {
+        background-color: #4caf50;
+        color: white;
+      }
+
+      .popup-buttons button[type="submit"]:hover,
+      .popup-buttons button.confirm-button:hover {
         background-color: #45a049;
       }
 
-      .popup-buttons button[type="button"] {
+      .popup-buttons button[type="button"],
+      .popup-buttons button.cancel-button {
         background-color: #f44336;
         color: white;
-        font-weight: bold;
       }
 
-      .popup-buttons button[type="button"]:hover {
+      .popup-buttons button[type="button"]:hover,
+      .popup-buttons button.cancel-button:hover {
         background-color: #e53935;
       }
 
@@ -311,6 +258,26 @@
 
       .delete-button i:hover {
         color: #c82333; /* Cor ao passar o mouse no botão de excluir */
+      }
+
+      /* Estilo do popup de exclusão */
+      #deletePopup h3 {
+        border-bottom: 2px solid #f44336;
+        color: #f44336;
+      }
+
+      .delete-popup-icon {
+        font-size: 48px;
+        color: #f44336;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      #deletePopup p {
+        margin-bottom: 20px;
+        font-size: 1.1rem;
+        color: #555;
+        text-align: center;
       }
     </style>
   </head>
@@ -332,7 +299,7 @@
         <section class="categories">
           <h2>Lista de Categorias</h2>
           <div class="button-container">
-            <a href="nova_categoria.html">Nova Categoria</a>
+            <a href="#" id="novaCategoriaBtn">Nova Categoria</a>
           </div>
           <div class="table-container">
             <table>
@@ -346,13 +313,13 @@
                 </tr>
               </thead>
               <tbody>
-                <tr>
+                <tr data-id="8">
                   <td>1</td>
                   <td>8</td>
                   <td>AJUDA HUMANITARIA</td>
                   <td>07/11/2023</td>
                   <td>
-                    <a href="#" class="edit-button">
+                    <a href="#" class="edit-button" onclick="showEditPopup(event, 8)">
                       <i
                         class="fas fa-edit"
                         style="color: #4caf50; font-size: 20px"
@@ -361,7 +328,7 @@
                     <a
                       href="#"
                       class="delete-button"
-                      onclick="confirmDelete(event)"
+                      onclick="showDeletePopup(event, 'AJUDA HUMANITARIA')"
                     >
                       <i
                         class="fas fa-trash"
@@ -370,13 +337,13 @@
                     </a>
                   </td>
                 </tr>
-                <tr>
+                <tr data-id="2">
                   <td>2</td>
                   <td>2</td>
                   <td>ALIMENTOS</td>
                   <td>21/09/2023</td>
                   <td>
-                    <a href="#" class="edit-button">
+                    <a href="#" class="edit-button" onclick="showEditPopup(event, 2)">
                       <i
                         class="fas fa-edit"
                         style="color: #4caf50; font-size: 20px"
@@ -385,7 +352,7 @@
                     <a
                       href="#"
                       class="delete-button"
-                      onclick="confirmDelete(event)"
+                      onclick="showDeletePopup(event, 'ALIMENTOS')"
                     >
                       <i
                         class="fas fa-trash"
@@ -402,11 +369,16 @@
       </main>
     </div>
     <div class="popup-overlay" id="popupOverlay"></div>
+    
+    <!-- Popup de cadastro/edição de categoria -->
     <div class="popup" id="popup">
-      <h3>Cadastrar Nova Categoria</h3>
+      <h3 id="popupTitle">Cadastrar Nova Categoria</h3>
       <form id="novaCategoriaForm">
+        <input type="hidden" id="editMode" value="false">
+        
         <label for="codigoCategoria">Código</label>
         <input type="text" id="codigoCategoria" readonly />
+        
         <label for="nomeCategoria">Nome da Categoria</label>
         <input
           type="text"
@@ -414,38 +386,86 @@
           placeholder="Digite o nome da categoria"
           required
         />
+        
         <div class="popup-buttons">
-          <button type="submit">Cadastrar</button>
+          <button type="submit" id="salvarCategoria">Cadastrar</button>
           <button type="button" id="fecharPopup">Cancelar</button>
         </div>
       </form>
     </div>
+
+    <!-- Popup de confirmação de exclusão -->
+    <div class="popup" id="deletePopup">
+      <div class="delete-popup-icon">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <h3>Confirmar Exclusão</h3>
+      <p id="deleteMessage">Tem certeza que deseja excluir esta categoria?</p>
+      <div class="popup-buttons">
+        <button type="button" id="confirmDelete" class="confirm-button">Excluir</button>
+        <button type="button" id="cancelDelete" class="cancel-button">Cancelar</button>
+      </div>
+    </div>
+
     <script src="scripts.js"></script>
     <script>
+      // Global variable to store the row to be deleted
+      let currentRowToDelete = null;
+      
       document.addEventListener("DOMContentLoaded", () => {
-        const novaCategoriaButton = document.querySelector(
-          ".button-container a"
-        );
+        const novaCategoriaButton = document.getElementById("novaCategoriaBtn");
         const popupOverlay = document.getElementById("popupOverlay");
         const popup = document.getElementById("popup");
+        const deletePopup = document.getElementById("deletePopup");
         const fecharPopupButton = document.getElementById("fecharPopup");
         const codigoCategoriaInput = document.getElementById("codigoCategoria");
         const nomeCategoriaInput = document.getElementById("nomeCategoria");
         const novaCategoriaForm = document.getElementById("novaCategoriaForm");
         const tabelaBody = document.querySelector("table tbody");
+        const confirmDeleteButton = document.getElementById("confirmDelete");
+        const cancelDeleteButton = document.getElementById("cancelDelete");
+        const deleteMessage = document.getElementById("deleteMessage");
+        const popupTitle = document.getElementById("popupTitle");
+        const salvarCategoriaButton = document.getElementById("salvarCategoria");
+        const editModeInput = document.getElementById("editMode");
 
-        // Função para gerar número aleatório de 3 dígitos
-        function gerarCodigoAleatorio() {
-          return Math.floor(100 + Math.random() * 900);
+        // Função para gerar o próximo código
+        function gerarProximoCodigo() {
+          // Buscar todos os códigos existentes na tabela
+          const rows = document.querySelector("table tbody").querySelectorAll("tr");
+          let maxCodigo = 0;
+          
+          // Encontrar o maior código
+          rows.forEach(row => {
+            const codigo = parseInt(row.cells[1].textContent);
+            if (!isNaN(codigo) && codigo > maxCodigo) {
+              maxCodigo = codigo;
+            }
+          });
+          
+          // Retornar o próximo código (maior + 1)
+          return maxCodigo + 1;
         }
 
-        // Abrir o pop-up
+        // Abrir o pop-up de nova categoria
         novaCategoriaButton.addEventListener("click", (e) => {
           e.preventDefault();
-          codigoCategoriaInput.value = gerarCodigoAleatorio();
-          nomeCategoriaInput.value = ""; // Limpa o campo de nome
+          
+          // Resetar o formulário
+          novaCategoriaForm.reset();
+          
+          // Configurar para modo de criação
+          editModeInput.value = "false";
+          popupTitle.textContent = "Cadastrar Nova Categoria";
+          salvarCategoriaButton.textContent = "Cadastrar";
+          
+                    // Gerar próximo código
+          codigoCategoriaInput.value = gerarProximoCodigo();
+          
+          // Mostrar popup
           popupOverlay.style.display = "block";
           popup.style.display = "block";
+          deletePopup.style.display = "none";
         });
 
         // Fechar o pop-up
@@ -454,47 +474,159 @@
           popup.style.display = "none";
         });
 
-        // Cadastrar nova categoria
+        // Fechar popup ao clicar no overlay
+        popupOverlay.addEventListener("click", (e) => {
+          if (e.target === popupOverlay) {
+            popupOverlay.style.display = "none";
+            popup.style.display = "none";
+            deletePopup.style.display = "none";
+            currentRowToDelete = null;
+          }
+        });
+
+        // Cadastrar/Editar categoria
         novaCategoriaForm.addEventListener("submit", (e) => {
           e.preventDefault();
 
+          const isEditMode = editModeInput.value === "true";
           const codigo = codigoCategoriaInput.value;
           const nome = nomeCategoriaInput.value;
-
-          // Adicionar nova linha na tabela
-          const novaLinha = document.createElement("tr");
-          novaLinha.innerHTML = `
-            <td>${tabelaBody.children.length + 1}</td>
-            <td>${codigo}</td>
-            <td>${nome}</td>
-            <td>${new Date().toLocaleDateString()}</td>
-            <td>
-              <a href="#" class="edit-button">
-                <i class="fas fa-edit" style="color: #4caf50; font-size: 20px;"></i>
-              </a>
-              <a href="#" class="delete-button" onclick="confirmDelete(event)">
-                <i class="fas fa-trash" style="color: #dc3545; font-size: 20px;"></i>
-              </a>
-            </td>
-          `;
-          tabelaBody.appendChild(novaLinha);
+          
+          if (isEditMode) {
+            // Modo de edição - atualizar linha existente
+            const rowToUpdate = document.querySelector(`tr[data-id="${codigo}"]`);
+            if (rowToUpdate) {
+              rowToUpdate.cells[2].textContent = nome;
+              
+              alert("Categoria atualizada com sucesso!");
+            }
+          } else {
+            // Modo de criação - adicionar nova linha
+            const novaLinha = document.createElement("tr");
+            novaLinha.setAttribute("data-id", codigo);
+            
+            const dataCadastro = new Date().toLocaleDateString();
+            const ordem = tabelaBody.children.length + 1;
+            
+            novaLinha.innerHTML = `
+              <td>${ordem}</td>
+              <td>${codigo}</td>
+              <td>${nome}</td>
+              <td>${dataCadastro}</td>
+              <td>
+                <a href="#" class="edit-button" onclick="showEditPopup(event, ${codigo})">
+                  <i class="fas fa-edit" style="color: #4caf50; font-size: 20px;"></i>
+                </a>
+                <a href="#" class="delete-button" onclick="showDeletePopup(event, '${nome}')">
+                  <i class="fas fa-trash" style="color: #dc3545; font-size: 20px;"></i>
+                </a>
+              </td>
+            `;
+            tabelaBody.appendChild(novaLinha);
+            
+            alert("Categoria cadastrada com sucesso!");
+          }
 
           // Fechar o pop-up
           popupOverlay.style.display = "none";
           popup.style.display = "none";
         });
+
+        // Manipuladores de eventos para o popup de exclusão
+        confirmDeleteButton.addEventListener("click", () => {
+          if (currentRowToDelete) {
+            currentRowToDelete.remove();
+            
+            // Reordenar os números das linhas
+            const rows = tabelaBody.querySelectorAll("tr");
+            rows.forEach((row, index) => {
+              row.cells[0].textContent = index + 1;
+            });
+            
+            // Fechar o popup
+            popupOverlay.style.display = "none";
+            deletePopup.style.display = "none";
+            
+            // Mostrar mensagem de sucesso
+            alert("Categoria excluída com sucesso!");
+            
+            // Limpar a referência
+            currentRowToDelete = null;
+          }
+        });
+
+        cancelDeleteButton.addEventListener("click", () => {
+          popupOverlay.style.display = "none";
+          deletePopup.style.display = "none";
+          currentRowToDelete = null;
+        });
       });
 
-      function confirmDelete(event) {
-        event.preventDefault(); // Evita o comportamento padrão do link
-        const confirmation = confirm(
-          "Você tem certeza que deseja excluir esta categoria?"
-        );
-        if (confirmation) {
-          // Aqui você pode adicionar a lógica para excluir a categoria
-          alert("Categoria excluída com sucesso!");
+      // Função para mostrar o popup de edição
+      function showEditPopup(event, id) {
+        event.preventDefault();
+        
+        // Obter a linha da tabela
+        const row = event.target.closest("tr");
+        if (!row) return;
+        
+        // Obter os dados da linha
+        const codigo = row.cells[1].textContent;
+        const nome = row.cells[2].textContent;
+        
+        // Preencher o formulário
+        document.getElementById("editMode").value = "true";
+        document.getElementById("popupTitle").textContent = "Editar Categoria";
+        document.getElementById("salvarCategoria").textContent = "Atualizar";
+        
+        document.getElementById("codigoCategoria").value = codigo;
+        document.getElementById("nomeCategoria").value = nome;
+        
+        // Mostrar o popup
+        document.getElementById("popupOverlay").style.display = "block";
+        document.getElementById("popup").style.display = "block";
+      }
+
+      // Função para mostrar o popup de exclusão
+      function showDeletePopup(event, itemName) {
+        // Prevent default behavior and event bubbling
+        event.preventDefault();
+        event.stopPropagation();
+        
+        console.log("Delete popup triggered for:", itemName); // Debug log
+        
+        const popupOverlay = document.getElementById("popupOverlay");
+        const deletePopup = document.getElementById("deletePopup");
+        const deleteMessage = document.getElementById("deleteMessage");
+        
+        if (!popupOverlay || !deletePopup || !deleteMessage) {
+          console.error("Popup elements not found!");
+          return;
         }
+        
+        // Store the row to be deleted - make sure to get the actual row
+        const clickedElement = event.target.closest("a.delete-button");
+        if (!clickedElement) {
+          console.error("Delete button not found!");
+          return;
+        }
+        
+        currentRowToDelete = clickedElement.closest("tr");
+        if (!currentRowToDelete) {
+          console.error("Table row not found!");
+          return;
+        }
+        
+        // Set the confirmation message
+        deleteMessage.textContent = `Tem certeza que deseja excluir "${itemName}"?`;
+        
+        // Show the popup
+        popupOverlay.style.display = "block";
+        deletePopup.style.display = "block";
+        
+        return false; // Prevent any default behavior
       }
     </script>
   </body>
 </html>
+
