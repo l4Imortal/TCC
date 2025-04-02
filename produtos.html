@@ -309,51 +309,151 @@
           top: 50%;
           transform: translate(-50%, -50%);
           background-color: #ffffff;
-          padding: 20px;
-          border-radius: 12px;
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+          padding: 30px;
+          border-radius: 16px;
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
           z-index: 1000;
           width: 90%;
-          max-width: 400px;
+          max-width: 500px;
           text-align: center;
+          font-family: Arial, sans-serif;
+        }
+
+        #deletePopup h3 {
+          margin-top: 0;
+          font-size: 1.8rem;
+          color: #333;
+          text-align: center;
+          border-bottom: 3px solid #dc3545;
+          padding-bottom: 10px;
+          margin-bottom: 20px;
         }
 
         #deletePopup p {
           margin: 20px 0;
-          font-size: 1rem;
-          color: #333;
+          font-size: 1.1rem;
+          color: #555;
+          line-height: 1.5;
         }
 
         #deletePopup .button-group {
           display: flex;
           justify-content: space-between;
+          margin-top: 30px;
         }
 
         #deletePopup .button-group button {
-          padding: 10px 20px;
+          padding: 12px 25px;
           border: none;
           border-radius: 8px;
           font-size: 1rem;
+          font-weight: bold;
           cursor: pointer;
-          transition: background-color 0.3s ease;
+          transition: background-color 0.3s ease, transform 0.2s ease;
+          width: 48%;
         }
 
         #confirmDelete {
-          background-color: #4caf50;
-          color: white;
-        }
-
-        #confirmDelete:hover {
-          background-color: #45a049;
-        }
-
-        #cancelDelete {
           background-color: #dc3545;
           color: white;
         }
 
-        #cancelDelete:hover {
+        #confirmDelete:hover {
           background-color: #c82333;
+          transform: scale(1.05);
+        }
+
+        #cancelDelete {
+          background-color: #6c757d;
+          color: white;
+        }
+
+        #cancelDelete:hover {
+          background-color: #5a6268;
+          transform: scale(1.05);
+        }
+
+        /* Add a warning icon to the delete popup */
+        #deletePopup::before {
+          content: "⚠️";
+          display: block;
+          font-size: 3rem;
+          margin-bottom: 15px;
+          color: #dc3545;
+        }
+        /* Style for the filter button to match other buttons */
+        #filterButton {
+          text-decoration: none;
+          padding: 10px 20px;
+          background-color: #4caf50;
+          color: white;
+          border-radius: 5px;
+          border: none;
+          cursor: pointer;
+          margin-left: 10px; /* Add spacing between buttons */
+          font-weight: bold;
+          display: inline-block;
+          transition: background-color 0.3s ease;
+        }
+        
+        #filterButton:hover {
+          background-color: #45a049;
+        }
+        
+        /* Style for the filter popup buttons */
+        #applyFilter {
+          width: 100%;
+          padding: 12px 20px;
+          background-color: #4caf50;
+          color: white;
+          border: none;
+          border-radius: 8px;
+          font-size: 1rem;
+          cursor: pointer;
+          transition: background-color 0.3s ease, transform 0.2s ease;
+          margin-top: 20px;
+          font-weight: bold;
+        }
+        
+        #applyFilter:hover {
+          background-color: #45a049;
+          transform: scale(1.05);
+        }
+        
+        /* Improve filter popup layout */
+        #popup {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 15px;
+          align-items: center;
+        }
+        
+        #popup label {
+          margin-bottom: 5px;
+        }
+        
+        #popup input,
+        #popup select {
+          margin-bottom: 15px;
+        }
+        
+        #popup h3 {
+          grid-column: span 2;
+        }
+        
+        #applyFilter {
+          grid-column: span 2;
+        }
+        .popup, .popup-overlay {
+          display: none; /* Ensure popups are hidden by default */
+        }
+        
+        #popup, #novoProdutoPopup, #deletePopup {
+          display: none; /* Explicitly hide all popup elements */
+        }
+        
+        #popupOverlay, #novoProdutoPopupOverlay, #deletePopupOverlay {
+          display: none; /* Explicitly hide all overlay elements */
         }
       </style>
       <link
@@ -418,7 +518,14 @@
         <label for="filterProduto">Produto</label>
         <input type="text" id="filterProduto" />
         <label for="filterCategoria">Categoria</label>
-        <input type="text" id="filterCategoria" />
+        <select id="filterCategoria">
+          <option value="">Selecione</option>
+          <option value="camiseta">Camiseta</option>
+          <option value="blusa">Blusa</option>
+          <option value="calca">Calça</option>
+          <option value="sapato">Sapato</option>
+          <option value="acessorios">Acessórios</option>
+        </select>
         <label for="filterUn">UN</label>
         <select id="filterUn">
           <option value="">Selecione</option>
@@ -449,7 +556,11 @@
           <label for="novoProdutoCategoria">Categoria</label>
           <select id="novoProdutoCategoria">
             <option value="">Selecione</option>
-            <!-- Opções serão preenchidas dinamicamente -->
+            <option value="Camiseta">Camiseta</option>
+            <option value="Blusa">Blusa</option>
+            <option value="Calça">Calça</option>
+            <option value="Sapato">Sapato</option>
+            <option value="Acessório">Acessório</option>
           </select>
 
           <label for="novoProdutoUn">UN</label>
@@ -486,6 +597,14 @@
       <div class="popup-overlay" id="deletePopupOverlay"></div>
         <script>
           document.addEventListener("DOMContentLoaded", function () {
+            // Immediately hide all popups and overlays when the page loads
+            document.getElementById("popupOverlay").style.display = "none";
+            document.getElementById("popup").style.display = "none";
+            document.getElementById("novoProdutoPopupOverlay").style.display = "none";
+            document.getElementById("novoProdutoPopup").style.display = "none";
+            document.getElementById("deletePopupOverlay").style.display = "none";
+            document.getElementById("deletePopup").style.display = "none";
+            
             // Elementos DOM principais
             const tbody = document.querySelector(".center-table tbody");
             let rowToDelete = null;
@@ -549,7 +668,7 @@
 
             // Carregar categorias e fornecedores para os selects
             function carregarCategoriasEFornecedores() {
-              const categorias = new Set();
+              // We'll only load fornecedores dynamically, not categorias
               const fornecedores = new Set();
 
               document
@@ -557,30 +676,26 @@
                 .forEach((row) => {
                   const cells = row.querySelectorAll("td");
                   if (cells.length >= 7) {
-                    const categoria = cells[3].textContent.trim();
                     const fornecedor = cells[6].textContent.trim();
-
-                    if (categoria) categorias.add(categoria);
                     if (fornecedor) fornecedores.add(fornecedor);
                   }
                 });
 
-              // Preencher select de categorias
-              const categoriaSelect = document.getElementById(
-                "novoProdutoCategoria"
-              );
+              // Set fixed categories instead of loading them dynamically
+              const categoriaSelect = document.getElementById("novoProdutoCategoria");
               categoriaSelect.innerHTML = '<option value="">Selecione</option>';
-              categorias.forEach((categoria) => {
+              
+              // Add the fixed category options
+              const categoriasFixes = ["camiseta", "blusa", "calca", "sapato", "acessorios"];
+              categoriasFixes.forEach((categoria) => {
                 const option = document.createElement("option");
                 option.value = categoria;
-                option.textContent = categoria;
+                option.textContent = categoria.charAt(0).toUpperCase() + categoria.slice(1); // Capitalize first letter
                 categoriaSelect.appendChild(option);
               });
 
-              // Preencher select de fornecedores
-              const fornecedorSelect = document.getElementById(
-                "novoProdutoFornecedor"
-              );
+              // Preencher select de fornecedores (unchanged)
+              const fornecedorSelect = document.getElementById("novoProdutoFornecedor");
               fornecedorSelect.innerHTML =
                 '<option value="">Selecione</option>';
               fornecedores.forEach((fornecedor) => {
@@ -590,7 +705,7 @@
                 fornecedorSelect.appendChild(option);
               });
 
-              // Também preencher o select de filtro de fornecedores
+              // Também preencher o select de filtro de fornecedores (unchanged)
               const filterFornecedorSelect =
                 document.getElementById("filterFornecedor");
               filterFornecedorSelect.innerHTML =
@@ -735,18 +850,14 @@
                     const produtoMatch = cells[2].textContent
                       .toLowerCase()
                       .includes(produto);
-                    const categoriaMatch = cells[3].textContent
-                      .toLowerCase()
-                      .includes(categoria);
-                    const unMatch = cells[4].textContent
-                      .toLowerCase()
-                      .includes(un);
-                    const fornecedorMatch = cells[6].textContent
-                      .toLowerCase()
-                      .includes(fornecedor);
-                    const estoqueMatch = estoque
-                      ? cells[9].textContent.toLowerCase().includes(estoque)
-                      : true;
+                    const categoriaMatch = categoria === "" || 
+                      cells[3].textContent.toLowerCase() === categoria;
+                    const unMatch = un === "" || 
+                      cells[4].textContent.toLowerCase() === un;
+                    const fornecedorMatch = fornecedor === "" || 
+                      cells[6].textContent.toLowerCase() === fornecedor;
+                    const estoqueMatch = estoque === "" || 
+                      cells[9].textContent.toLowerCase().includes(estoque);
 
                     if (
                       codMatch &&
@@ -909,14 +1020,340 @@
                   "none";
                 document.getElementById("deletePopup").style.display = "none";
               });
+
+            // Function to close all popups
+            function closeAllPopups() {
+              document.getElementById("popupOverlay").style.display = "none";
+              document.getElementById("popup").style.display = "none";
+              document.getElementById("novoProdutoPopupOverlay").style.display = "none";
+              document.getElementById("novoProdutoPopup").style.display = "none";
+              document.getElementById("deletePopupOverlay").style.display = "none";
+              document.getElementById("deletePopup").style.display = "none";
+            }
+            
+            // Close popup when clicking outside of it
+            document.addEventListener("click", function(event) {
+              // Get all popup elements
+              const popups = [
+                document.getElementById("popup"),
+                document.getElementById("novoProdutoPopup"),
+                document.getElementById("deletePopup")
+              ];
+              
+              // Check if click is outside all popups
+              const clickedOutside = popups.every(popup => {
+                return popup && !popup.contains(event.target) && 
+                       !event.target.closest(".button-container") && // Don't close when clicking buttons that open popups
+                       !event.target.closest(".edit-button") &&      // Don't close when clicking edit buttons
+                       !event.target.closest(".delete-button");      // Don't close when clicking delete buttons
+              });
+              
+              // If clicked outside and at least one popup is visible
+              if (clickedOutside && (
+                document.getElementById("popupOverlay").style.display === "block" ||
+                document.getElementById("novoProdutoPopupOverlay").style.display === "block" ||
+                document.getElementById("deletePopupOverlay").style.display === "block"
+              )) {
+                closeAllPopups();
+              }
+            });
+            
+            // Make sure overlay clicks close the popups (reinforcing existing behavior)
+            document.getElementById("popupOverlay").addEventListener("click", closeAllPopups);
+            document.getElementById("novoProdutoPopupOverlay").addEventListener("click", closeAllPopups);
+            document.getElementById("deletePopupOverlay").addEventListener("click", closeAllPopups);
+            
+            // Also add the ESC key handler
+            document.addEventListener("keydown", function(event) {
+              if (event.key === "Escape") {
+                closeAllPopups();
+              }
+            });
+
+            // First, create the edit popup HTML structure if it doesn't exist yet
+            const editPopupHTML = `
+<div class="popup-overlay" id="editPopupOverlay"></div>
+<div class="popup" id="editProdutoPopup">
+  <h3>Editar Produto</h3>
+  <form>
+    <label for="editProdutoFoto">Foto</label>
+    <input type="file" id="editProdutoFoto" accept="image/*" />
+    
+    <label for="editProdutoCod">COD</label>
+    <input type="text" id="editProdutoCod" />
+    
+    <label for="editProdutoNome">Produto</label>
+    <input type="text" id="editProdutoNome" />
+    
+    <label for="editProdutoCategoria">Categoria</label>
+    <select id="editProdutoCategoria">
+      <option value="">Selecione</option>
+      <option value="camiseta">Camiseta</option>
+      <option value="blusa">Blusa</option>
+      <option value="calca">Calça</option>
+      <option value="sapato">Sapato</option>
+      <option value="acessorios">Acessórios</option>
+    </select>
+    
+    <label for="editProdutoUn">UN</label>
+    <select id="editProdutoUn">
+      <option value="">Selecione</option>
+      <option value="UN">UN</option>
+      <option value="CX">CX</option>
+    </select>
+    
+    <label for="editProdutoFornecedor">Fornecedor</label>
+    <select id="editProdutoFornecedor">
+      <option value="">Selecione</option>
+      <!-- Opções serão preenchidas dinamicamente -->
+    </select>
+    
+    <label for="editProdutoCompra">Preço de Compra</label>
+    <input type="text" id="editProdutoCompra" />
+    
+    <label for="editProdutoVenda">Preço de Venda</label>
+    <input type="text" id="editProdutoVenda" />
+    
+    <label for="editProdutoEstoque">Estoque</label>
+    <input type="number" id="editProdutoEstoque" />
+    
+    <label for="editProdutoEstoqueMinimo">Estoque Mínimo</label>
+    <input type="number" id="editProdutoEstoqueMinimo" />
+    
+    <div class="button-group">
+      <button id="salvarEdicaoProduto">Salvar Alterações</button>
+      <button type="button" id="cancelarEdicaoProduto">Cancelar</button>
+    </div>
+  </form>
+</div>
+`;
+
+            // Add the edit popup HTML to the document body
+            document.body.insertAdjacentHTML('beforeend', editPopupHTML);
+
+            // Variable to store the row being edited
+            let rowToEdit = null;
+
+            // Add event listener for edit buttons
+            tbody.addEventListener("click", function(e) {
+              if (e.target.closest(".edit-button")) {
+                e.preventDefault();
+                rowToEdit = e.target.closest("tr");
+                
+                // Get data from the row
+                const cells = rowToEdit.querySelectorAll("td");
+                const imgSrc = cells[0].querySelector("img")?.src || "";
+                const cod = cells[1].textContent;
+                const nome = cells[2].textContent;
+                const categoria = cells[3].textContent.toLowerCase();
+                const un = cells[4].textContent;
+                const fornecedor = cells[6].textContent;
+                const compra = cells[7].textContent;
+                const venda = cells[8].textContent;
+                const estoque = cells[9].textContent;
+                const estoqueMinimo = cells[10].textContent;
+                
+                // Populate the edit form
+                document.getElementById("editProdutoCod").value = cod;
+                document.getElementById("editProdutoNome").value = nome;
+                
+                // Set category dropdown
+                const categoriaSelect = document.getElementById("editProdutoCategoria");
+                for (let i = 0; i < categoriaSelect.options.length; i++) {
+                  if (categoriaSelect.options[i].value === categoria) {
+                    categoriaSelect.selectedIndex = i;
+                    break;
+                  }
+                }
+                
+                // Set UN dropdown
+                const unSelect = document.getElementById("editProdutoUn");
+                for (let i = 0; i < unSelect.options.length; i++) {
+                  if (unSelect.options[i].value === un) {
+                    unSelect.selectedIndex = i;
+                    break;
+                  }
+                }
+                
+                // Populate fornecedor dropdown and select current value
+                const fornecedorSelect = document.getElementById("editProdutoFornecedor");
+                // First, clear existing options except the first one
+                while (fornecedorSelect.options.length > 1) {
+                  fornecedorSelect.remove(1);
+                }
+                
+                // Get unique fornecedores from the table
+                const fornecedores = new Set();
+                document.querySelectorAll(".center-table tbody tr").forEach(row => {
+                  const fornecedorCell = row.querySelectorAll("td")[6];
+                  if (fornecedorCell && fornecedorCell.textContent.trim()) {
+                    fornecedores.add(fornecedorCell.textContent.trim());
+                  }
+                });
+                
+                // Add fornecedores to dropdown
+                fornecedores.forEach(f => {
+                  const option = document.createElement("option");
+                  option.value = f;
+                  option.textContent = f;
+                  fornecedorSelect.appendChild(option);
+                  
+                  // Select the current fornecedor
+                  if (f === fornecedor) {
+                    option.selected = true;
+                  }
+                });
+                
+                // Set price values
+                document.getElementById("editProdutoCompra").value = compra;
+                document.getElementById("editProdutoVenda").value = venda;
+                
+                // Set numeric values
+                document.getElementById("editProdutoEstoque").value = estoque;
+                document.getElementById("editProdutoEstoqueMinimo").value = estoqueMinimo;
+                
+                // Show the edit popup
+                document.getElementById("editPopupOverlay").style.display = "block";
+                document.getElementById("editProdutoPopup").style.display = "block";
+              }
+            });
+
+            // Handle save button click
+            document.getElementById("salvarEdicaoProduto").addEventListener("click", function(e) {
+              e.preventDefault();
+              
+              if (!rowToEdit) return;
+              
+              // Get values from the form
+              const cod = document.getElementById("editProdutoCod").value;
+              const nome = document.getElementById("editProdutoNome").value;
+              const categoria = document.getElementById("editProdutoCategoria").value;
+              const un = document.getElementById("editProdutoUn").value;
+              const fornecedor = document.getElementById("editProdutoFornecedor").value;
+              let compra = document.getElementById("editProdutoCompra").value;
+              let venda = document.getElementById("editProdutoVenda").value;
+              const estoque = document.getElementById("editProdutoEstoque").value;
+              const estoqueMinimo = document.getElementById("editProdutoEstoqueMinimo").value;
+              
+              // Validate required fields
+              if (!nome || !cod) {
+                alert("Por favor, preencha pelo menos o código e o nome do produto.");
+                return;
+              }
+              
+              // Format price values if needed
+              if (!compra.startsWith("R$")) {
+                compra = "R$ " + compra;
+              }
+              
+              if (!venda.startsWith("R$")) {
+                venda = "R$ " + venda;
+              }
+              
+              // Update the row with new values
+              const cells = rowToEdit.querySelectorAll("td");
+              
+              // Don't update the image if no new file was selected
+              // cells[0] contains the image
+              
+              cells[1].textContent = cod;
+              cells[2].textContent = nome;
+              cells[3].textContent = categoria.charAt(0).toUpperCase() + categoria.slice(1); // Capitalize first letter
+              cells[4].textContent = un;
+              // cells[5] contains the date, don't update
+              cells[6].textContent = fornecedor;
+              cells[7].textContent = compra;
+              cells[8].textContent = venda;
+              cells[9].textContent = estoque;
+              cells[10].textContent = estoqueMinimo;
+              
+              // Handle file upload if a new image was selected
+              const fileInput = document.getElementById("editProdutoFoto");
+              if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                  cells[0].querySelector("img").src = e.target.result;
+                  // Save to localStorage after image is loaded
+                  salvarProdutosNoLocalStorage();
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+              } else {
+                // Save to localStorage immediately if no new image
+                salvarProdutosNoLocalStorage();
+              }
+              
+              // Close the popup
+              document.getElementById("editPopupOverlay").style.display = "none";
+              document.getElementById("editProdutoPopup").style.display = "none";
+              
+              // Reset the form
+              document.querySelector("#editProdutoPopup form").reset();
+              rowToEdit = null;
+            });
+
+            // Handle cancel button click
+            document.getElementById("cancelarEdicaoProduto").addEventListener("click", function(e) {
+              e.preventDefault();
+              
+              // Close the popup
+              document.getElementById("editPopupOverlay").style.display = "none";
+              document.getElementById("editProdutoPopup").style.display = "none";
+              
+              // Reset the form
+              document.querySelector("#editProdutoPopup form").reset();
+              rowToEdit = null;
+            });
+
+            // Close edit popup when clicking on overlay
+            document.getElementById("editPopupOverlay").addEventListener("click", function() {
+              document.getElementById("editPopupOverlay").style.display = "none";
+              document.getElementById("editProdutoPopup").style.display = "none";
+              document.querySelector("#editProdutoPopup form").reset();
+              rowToEdit = null;
+            });
+
+            // Add validation for price fields in edit form
+            const editCampoCompra = document.getElementById("editProdutoCompra");
+            const editCampoVenda = document.getElementById("editProdutoVenda");
+
+            [editCampoCompra, editCampoVenda].forEach((campo) => {
+              campo.addEventListener("input", function() {
+                let valor = this.value.replace("R$ ", "").trim();
+                const valorFormatado = formatarValorReais(valor);
+                this.value = `R$ ${valorFormatado}`;
+              });
+
+              campo.addEventListener("focus", function() {
+                if (!this.value.startsWith("R$")) {
+                  this.value = "R$ ";
+                }
+              });
+
+              campo.addEventListener("blur", function() {
+                if (this.value === "R$ ") {
+                  this.value = "";
+                }
+              });
+            });
+
+            // Add validation for numeric fields in edit form
+            const editCampoEstoque = document.getElementById("editProdutoEstoque");
+            const editCampoEstoqueMinimo = document.getElementById("editProdutoEstoqueMinimo");
+
+            [editCampoEstoque, editCampoEstoqueMinimo].forEach((campo) => {
+              campo.addEventListener("input", function() {
+                this.value = this.value.replace(/\D/g, "");
+              });
+            });
           });
+          
         </script>
       </div>
       <div class="popup" id="deletePopup">
         <h3>Confirmação de Exclusão</h3>
         <p>Tem certeza que deseja excluir este produto?</p>
         <div class="button-group">
-          <button id="confirmDelete">Sim, excluir</button>
+          <button id="confirmDelete">Excluir</button>
           <button id="cancelDelete">Cancelar</button>
         </div>
       </div>
