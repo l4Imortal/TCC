@@ -1,75 +1,330 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Saídas - StoQ</title>
-    <link rel="stylesheet" href="styles.css" />
-    <style>
-      body {
-        font-family: Arial, sans-serif;
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Saídas - StoQ</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    rel="stylesheet"
+  />
+  <style>
+    /* Estilo geral */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      width: 90%;
+      margin: 20px auto;
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      color: #333;
+    }
+
+    /* Estilo da navegação */
+    nav ul {
+      list-style-type: none;
+      padding: 0;
+      display: flex;
+      background-color: #333;
+    }
+
+    nav ul li {
+      flex: 1;
+    }
+
+    nav ul li a {
+      text-decoration: none;
+      color: white;
+      display: block;
+      text-align: center;
+      padding: 10px;
+    }
+
+    nav ul li a:hover {
+      background-color: #575757;
+    }
+
+    /* Estilo da tabela */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    table,
+    th,
+    td {
+      border: 1px solid #ddd;
+    }
+
+    th,
+    td {
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #333;
+      color: white;
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    tbody tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    /* Estilo dos botões */
+    .button-container {
+      text-align: right;
+      margin-bottom: 20px;
+    }
+
+    .button-container a {
+      text-decoration: none;
+      padding: 10px 20px;
+      background-color: #c82333;
+      color: white;
+      border-radius: 5px;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    .button-container a:hover {
+      background-color: #c82333;
+    }
+
+    /* Estilo do contêiner da tabela */
+    .table-container {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      background-color: #f9f9f9;
+      overflow-x: auto; /* Para tabelas responsivas */
+    }
+
+    /* Estilo dos ícones de ação */
+    td a {
+      margin: 0 5px;
+      text-decoration: none;
+      color: #007bff;
+      font-weight: bold;
+    }
+
+    td a:hover {
+      text-decoration: underline;
+    }
+
+    .edit-button,
+    .delete-button {
+      margin: 0 5px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .edit-button i:hover {
+      color: #c82333;
+    }
+
+    .delete-button i:hover {
+      color: #c82333;
+    }
+
+    /* Estilo do rodapé */
+    footer {
+      text-align: center;
+      margin-top: 20px;
+      padding: 10px;
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    /* Estilo do popup */
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+
+    .popup {
+      background-color: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      width: 500px;
+      max-width: 90%;
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1000;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .popup h3 {
+      margin-top: 0;
+      font-size: 1.8rem;
+      color: #333;
+      text-align: center;
+      border-bottom: 2px solid #c82333;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+
+    .popup label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #555;
+    }
+
+    .popup input, .popup select {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+
+    .popup-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .popup-buttons button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      font-weight: bold;
+    }
+
+    .popup-buttons button[type="submit"],
+    .popup-buttons button.confirm-button {
+      background-color: #c82333;
+      color: white;
+    }
+
+    .popup-buttons button[type="submit"]:hover,
+    .popup-buttons button.confirm-button:hover {
+      background-color: #b21f2d;
+    }
+
+    .popup-buttons button[type="button"],
+    .popup-buttons button.cancel-button {
+      background-color: #6c757d;
+      color: white;
+    }
+
+    .popup-buttons button[type="button"]:hover,
+    .popup-buttons button.cancel-button:hover {
+      background-color: #5a6268;
+    }
+
+    /* Estilo do popup de exclusão */
+    #deletePopup h3 {
+      border-bottom: 2px solid #c82333;
+      color: #c82333;
+    }
+
+    .delete-popup-icon {
+      font-size: 48px;
+      color: #c82333;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    #deletePopup p {
+      margin-bottom: 20px;
+      font-size: 1.1rem;
+      color: #555;
+      text-align: center;
+    }
+
+    /* Formulário em duas colunas */
+    .form-row {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 10px;
+    }
+
+    .form-group {
+      flex: 1;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+
+    /* Responsividade para telas pequenas */
+    @media (max-width: 768px) {
+      .form-row {
+        flex-direction: column;
+        gap: 0;
       }
-      nav ul {
-        list-style-type: none;
-        padding: 0;
-        display: flex;
-        background-color: #333;
-      }
-      nav ul li {
-        flex: 1;
-      }
-      nav ul li a {
-        text-decoration: none;
-        color: white;
-        display: block;
-        text-align: center;
-        padding: 10px;
-      }
-      nav ul li a:hover {
-        background-color: #575757;
-      }
-      .container {
-        width: 90%;
-        margin: 0 auto;
-        padding: 20px;
-        background-color: #ffffff;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      }
-      .add-button {
-        background-color: #f44336;
-        color: white;
-        padding: 10px;
-        text-decoration: none;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-      }
-      .add-button:hover {
-        background-color: #d32f2f;
-      }
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-      }
-      th,
-      td {
-        text-align: left;
-        padding: 8px;
-        border: 1px solid #ddd;
-      }
-      th {
-        background-color: #f2f2f2;
-      }
-      footer {
-        margin-top: 20px;
-        text-align: center;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
+    }
+    #confirmarSaida {
+    display: block !important;
+    background-color: #4caf50;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: bold;
+    margin: 5px 0;
+  }
+  </style>
+</head>
+<body>
+  <div class="container">
     <header>
       <h1>Saídas - StoQ</h1>
     </header>
@@ -79,51 +334,336 @@
         <li><a href="produtos.html">Produtos</a></li>
         <li><a href="fornecedores.html">Fornecedores</a></li>
         <li><a href="entradas.html">Entradas</a></li>
-       
       </ul>
     </nav>
-    
-      <h2>Saídas de Produtos</h2>
-      <button class="add-button">Nova Saída</button>
-      <table>
-        <thead>
-          <tr>
-            <th>Código</th>
-            <th>Produto</th>
-            <th>Quantidade</th>
-            <th>Responsável</th>
-            <th>Data Saída</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>1</td>
-            <td>Notebook</td>
-            <td>5</td>
-            <td>João Silva</td>
-            <td>15/03/2025</td>
-            <td>
-              <a href="#">Editar</a> |
-              <a href="#">Excluir</a>
-            </td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>Mouse</td>
-            <td>25</td>
-            <td>Maria Oliveira</td>
-            <td>16/03/2025</td>
-            <td>
-              <a href="#">Editar</a> |
-              <a href="#">Excluir</a>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <main>
+      <section class="saidas">
+        <h2>Saídas de Produtos</h2>
+        <div class="button-container">
+          <a href="#" id="novaSaidaBtn">Nova Saída</a>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Produto</th>
+                <th>Quantidade</th>
+                <th>Responsável</th>
+                <th>Data Saída</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-id="1">
+                <td>1</td>
+                <td>Notebook</td>
+                <td>5</td>
+                <td>João Silva</td>
+                <td>15/03/2025</td>
+                <td>
+                  <a href="#" class="edit-button" onclick="showEditPopup(event, 1)">
+                    <i class="fas fa-edit" style="color: #4caf50; font-size: 20px"></i>
+                  </a>
+                  <a href="#" class="delete-button" onclick="showDeletePopup(event, 'Notebook')">
+                    <i class="fas fa-trash" style="color: #dc3545; font-size: 20px"></i>
+                  </a>
+                </td>
+              </tr>
+              <tr data-id="2">
+                <td>2</td>
+                <td>Mouse</td>
+                <td>25</td>
+                <td>Maria Oliveira</td>
+                <td>16/03/2025</td>
+                <td>
+                  <a href="#" class="edit-button" onclick="showEditPopup(event, 2)">
+                    <i class="fas fa-edit" style="color: #4caf50; font-size: 20px"></i>
+                  </a>
+                  <a href="#" class="delete-button" onclick="showDeletePopup(event, 'Mouse')">
+                    <i class="fas fa-trash" style="color: #dc3545; font-size: 20px"></i>
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+  
+  <!-- Popup Overlay -->
+  <div class="popup-overlay" id="popupOverlay"></div>
+  
+  
+<!-- Popup de cadastro/edição de saída -->
+<div class="popup" id="saidaPopup">
+  <h3 id="popupTitle">Cadastrar Nova Saída</h3>
+  <form id="saidaForm">
+    <input type="hidden" id="editMode" value="false">
+    <div class="form-row">
+      <div class="form-group">
+        <label for="codigoSaida">Código</label>
+        <input type="text" id="codigoSaida" readonly />
+      </div>
+      <div class="form-group">
+        <label for="dataSaida">Data de Saída*</label>
+        <input type="date" id="dataSaida" required />
+      </div>
     </div>
-    <footer>
-      <p>&copy; 2025 - Controle de Estoque</p>
-    </footer>
-  </body>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="produtoSaida">Produto*</label>
+        <input type="text" id="produtoSaida" placeholder="Digite o nome do produto" required />
+      </div>
+      <div class="form-group">
+        <label for="quantidadeSaida">Quantidade*</label>
+        <input type="number" id="quantidadeSaida" min="1" required />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="responsavelSaida">Responsável*</label>
+        <input type="text" id="responsavelSaida" placeholder="Nome do responsável" required />
+      </div>
+      
+    </div>
+    <div class="form-group">
+      <label for="observacoesSaida">Observações</label>
+      <input type="text" id="observacoesSaida" placeholder="Observações adicionais" />
+    </div>
+    <div class="popup-buttons">
+      <button type="submit" id="salvarSaida">Cadastrar</button>
+      <button type="button" id="fecharPopup">Cancelar</button>
+    </div>
+  </form>
+</div>
+
+<!-- Popup de confirmação de exclusão -->
+<div class="popup" id="deletePopup">
+  <div class="delete-popup-icon">
+    <i class="fas fa-exclamation-triangle"></i>
+  </div>
+  <h3>Confirmar Exclusão</h3>
+  <p id="deleteMessage">Tem certeza que deseja excluir esta saída?</p>
+  <div class="popup-buttons">
+    <button type="button" id="confirmDelete" class="confirm-button">Excluir</button>
+    <button type="button" id="cancelDelete" class="cancel-button">Cancelar</button>
+  </div>
+</div>
+
+<script>
+  // Global variable to store the row to be deleted
+  let currentRowToDelete = null;
+  
+  document.addEventListener("DOMContentLoaded", () => {
+    // Declaração dos elementos
+    const novaSaidaButton = document.getElementById("novaSaidaBtn");
+    const popupOverlay = document.getElementById("popupOverlay");
+    const saidaPopup = document.getElementById("saidaPopup");
+    const deletePopup = document.getElementById("deletePopup");
+    const fecharPopupButton = document.getElementById("fecharPopup");
+    const codigoSaidaInput = document.getElementById("codigoSaida");
+    const saidaForm = document.getElementById("saidaForm");
+    const tabelaBody = document.querySelector("table tbody");
+    const confirmDeleteButton = document.getElementById("confirmDelete");
+    const cancelDeleteButton = document.getElementById("cancelDelete");
+    const deleteMessage = document.getElementById("deleteMessage");
+    const popupTitle = document.getElementById("popupTitle");
+    const salvarSaidaButton = document.getElementById("salvarSaida");
+    const editModeInput = document.getElementById("editMode");
+
+    // Função para gerar o próximo código
+    function gerarProximoCodigo() {
+      // Buscar todos os códigos existentes na tabela
+      const rows = tabelaBody.querySelectorAll("tr");
+      let maxCodigo = 0;
+      rows.forEach(row => {
+        const codigo = parseInt(row.cells[0].textContent);
+        if (!isNaN(codigo) && codigo > maxCodigo) {
+          maxCodigo = codigo;
+        }
+      });
+      // Retornar o próximo código (maior + 1)
+      return maxCodigo + 1;
+    }
+
+    // Adicionar evento para abrir o popup de nova saída
+    novaSaidaButton.addEventListener("click", (e) => {
+      e.preventDefault();
+      // Resetar o formulário
+      saidaForm.reset();
+      // Configurar para modo de criação
+      editModeInput.value = "false";
+      popupTitle.textContent = "Cadastrar Nova Saída";
+      salvarSaidaButton.textContent = "Cadastrar";
+      // Definir a data atual como padrão
+      const today = new Date().toISOString().split("T")[0];
+      document.getElementById("dataSaida").value = today;
+      // Gerar próximo código
+      codigoSaidaInput.value = gerarProximoCodigo();
+      // Mostrar o popup de cadastro
+      popupOverlay.style.display = "block";
+      saidaPopup.style.display = "block";
+      deletePopup.style.display = "none";
+    });
+
+    // Fechar o popup ao clicar no botão de fechar
+    fecharPopupButton.addEventListener("click", () => {
+      popupOverlay.style.display = "none";
+      saidaPopup.style.display = "none";
+      deletePopup.style.display = "none";
+    });
+
+    // Fechar o popup ao clicar no overlay (fora do conteúdo do popup)
+    popupOverlay.addEventListener("click", (e) => {
+      if (e.target === popupOverlay) {
+        popupOverlay.style.display = "none";
+        saidaPopup.style.display = "none";
+        deletePopup.style.display = "none";
+        currentRowToDelete = null;
+      }
+    });
+
+    // Cadastrar ou editar a saída ao submeter o formulário
+    saidaForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const isEditMode = editModeInput.value === "true";
+      const codigo = codigoSaidaInput.value;
+      const produto = document.getElementById("produtoSaida").value;
+      const quantidade = document.getElementById("quantidadeSaida").value;
+      const responsavel = document.getElementById("responsavelSaida").value;
+      const dataSaida = document.getElementById("dataSaida").value;
+
+      // Formatar a data para exibição (DD/MM/YYYY)
+      const dataObj = new Date(dataSaida);
+      const dia = String(dataObj.getDate()).padStart(2, "0");
+      const mes = String(dataObj.getMonth() + 1).padStart(2, "0");
+      const ano = dataObj.getFullYear();
+      const dataFormatada = `${dia}/${mes}/${ano}`;
+
+      if (isEditMode) {
+        // Modo de edição – atualizar a linha existente
+        const rowToUpdate = document.querySelector(`tr[data-id="${codigo}"]`);
+        if (rowToUpdate) {
+          rowToUpdate.cells[1].textContent = produto;
+          rowToUpdate.cells[2].textContent = quantidade;
+          rowToUpdate.cells[3].textContent = responsavel;
+          rowToUpdate.cells[4].textContent = dataFormatada;
+          alert("Saída atualizada com sucesso!");
+        }
+      } else {
+        // Modo de criação – adicionar nova linha
+        const novaLinha = document.createElement("tr");
+        novaLinha.setAttribute("data-id", codigo);
+        novaLinha.innerHTML = `
+          <td>${codigo}</td>
+          <td>${produto}</td>
+          <td>${quantidade}</td>
+          <td>${responsavel}</td>
+          <td>${dataFormatada}</td>
+          <td>
+            <a href="#" class="edit-button" onclick="showEditPopup(event, ${codigo})">
+              <i class="fas fa-edit" style="color: #4caf50; font-size: 20px;"></i>
+            </a>
+            <a href="#" class="delete-button" onclick="showDeletePopup(event, '${produto}')">
+              <i class="fas fa-trash" style="color: #dc3545; font-size: 20px;"></i>
+            </a>
+          </td>
+        `;
+        tabelaBody.appendChild(novaLinha);
+        alert("Saída cadastrada com sucesso!");
+      }
+
+      // Fechar todos os popups
+      popupOverlay.style.display = "none";
+      saidaPopup.style.display = "none";
+      deletePopup.style.display = "none";
+    });
+
+    // Manipulador para confirmar a exclusão
+    confirmDeleteButton.addEventListener("click", () => {
+      if (currentRowToDelete) {
+        currentRowToDelete.remove();
+        popupOverlay.style.display = "none";
+        deletePopup.style.display = "none";
+        alert("Saída excluída com sucesso!");
+        currentRowToDelete = null;
+      }
+    });
+
+    // Manipulador para cancelar a exclusão
+    cancelDeleteButton.addEventListener("click", () => {
+      popupOverlay.style.display = "none";
+      deletePopup.style.display = "none";
+      currentRowToDelete = null;
+    });
+
+    // Expor as funções para o escopo global (necessário para os onclicks inline)
+    window.showEditPopup = showEditPopup;
+    window.showDeletePopup = showDeletePopup;
+  });
+
+  // Função para mostrar o popup de edição
+  function showEditPopup(event, id) {
+    event.preventDefault();
+    
+    // Obter a linha da tabela
+    const row = event.target.closest("tr");
+    if (!row) return;
+    
+    // Obter os dados da linha
+    const codigo = row.cells[0].textContent;
+    const produto = row.cells[1].textContent;
+    const quantidade = row.cells[2].textContent;
+    const responsavel = row.cells[3].textContent;
+    const dataSaida = row.cells[4].textContent;
+    
+    // Converter a data para o formato do input date (YYYY-MM-DD)
+    const dataParts = dataSaida.split('/');
+    const dataFormatada = dataParts.length === 3 ?
+      `${dataParts[2]}-${dataParts[1].padStart(2, '0')}-${dataParts[0].padStart(2, '0')}` : '';
+    
+    // Preencher o formulário
+    document.getElementById("editMode").value = "true";
+    document.getElementById("popupTitle").textContent = "Editar Saída";
+    document.getElementById("salvarSaida").textContent = "Atualizar";
+    
+    document.getElementById("codigoSaida").value = codigo;
+    document.getElementById("produtoSaida").value = produto;
+    document.getElementById("quantidadeSaida").value = quantidade;
+    document.getElementById("responsavelSaida").value = responsavel;
+    document.getElementById("dataSaida").value = dataFormatada;
+    
+    // Mostrar o popup
+    document.getElementById("popupOverlay").style.display = "block";
+    document.getElementById("saidaPopup").style.display = "block";
+  }
+
+  // Função para mostrar o popup de exclusão
+  function showDeletePopup(event, itemName) {
+    // Prevent default behavior and event bubbling
+    event.preventDefault();
+    event.stopPropagation();
+    
+    const popupOverlay = document.getElementById("popupOverlay");
+    const deletePopup = document.getElementById("deletePopup");
+    const deleteMessage = document.getElementById("deleteMessage");
+    
+    // Store the row to be deleted
+    currentRowToDelete = event.target.closest("tr");
+    
+    // Set the confirmation message
+    deleteMessage.textContent = `Tem certeza que deseja excluir a saída do produto "${itemName}"?`;
+    
+    // Show the popup
+    popupOverlay.style.display = "block";
+    deletePopup.style.display = "block";
+    
+    return false; // Prevent any default behavior
+  }
+</script>
+
+
+ </body>
 </html>
