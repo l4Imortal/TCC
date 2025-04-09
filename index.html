@@ -330,6 +330,40 @@
     <script src="scripts.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", () => {
+        // Hamburger menu functionality
+        const menuIcon = document.getElementById("menuIcon");
+        const menuContent = document.getElementById("menuContent");
+
+        menuIcon.addEventListener("click", function () {
+          this.classList.toggle("open");
+          if (menuContent.style.display === "block") {
+            menuContent.style.display = "none";
+          } else {
+            menuContent.style.display = "block";
+          }
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener("click", function (event) {
+          if (
+            !menuIcon.contains(event.target) &&
+            !menuContent.contains(event.target)
+          ) {
+            menuIcon.classList.remove("open");
+            menuContent.style.display = "none";
+          }
+        });
+
+        // Logout button functionality
+        document
+          .getElementById("logoutButton")
+          .addEventListener("click", function () {
+            // Clear user session data
+            localStorage.removeItem("usuarioLogado");
+            // Redirect to login page
+            window.location.href = "login.html";
+          });
+
         // Função para extrair número de um valor (string ou número)
         function extrairNumero(valor) {
           if (valor === undefined || valor === null) return 0;
