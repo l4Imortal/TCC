@@ -7,4 +7,3 @@
 
 4- Separar CSS/HTML/JS 
 
-5- Remover INDEX.CSS/ LOGIN.CSS/ PRODUTO.CSS
