@@ -138,20 +138,20 @@ body::after {
 }
 
 .image-title {
-  font-size: 2em;
+  font-size: 3vw;
   font-weight: bold;
   margin-bottom: 0.1px; /* Reduzido para aproximar o subtítulo */
   color: #fff;
   text-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
-  margin-left: 50px; /* Alinha com a imagem após o deslocamento */
+  margin-left: -50px; /* Alinha com a imagem após o deslocamento */
   margin-top: 100px;
 }
 
 .image-subtitle {
-  font-size: 1.2em;
+  font-size: 1.2vw;
   color: #e0e0e0;
   margin-bottom: 25px;
-  margin-left: 50px; /* Alinha com o título */
+  margin-left: -50px; /* Alinha com o título */
   text-shadow: 0 0 8px rgba(0, 255, 170, 0.5);
   max-width: 450px;
 }
@@ -160,12 +160,12 @@ body::after {
   width: 100%;
   display: flex;
   justify-content: flex-start;
-  margin-left: 150PX;
+  margin-left: -50px;
 }
 
 .server-image-container img {
   max-width: 90%;
-  max-height: 380px;
+  max-height: 400px;
   object-fit: contain;
   border-radius: 0;
   box-shadow: none;

@@ -79,146 +79,6 @@ main {
 .center-table tbody tr:hover {
   background-color: #f1f1f1;
 }
-.button-container {
-  text-align: right;
-  margin-bottom: 20px;
-}
-.button-container a {
-  text-decoration: none;
-  padding: 10px 20px;
-  background-color: #4caf50;
-  color: white;
-  border-radius: 5px;
-  border: none;
-  cursor: pointer;
-  margin-right: 10px; /* Espaçamento entre os botões */
-}
-.button-container a:hover {
-  background-color: #45a049;
-}
-.button-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.button-container h2 {
-  margin: 0;
-}
-.button-container a {
-  text-decoration: none;
-  padding: 10px 20px;
-  background-color: #4caf50;
-  color: white;
-  border-radius: 5px;
-  border: none;
-  cursor: pointer;
-}
-.button-container a:hover {
-  background-color: #45a049;
-}
-/* Estilo atualizado para o pop-up */
-.popup {
-  display: none;
-  position: fixed;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #ffffff;
-  padding: 30px;
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
-  width: 90%;
-  max-width: 600px;
-  max-height: 90%;
-  overflow-y: auto;
-  font-family: Arial, sans-serif;
-}
-
-.popup h3 {
-  margin-top: 0;
-  font-size: 1.8rem;
-  color: #333;
-  text-align: center;
-  border-bottom: 3px solid #4caf50;
-  padding-bottom: 10px;
-  margin-bottom: 20px;
-}
-
-.popup form {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-
-.popup label {
-  font-weight: bold;
-  color: #555;
-  margin-bottom: 5px;
-}
-
-.popup input,
-.popup select {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 1rem;
-  box-sizing: border-box;
-  background-color: #f9f9f9;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.popup input:focus,
-.popup select:focus {
-  border-color: #4caf50;
-  box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
-  outline: none;
-  background-color: #ffffff;
-}
-
-.popup button {
-  padding: 12px 20px;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.popup button:hover {
-  background-color: #45a049;
-  transform: scale(1.05);
-}
-
-.popup .button-group {
-  grid-column: span 2;
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
-}
-
-#cancelarProduto {
-  background-color: #dc3545;
-}
-
-#cancelarProduto:hover {
-  background-color: #c82333;
-}
-
-.popup-overlay {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 999;
-}
-
 h1,
 h2,
 h3,
@@ -230,224 +90,307 @@ a {
   font-family: Arial, sans-serif;
   font-weight: bold; /* Aplica negrito a todos os textos */
 }
-
-.edit-button,
-.delete-button {
-  margin: 0 5px;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.edit-button i:hover {
-  color: #45a049; /* Cor ao passar o mouse no botão de editar */
-}
-
-.delete-button i:hover {
-  color: #c82333; /* Cor ao passar o mouse no botão de excluir */
-}
-
-.button-group {
-  grid-column: span 2;
-  display: flex;
-  justify-content: space-between;
-}
-
-.button-group button {
-  padding: 10px 20px;
+.btn-novo-produto {
+  background-color: #4caf50; /* Cor verde */
+  color: white;
   border: none;
-  border-radius: 8px;
-  font-size: 1rem;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: bold;
+  border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  float: right; /* Alinha o botão à direita */
+  margin-top: -40px; /* Ajusta a posição vertical */
 }
 
-#cadastrarProduto {
-  background-color: #4caf50;
-  color: white;
+.btn-novo-produto:hover {
+  background-color: #45a049; /* Cor ao passar o mouse */
+}
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7); /* Fundo mais escuro */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
 
-#cadastrarProduto:hover {
-  background-color: #45a049;
+/* Estilo para o popup */
+.popup {
+  background-color: #ffffff;
+  padding: 40px; /* Espaçamento interno maior */
+  border-radius: 12px;
+  width: 600px; /* Largura maior para ocupar mais espaço horizontal */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* Sombra */
+  animation: fadeIn 0.3s ease-in-out; /* Animação de entrada */
+  display: flex;
+  flex-direction: column; /* Alinha os itens verticalmente */
+  align-items: stretch; /* Permite que os itens ocupem toda a largura */
+  text-align: center; /* Alinha o texto à esquerda para uma aparência mais natural */
+  height: auto; /* Ajusta a altura automaticamente com base no conteúdo */
+  max-height: 90vh; /* Garante que o popup não ultrapasse a altura da tela */
+  overflow-y: auto; /* Adiciona rolagem se o conteúdo for muito grande */
 }
 
-#cancelarProduto {
-  background-color: #dc3545;
-  color: white;
+.popup h3 {
+  margin-top: 0;
+  font-size: 1.5rem;
+  color: #333;
+  border-bottom: 2px solid #4caf50;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  width: 100%; /* Garante que o título ocupe toda a largura */
 }
 
-#cancelarProduto:hover {
-  background-color: #c82333;
+.popup label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #555;
+  text-align: left; /* Mantém os labels alinhados à esquerda */
+  width: 100%; /* Garante que os labels ocupem toda a largura */
 }
 
-input[type="file"] {
-  padding: 5px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 1rem;
-  background-color: #f9f9f9;
-  cursor: pointer;
+.popup input,
+.popup select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.3s;
 }
 
-input[type="file"]:focus {
+.popup input:focus,
+.popup select:focus {
   border-color: #4caf50;
   outline: none;
 }
-/* Estilo para o pop-up de exclusão */
-#deletePopup {
-  display: none;
+
+.popup button {
+  padding: 12px 100px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  transition: background-color 0.3s, transform 0.2s;
+  margin-top: 10px; /* Adiciona espaçamento entre os botões */
+}
+
+.popup button[type="submit"] {
+  background-color: #4caf50;
+  color: white;
+  margin-right: 10px;
+}
+
+.popup button[type="button"] {
+  background-color: #f44336;
+  color: white;
+}
+
+.popup button:hover {
+  transform: scale(1.05); /* Efeito de zoom ao passar o mouse */
+  opacity: 0.9;
+}
+
+.popup button:active {
+  transform: scale(0.95); /* Efeito de clique */
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Estilo para o popup de confirmação de exclusão */
+.popup-confirmacao-overlay {
   position: fixed;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #ffffff;
-  padding: 30px;
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8); /* Fundo escuro mais intenso */
+  display: flex;
+  justify-content: center;
+  align-items: center;
   z-index: 1000;
-  width: 90%;
-  max-width: 500px;
-  text-align: center;
-  font-family: Arial, sans-serif;
 }
 
-#deletePopup h3 {
-  margin-top: 0;
+.popup-confirmacao {
+  background-color: #ffffff;
+  padding: 40px;
+  border-radius: 16px; /* Bordas mais arredondadas */
+  width: 450px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); /* Sombra mais forte */
+  animation: fadeIn 0.3s ease-in-out; /* Animação de entrada */
+  position: relative;
+}
+
+.popup-confirmacao h3 {
+  margin: 0 0 15px;
   font-size: 1.8rem;
-  color: #333;
-  text-align: center;
-  border-bottom: 3px solid #dc3545;
-  padding-bottom: 10px;
-  margin-bottom: 20px;
+  color: #e74c3c; /* Cor vermelha para destaque */
+  font-weight: bold;
 }
 
-#deletePopup p {
-  margin: 20px 0;
-  font-size: 1.1rem;
+.popup-confirmacao p {
+  margin: 10px 0 20px;
+  font-size: 1rem;
   color: #555;
   line-height: 1.5;
 }
 
-#deletePopup .button-group {
+.popup-confirmacao i {
+  font-size: 2.5rem;
+  color: #f1c40f; /* Ícone de alerta em amarelo */
+  margin-bottom: 15px;
+}
+
+.popup-botoes {
   display: flex;
   justify-content: space-between;
-  margin-top: 30px;
+  gap: 10px; /* Espaçamento entre os botões */
 }
 
-#deletePopup .button-group button {
-  padding: 12px 25px;
+.popup-botoes .btn-excluir {
+  background-color: #e74c3c; /* Cor de fundo vermelha */
+  color: white; /* Texto sempre branco */
   border: none;
+  padding: 12px 50px;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: 14px;
   font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  width: 48%;
+  transition: background-color 0.3s, transform 0.2s;
 }
 
-#confirmDelete {
-  background-color: #dc3545;
-  color: white;
+.popup-botoes .btn-excluir:hover {
+  background-color: #c0392b; /* Vermelho mais escuro no hover */
+  color: white; /* Garante que o texto continue branco no hover */
+  transform: scale(1.1); /* Efeito de zoom no hover */
 }
 
-#confirmDelete:hover {
-  background-color: #c82333;
-  transform: scale(1.05);
+.popup-botoes .btn-cancelar {
+  background-color: #7f8c8d; /* Cor de fundo cinza */
+  color: white; /* Texto branco */
+  border: none;
+  padding: 12px 50px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s; /* Adiciona transição para o zoom */
 }
 
-#cancelDelete {
-  background-color: #6c757d;
-  color: white;
+.popup-botoes .btn-cancelar:hover {
+  background-color: #95a5a6; /* Cinza mais claro no hover */
+  transform: scale(1.1); /* Efeito de zoom no hover */
 }
 
-#cancelDelete:hover {
-  background-color: #5a6268;
-  transform: scale(1.05);
+/* Estilo para o popup de confirmação de cadastro */
+.popup-confirmacao-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7); /* Fundo escuro semitransparente */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
 
-/* Add a warning icon to the delete popup */
-#deletePopup::before {
-  content: "⚠️";
-  display: block;
+.popup-confirmacao {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 16px; /* Bordas arredondadas */
+  width: 400px;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* Sombra */
+  animation: fadeIn 0.3s ease-in-out; /* Animação de entrada */
+  position: relative;
+}
+
+.popup-confirmacao i {
   font-size: 3rem;
+  color: #4caf50; /* Ícone de sucesso em verde */
   margin-bottom: 15px;
-  color: #dc3545;
 }
-/* Style for the filter button to match other buttons */
-#filterButton {
-  text-decoration: none;
+
+.popup-confirmacao h3 {
+  margin: 0 0 15px;
+  font-size: 1.8rem;
+  color: #333;
+  font-weight: bold;
+}
+
+.popup-confirmacao p {
+  margin: 10px 0 20px;
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.5;
+}
+
+.popup-confirmacao button {
   padding: 10px 20px;
   background-color: #4caf50;
   color: white;
-  border-radius: 5px;
-  border: none;
-  cursor: pointer;
-  margin-left: 10px; /* Add spacing between buttons */
-  font-weight: bold;
-  display: inline-block;
-  transition: background-color 0.3s ease;
-}
-
-#filterButton:hover {
-  background-color: #45a049;
-}
-
-/* Style for the filter popup buttons */
-#applyFilter {
-  width: 100%;
-  padding: 12px 20px;
-  background-color: #4caf50;
-  color: white;
   border: none;
   border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  margin-top: 20px;
+  font-size: 14px;
   font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
 }
 
-#applyFilter:hover {
+.popup-confirmacao button:hover {
   background-color: #45a049;
-  transform: scale(1.05);
 }
 
-/* Improve filter popup layout */
-#popup {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
-  align-items: center;
+.popup-confirmacao button:active {
+  transform: scale(0.95); /* Efeito de clique */
 }
 
-#popup label {
-  margin-bottom: 5px;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-#popup input,
-#popup select {
-  margin-bottom: 15px;
+/* Estilo para o botão de excluir com ícone de lixeira */
+.btn-excluir {
+  background: none;
+  border: none;
+  color: #e74c3c; /* Cor vermelha */
+  font-size: 1.2rem; /* Tamanho do ícone */
+  cursor: pointer;
+  transition: transform 0.2s, color 0.3s;
 }
 
-#popup h3 {
-  grid-column: span 2;
+.btn-excluir:hover {
+  color: #c0392b; /* Vermelho mais escuro no hover */
+  transform: scale(1.1); /* Efeito de zoom no hover */
 }
 
-#applyFilter {
-  grid-column: span 2;
-}
-.popup,
-.popup-overlay {
-  display: none; /* Ensure popups are hidden by default */
-}
-
-#popup,
-#novoProdutoPopup,
-#deletePopup {
-  display: none; /* Explicitly hide all popup elements */
-}
-
-#popupOverlay,
-#novoProdutoPopupOverlay,
-#deletePopupOverlay {
-  display: none; /* Explicitly hide all overlay elements */
+.btn-excluir i {
+  pointer-events: none; /* Evita que o clique seja registrado no ícone */
 }

@@ -1,912 +1,174 @@
-<UPDATED_CODE
-  ><!DOCTYPE html>
-  <html lang="en">
-    <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Produtos - StoQ</title>
-      <link rel="stylesheet" href="CSS/produtos.css" />
-      <link
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-        rel="stylesheet"
-      />
-    </head>
-    <body>
-      <div class="container">
-        <header>
-          <h1>Produtos - StoQ</h1>
-        </header>
-        <nav>
-          <ul>
-            <li><a href="index.html">Página Inicial</a></li>
-            <li><a href="fornecedores.html">Fornecedores</a></li>
-            <li><a href="entradas.html">Entradas</a></li>
-            <li><a href="saidas.html">Saídas</a></li>
-            <li><a href="relatorios.html">Relatórios</a></li>
-          </ul>
-        </nav>
-        <main>
-          <section class="product-info">
-            <div class="button-container">
-              <h2>Lista de Produtos</h2>
-              <div>
-                <a href="#" id="novoProdutoButton">Novo Produto</a>
-                <a href="#" id="filterButton">Filtrar</a>
-              </div>
-            </div>
-            <div class="table-container">
-              <table class="center-table">
-                <thead>
-                  <tr>
-                    <th>Foto</th>
-                    <th>COD</th>
-                    <th>Produto</th>
-                    <th>Categoria</th>
-                    <th>UN</th>
-                    <th>Data</th>
-                    <th>Fornecedor</th>
-                    <th>Compra</th>
-                    <th>Venda</th>
-                    <th>Estoque</th>
-                    <th>Estoque Mínimo</th>
-                    <th>Ações</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <!-- Linhas da tabela serão adicionadas aqui -->
-                </tbody>
-              </table>
-            </div>
-          </section>
-        </main>
-      </div>
-      <div class="popup-overlay" id="popupOverlay"></div>
-      <div class="popup" id="popup">
-        <h3>Filtrar Produtos</h3>
-        <label for="filterCod">COD</label>
-        <input type="text" id="filterCod" />
-        <label for="filterProduto">Produto</label>
-        <input type="text" id="filterProduto" />
-        <label for="filterCategoria">Categoria</label>
-        <select id="filterCategoria">
-          <option value="">Selecione</option>
-          <option value="camiseta">Camiseta</option>
-          <option value="blusa">Blusa</option>
-          <option value="calca">Calça</option>
-          <option value="sapato">Sapato</option>
-          <option value="acessorios">Acessórios</option>
-        </select>
-        <label for="filterUn">UN</label>
-        <select id="filterUn">
-          <option value="">Selecione</option>
-          <option value="UN">UN</option>
-          <option value="CX">CX</option>
-        </select>
-        <label for="filterFornecedor">Fornecedor</label>
-        <select id="filterFornecedor">
-          <option value="">Selecione</option>
-        </select>
-        <label for="filterEstoque">Estoque</label>
-        <input type="text" id="filterEstoque" />
-        <button id="applyFilter">Aplicar Filtro</button>
-      </div>
-      <div class="popup-overlay" id="novoProdutoPopupOverlay"></div>
-      <div class="popup" id="novoProdutoPopup">
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Produtos - StoQ</title>
+    <link rel="stylesheet" href="CSS/produtos.css" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Produtos - StoQ</h1>
+      </header>
+      <nav>
+        <ul>
+          <li><a href="index.html">Página Inicial</a></li>
+          <li><a href="fornecedores.html">Fornecedores</a></li>
+          <li><a href="entradas.html">Entradas</a></li>
+          <li><a href="saidas.html">Saídas</a></li>
+          <li><a href="relatorios.html">Relatórios</a></li>
+        </ul>
+      </nav>
+      <main>
+        <section class="product-info">
+          <div class="button-container">
+            <h2>Lista de Produtos</h2>
+            <button id="btnNovoProduto" class="btn-novo-produto">
+              Novo Produto
+            </button>
+          </div>
+          <div class="table-container">
+            <table class="center-table">
+              <thead>
+                <tr>
+                  <th>Foto</th>
+                  <th>SKU</th>
+                  <th>Produto</th>
+                  <th>Categoria</th>
+                  <th>UN</th>
+                  <th>Data</th>
+                  <th>Fornecedor</th>
+                  <th>Estoque Mínimo</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Linhas da tabela serão adicionadas aqui -->
+                <tr>
+                  <td>
+                    <button class="btn-editar">Editar</button>
+                  </td>
+                  <td>
+                    <button class="btn-excluir">
+                      <i class="fas fa-trash-alt"></i>
+                      <!-- Ícone de lixeira -->
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+    <div id="popupNovoProduto" class="popup-overlay" style="display: none">
+      <div class="popup">
         <h3>Cadastrar Novo Produto</h3>
-        <form>
-          <label for="novoProdutoFoto">Foto</label>
-          <input type="file" id="novoProdutoFoto" accept="image/*" />
+        <form id="formNovoProduto">
+          <label for="fotoProduto">Foto:</label>
+          <input
+            type="file"
+            id="fotoProduto"
+            name="fotoProduto"
+            accept="image/*"
+          /><br /><br />
 
-          <label for="novoProdutoCod">COD</label>
-          <input type="text" id="novoProdutoCod" />
+          <label for="skuProduto">SKU:</label>
+          <input
+            type="text"
+            id="skuProduto"
+            name="skuProduto"
+            required
+          /><br /><br />
 
-          <label for="novoProdutoNome">Produto</label>
-          <input type="text" id="novoProdutoNome" />
+          <label for="nomeProduto">Produto:</label>
+          <input
+            type="text"
+            id="nomeProduto"
+            name="nomeProduto"
+            required
+          /><br /><br />
 
-          <label for="novoProdutoCategoria">Categoria</label>
-          <select id="novoProdutoCategoria">
-            <option value="">Selecione</option>
+          <label for="categoriaProduto">Categoria:</label>
+          <select id="categoriaProduto" name="categoriaProduto" required>
             <option value="Camiseta">Camiseta</option>
             <option value="Blusa">Blusa</option>
             <option value="Calça">Calça</option>
+            <option value="Shorts">Shorts</option>
             <option value="Sapato">Sapato</option>
-            <option value="Acessório">Acessório</option>
-          </select>
+            <option value="Acessorio">Acessório</option></select
+          ><br /><br />
 
-          <label for="novoProdutoUn">UN</label>
-          <select id="novoProdutoUn">
-            <option value="">Selecione</option>
+          <label for="unidadeProduto">Unidade de Conversão:</label>
+          <select id="unidadeProduto" name="unidadeProduto" required>
             <option value="UN">UN</option>
-            <option value="CX">CX</option>
+            <option value="CX">CX</option></select
+          ><br /><br />
+
+          <label for="fornecedorProduto">Fornecedor:</label>
+          <select
+            id="fornecedorProduto"
+            name="fornecedorProduto"
+            required
+            disabled
+          >
+            <option value="" disabled selected>
+              Nenhum fornecedor disponível
+            </option>
           </select>
+          <br /><br />
 
-          <label for="novoProdutoFornecedor">Fornecedor</label>
-          <select id="novoProdutoFornecedor">
-            <option value="">Selecione</option>
-            <!-- Opções serão preenchidas dinamicamente -->
-          </select>
+          <label for="estoqueMinimo">Estoque Mínimo:</label>
+          <input
+            type="number"
+            id="estoqueMinimo"
+            name="estoqueMinimo"
+            required
+          /><br /><br />
 
-          <label for="novoProdutoCompra">Preço de Compra</label>
-          <input type="text" id="novoProdutoCompra" />
-
-          <label for="novoProdutoVenda">Preço de Venda</label>
-          <input type="text" id="novoProdutoVenda" />
-
-          <label for="novoProdutoEstoque">Estoque</label>
-          <input type="number" id="novoProdutoEstoque" />
-
-          <label for="novoProdutoEstoqueMinimo">Estoque Mínimo</label>
-          <input type="number" id="novoProdutoEstoqueMinimo" />
-
-          <div class="button-group">
-            <button id="cadastrarProduto">Cadastrar Produto</button>
-            <button type="button" id="cancelarProduto">Cancelar</button>
-          </div>
+          <button type="submit">Cadastrar</button>
+          <button type="button" id="btnFecharPopup">Cancelar</button>
         </form>
       </div>
-      <div class="popup-overlay" id="deletePopupOverlay"></div>
-        <script>
-          document.addEventListener("DOMContentLoaded", function () {
-            // Immediately hide all popups and overlays when the page loads
-            document.getElementById("popupOverlay").style.display = "none";
-            document.getElementById("popup").style.display = "none";
-            document.getElementById("novoProdutoPopupOverlay").style.display = "none";
-            document.getElementById("novoProdutoPopup").style.display = "none";
-            document.getElementById("deletePopupOverlay").style.display = "none";
-            document.getElementById("deletePopup").style.display = "none";
-            
-            // Elementos DOM principais
-            const tbody = document.querySelector(".center-table tbody");
-            let rowToDelete = null;
-
-            // ===== FUNÇÕES DE ARMAZENAMENTO =====
-
-            // Salvar produtos no localStorage
-            function salvarProdutosNoLocalStorage() {
-              const produtos = [];
-              document
-                .querySelectorAll(".center-table tbody tr")
-                .forEach((row) => {
-                  const cells = row.querySelectorAll("td");
-                  produtos.push({
-                    foto: cells[0].querySelector("img")?.src || "",
-                    cod: cells[1].textContent,
-                    nome: cells[2].textContent,
-                    categoria: cells[3].textContent,
-                    un: cells[4].textContent,
-                    data: cells[5].textContent,
-                    fornecedor: cells[6].textContent,
-                    compra: cells[7].textContent,
-                    venda: cells[8].textContent,
-                    estoque: cells[9].textContent,
-                    estoqueMinimo: cells[10].textContent,
-                  });
-                });
-              localStorage.setItem("produtos", JSON.stringify(produtos));
-            }
-
-            // Carregar produtos do localStorage
-            function carregarProdutosDoLocalStorage() {
-              const produtos =
-                JSON.parse(localStorage.getItem("produtos")) || [];
-              tbody.innerHTML = ""; // Limpa a tabela antes de adicionar
-
-              produtos.forEach((produto) => {
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                  <td><img src="${produto.foto}" alt="${produto.nome}" width="50"></td>
-                  <td>${produto.cod}</td>
-                  <td>${produto.nome}</td>
-                  <td>${produto.categoria}</td>
-                  <td>${produto.un}</td>
-                  <td>${produto.data}</td>
-                  <td>${produto.fornecedor}</td>
-                  <td>${produto.compra}</td>
-                  <td>${produto.venda}</td>
-                  <td class="estoque">${produto.estoque}</td>
-                  <td>${produto.estoqueMinimo}</td>
-                  <td>
-                    <a href="#" class="edit-button"><i class="fas fa-edit" style="color: #4caf50; font-size: 20px"></i></a>
-                    <a href="#" class="delete-button"><i class="fas fa-trash" style="color: #dc3545; font-size: 20px"></i></a>
-                  </td>
-                `;
-                tbody.appendChild(row);
-              });
-            }
-
-            // ===== FUNÇÕES DE INTERFACE =====
-
-            // Carregar categorias e fornecedores para os selects
-            function carregarCategoriasEFornecedores() {
-              // We'll only load fornecedores dynamically, not categorias
-              const fornecedores = new Set();
-
-              document
-                .querySelectorAll(".center-table tbody tr")
-                .forEach((row) => {
-                  const cells = row.querySelectorAll("td");
-                  if (cells.length >= 7) {
-                    const fornecedor = cells[6].textContent.trim();
-                    if (fornecedor) fornecedores.add(fornecedor);
-                  }
-                });
-
-              // Set fixed categories instead of loading them dynamically
-              const categoriaSelect = document.getElementById("novoProdutoCategoria");
-              categoriaSelect.innerHTML = '<option value="">Selecione</option>';
-              
-              // Add the fixed category options
-              const categoriasFixes = ["camiseta", "blusa", "calca", "sapato", "acessorios"];
-              categoriasFixes.forEach((categoria) => {
-                const option = document.createElement("option");
-                option.value = categoria;
-                option.textContent = categoria.charAt(0).toUpperCase() + categoria.slice(1); // Capitalize first letter
-                categoriaSelect.appendChild(option);
-              });
-
-              // Preencher select de fornecedores (unchanged)
-              const fornecedorSelect = document.getElementById("novoProdutoFornecedor");
-              fornecedorSelect.innerHTML =
-                '<option value="">Selecione</option>';
-              fornecedores.forEach((fornecedor) => {
-                const option = document.createElement("option");
-                option.value = fornecedor;
-                option.textContent = fornecedor;
-                fornecedorSelect.appendChild(option);
-              });
-
-              // Também preencher o select de filtro de fornecedores (unchanged)
-              const filterFornecedorSelect =
-                document.getElementById("filterFornecedor");
-              filterFornecedorSelect.innerHTML =
-                '<option value="">Selecione</option>';
-              fornecedores.forEach((fornecedor) => {
-                const option = document.createElement("option");
-                option.value = fornecedor;
-                option.textContent = fornecedor;
-                filterFornecedorSelect.appendChild(option);
-              });
-            }
-
-            // ===== FUNÇÕES DE FORMATAÇÃO =====
-
-            // Formatar valores monetários
-            function formatarValorReais(valor) {
-              valor = valor.replace(/[^\d,]/g, "");
-
-              const partes = valor.split(",");
-              if (partes.length > 2) {
-                valor = partes[0] + "," + partes[1].slice(0, 2);
-              }
-
-              if (partes[1]) {
-                partes[1] = partes[1].slice(0, 2);
-              }
-
-              partes[0] = partes[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-              return partes.join(",");
-            }
-
-            // Adicionar centavos se necessário
-            function adicionarCentavos(valor) {
-              if (!valor) return "0,00";
-
-              if (!valor.includes(",")) {
-                return valor + ",00";
-              }
-
-              const partes = valor.split(",");
-              if (partes[1].length === 0) {
-                return valor + "00";
-              } else if (partes[1].length === 1) {
-                return valor + "0";
-              }
-
-              return valor;
-            }
-
-            // ===== INICIALIZAÇÃO =====
-
-            // Carregar dados iniciais
-            carregarProdutosDoLocalStorage();
-            carregarCategoriasEFornecedores();
-
-            // Configurar validação de campos
-            const campoCompra = document.getElementById("novoProdutoCompra");
-            const campoVenda = document.getElementById("novoProdutoVenda");
-
-            // Validação para campos monetários
-            [campoCompra, campoVenda].forEach((campo) => {
-              campo.addEventListener("input", function () {
-                let valor = this.value.replace("R$ ", "").trim();
-                const valorFormatado = formatarValorReais(valor);
-                this.value = `R$ ${valorFormatado}`;
-              });
-
-              campo.addEventListener("focus", function () {
-                if (!this.value.startsWith("R$")) {
-                  this.value = "R$ ";
-                }
-              });
-
-              campo.addEventListener("blur", function () {
-                if (this.value === "R$ ") {
-                  this.value = "";
-                }
-              });
-            });
-
-            // Validação para campos numéricos
-            const campoEstoque = document.getElementById("novoProdutoEstoque");
-            const campoEstoqueMinimo = document.getElementById(
-              "novoProdutoEstoqueMinimo"
-            );
-
-            [campoEstoque, campoEstoqueMinimo].forEach((campo) => {
-              campo.addEventListener("input", function () {
-                this.value = this.value.replace(/\D/g, "");
-              });
-            });
-
-            // ===== EVENT LISTENERS =====
-
-            // Botão de filtro
-            document
-              .getElementById("filterButton")
-              .addEventListener("click", function () {
-                document.getElementById("popupOverlay").style.display = "block";
-                document.getElementById("popup").style.display = "block";
-              });
-
-            // Fechar popup ao clicar no overlay
-            document
-              .getElementById("popupOverlay")
-              .addEventListener("click", function () {
-                document.getElementById("popupOverlay").style.display = "none";
-                document.getElementById("popup").style.display = "none";
-              });
-
-            // Aplicar filtro
-            document
-              .getElementById("applyFilter")
-              .addEventListener("click", function () {
-                const cod = document
-                  .getElementById("filterCod")
-                  .value.toLowerCase();
-                const produto = document
-                  .getElementById("filterProduto")
-                  .value.toLowerCase();
-                const categoria = document
-                  .getElementById("filterCategoria")
-                  .value.toLowerCase();
-                const un = document
-                  .getElementById("filterUn")
-                  .value.toLowerCase();
-                const fornecedor = document
-                  .getElementById("filterFornecedor")
-                  .value.toLowerCase();
-                const estoque = document
-                  .getElementById("filterEstoque")
-                  .value.toLowerCase();
-
-                document
-                  .querySelectorAll(".center-table tbody tr")
-                  .forEach((row) => {
-                    const cells = row.querySelectorAll("td");
-
-                    const codMatch = cells[1].textContent
-                      .toLowerCase()
-                      .includes(cod);
-                    const produtoMatch = cells[2].textContent
-                      .toLowerCase()
-                      .includes(produto);
-                    const categoriaMatch = categoria === "" || 
-                      cells[3].textContent.toLowerCase() === categoria;
-                    const unMatch = un === "" || 
-                      cells[4].textContent.toLowerCase() === un;
-                    const fornecedorMatch = fornecedor === "" || 
-                      cells[6].textContent.toLowerCase() === fornecedor;
-                    const estoqueMatch = estoque === "" || 
-                      cells[9].textContent.toLowerCase().includes(estoque);
-
-                    if (
-                      codMatch &&
-                      produtoMatch &&
-                      categoriaMatch &&
-                      unMatch &&
-                      fornecedorMatch &&
-                      estoqueMatch
-                    ) {
-                      row.style.display = "";
-                    } else {
-                      row.style.display = "none";
-                    }
-                  });
-
-                document.getElementById("popupOverlay").style.display = "none";
-                document.getElementById("popup").style.display = "none";
-              });
-
-            // Botão Novo Produto
-            document
-              .getElementById("novoProdutoButton")
-              .addEventListener("click", function () {
-                document.getElementById(
-                  "novoProdutoPopupOverlay"
-                ).style.display = "block";
-                document.getElementById("novoProdutoPopup").style.display =
-                  "block";
-              });
-
-            // Botão Cancelar no popup de novo produto
-            document
-              .getElementById("cancelarProduto")
-              .addEventListener("click", function (e) {
-                e.preventDefault();
-                document.getElementById(
-                  "novoProdutoPopupOverlay"
-                ).style.display = "none";
-                document.getElementById("novoProdutoPopup").style.display =
-                  "none";
-                document.querySelector("#novoProdutoPopup form").reset();
-              });
-
-            // Botão Cadastrar Produto
-            document
-              .getElementById("cadastrarProduto")
-              .addEventListener("click", function (e) {
-                e.preventDefault();
-
-                // Obter valores do formulário
-                const fotoInput = document.getElementById("novoProdutoFoto");
-                const foto = fotoInput.files[0]
-                  ? URL.createObjectURL(fotoInput.files[0])
-                  : "";
-                const cod = document.getElementById("novoProdutoCod").value;
-                const nome = document.getElementById("novoProdutoNome").value;
-                const categoria = document.getElementById(
-                  "novoProdutoCategoria"
-                ).value;
-                const un = document.getElementById("novoProdutoUn").value;
-                const fornecedor = document.getElementById(
-                  "novoProdutoFornecedor"
-                ).value;
-                let compra = document
-                  .getElementById("novoProdutoCompra")
-                  .value.replace("R$ ", "")
-                  .trim();
-                let venda = document
-                  .getElementById("novoProdutoVenda")
-                  .value.replace("R$ ", "")
-                  .trim();
-                const estoque =
-                  document.getElementById("novoProdutoEstoque").value;
-                const estoqueMinimo = document.getElementById(
-                  "novoProdutoEstoqueMinimo"
-                ).value;
-                const data = new Date().toLocaleDateString("pt-BR");
-
-                // Validar campos obrigatórios
-                if (!nome || !cod) {
-                  alert(
-                    "Por favor, preencha pelo menos o código e o nome do produto."
-                  );
-                  return;
-                }
-
-                // Formatar valores
-                compra = adicionarCentavos(compra);
-                venda = adicionarCentavos(venda);
-
-                // Criar nova linha na tabela
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                <td><img src="${foto}" alt="${nome}" width="50"></td>
-                <td>${cod}</td>
-                <td>${nome}</td>
-                <td>${categoria}</td>
-                <td>${un}</td>
-                <td>${data}</td>
-                <td>${fornecedor}</td>
-                <td>R$ ${compra}</td>
-                <td>R$ ${venda}</td>
-                <td class="estoque">${estoque}</td>
-                <td>${estoqueMinimo}</td>
-                <td>
-                  <a href="#" class="edit-button"><i class="fas fa-edit" style="color: #4caf50; font-size: 20px"></i></a>
-                  <a href="#" class="delete-button"><i class="fas fa-trash" style="color: #dc3545; font-size: 20px"></i></a>
-                </td>
-              `;
-
-                tbody.appendChild(row);
-
-                // Salvar no localStorage e atualizar selects
-                salvarProdutosNoLocalStorage();
-                carregarCategoriasEFornecedores();
-
-                // Fechar popup e limpar formulário
-                document.getElementById(
-                  "novoProdutoPopupOverlay"
-                ).style.display = "none";
-                document.getElementById("novoProdutoPopup").style.display =
-                  "none";
-                document.querySelector("#novoProdutoPopup form").reset();
-              });
-
-            // Eventos de exclusão
-            tbody.addEventListener("click", function (e) {
-              // Botão de exclusão
-              if (e.target.closest(".delete-button")) {
-                e.preventDefault();
-                rowToDelete = e.target.closest("tr");
-                document.getElementById("deletePopupOverlay").style.display =
-                  "block";
-                document.getElementById("deletePopup").style.display = "block";
-              }
-            });
-
-            // Confirmar exclusão
-            document
-              .getElementById("confirmDelete")
-              .addEventListener("click", function () {
-                if (rowToDelete) {
-                  rowToDelete.remove();
-                  salvarProdutosNoLocalStorage();
-                  carregarCategoriasEFornecedores();
-                  rowToDelete = null;
-                }
-
-                document.getElementById("deletePopupOverlay").style.display =
-                  "none";
-                document.getElementById("deletePopup").style.display = "none";
-              });
-
-            // Cancelar exclusão
-            document
-              .getElementById("cancelDelete")
-              .addEventListener("click", function () {
-                rowToDelete = null;
-                document.getElementById("deletePopupOverlay").style.display =
-                  "none";
-                document.getElementById("deletePopup").style.display = "none";
-              });
-
-            // Function to close all popups
-            function closeAllPopups() {
-              document.getElementById("popupOverlay").style.display = "none";
-              document.getElementById("popup").style.display = "none";
-              document.getElementById("novoProdutoPopupOverlay").style.display = "none";
-              document.getElementById("novoProdutoPopup").style.display = "none";
-              document.getElementById("deletePopupOverlay").style.display = "none";
-              document.getElementById("deletePopup").style.display = "none";
-            }
-            
-            // Close popup when clicking outside of it
-            document.addEventListener("click", function(event) {
-              // Get all popup elements
-              const popups = [
-                document.getElementById("popup"),
-                document.getElementById("novoProdutoPopup"),
-                document.getElementById("deletePopup")
-              ];
-              
-              // Check if click is outside all popups
-              const clickedOutside = popups.every(popup => {
-                return popup && !popup.contains(event.target) && 
-                       !event.target.closest(".button-container") && // Don't close when clicking buttons that open popups
-                       !event.target.closest(".edit-button") &&      // Don't close when clicking edit buttons
-                       !event.target.closest(".delete-button");      // Don't close when clicking delete buttons
-              });
-              
-              // If clicked outside and at least one popup is visible
-              if (clickedOutside && (
-                document.getElementById("popupOverlay").style.display === "block" ||
-                document.getElementById("novoProdutoPopupOverlay").style.display === "block" ||
-                document.getElementById("deletePopupOverlay").style.display === "block"
-              )) {
-                closeAllPopups();
-              }
-            });
-            
-            // Make sure overlay clicks close the popups (reinforcing existing behavior)
-            document.getElementById("popupOverlay").addEventListener("click", closeAllPopups);
-            document.getElementById("novoProdutoPopupOverlay").addEventListener("click", closeAllPopups);
-            document.getElementById("deletePopupOverlay").addEventListener("click", closeAllPopups);
-            
-            // Also add the ESC key handler
-            document.addEventListener("keydown", function(event) {
-              if (event.key === "Escape") {
-                closeAllPopups();
-              }
-            });
-
-            // First, create the edit popup HTML structure if it doesn't exist yet
-            const editPopupHTML = `
-<div class="popup-overlay" id="editPopupOverlay"></div>
-<div class="popup" id="editProdutoPopup">
-  <h3>Editar Produto</h3>
-  <form>
-    <label for="editProdutoFoto">Foto</label>
-    <input type="file" id="editProdutoFoto" accept="image/*" />
-    
-    <label for="editProdutoCod">COD</label>
-    <input type="text" id="editProdutoCod" />
-    
-    <label for="editProdutoNome">Produto</label>
-    <input type="text" id="editProdutoNome" />
-    
-    <label for="editProdutoCategoria">Categoria</label>
-    <select id="editProdutoCategoria">
-      <option value="">Selecione</option>
-      <option value="camiseta">Camiseta</option>
-      <option value="blusa">Blusa</option>
-      <option value="calca">Calça</option>
-      <option value="sapato">Sapato</option>
-      <option value="acessorios">Acessórios</option>
-    </select>
-    
-    <label for="editProdutoUn">UN</label>
-    <select id="editProdutoUn">
-      <option value="">Selecione</option>
-      <option value="UN">UN</option>
-      <option value="CX">CX</option>
-    </select>
-    
-    <label for="editProdutoFornecedor">Fornecedor</label>
-    <select id="editProdutoFornecedor">
-      <option value="">Selecione</option>
-      <!-- Opções serão preenchidas dinamicamente -->
-    </select>
-    
-    <label for="editProdutoCompra">Preço de Compra</label>
-    <input type="text" id="editProdutoCompra" />
-    
-    <label for="editProdutoVenda">Preço de Venda</label>
-    <input type="text" id="editProdutoVenda" />
-    
-    <label for="editProdutoEstoque">Estoque</label>
-    <input type="number" id="editProdutoEstoque" />
-    
-    <label for="editProdutoEstoqueMinimo">Estoque Mínimo</label>
-    <input type="number" id="editProdutoEstoqueMinimo" />
-    
-    <div class="button-group">
-      <button id="salvarEdicaoProduto">Salvar Alterações</button>
-      <button type="button" id="cancelarEdicaoProduto">Cancelar</button>
     </div>
-  </form>
-</div>
-`;
-
-            // Add the edit popup HTML to the document body
-            document.body.insertAdjacentHTML('beforeend', editPopupHTML);
-
-            // Variable to store the row being edited
-            let rowToEdit = null;
-
-            // Add event listener for edit buttons
-            tbody.addEventListener("click", function(e) {
-              if (e.target.closest(".edit-button")) {
-                e.preventDefault();
-                rowToEdit = e.target.closest("tr");
-                
-                // Get data from the row
-                const cells = rowToEdit.querySelectorAll("td");
-                const imgSrc = cells[0].querySelector("img")?.src || "";
-                const cod = cells[1].textContent;
-                const nome = cells[2].textContent;
-                const categoria = cells[3].textContent.toLowerCase();
-                const un = cells[4].textContent;
-                const fornecedor = cells[6].textContent;
-                const compra = cells[7].textContent;
-                const venda = cells[8].textContent;
-                const estoque = cells[9].textContent;
-                const estoqueMinimo = cells[10].textContent;
-                
-                // Populate the edit form
-                document.getElementById("editProdutoCod").value = cod;
-                document.getElementById("editProdutoNome").value = nome;
-                
-                // Set category dropdown
-                const categoriaSelect = document.getElementById("editProdutoCategoria");
-                for (let i = 0; i < categoriaSelect.options.length; i++) {
-                  if (categoriaSelect.options[i].value === categoria) {
-                    categoriaSelect.selectedIndex = i;
-                    break;
-                  }
-                }
-                
-                // Set UN dropdown
-                const unSelect = document.getElementById("editProdutoUn");
-                for (let i = 0; i < unSelect.options.length; i++) {
-                  if (unSelect.options[i].value === un) {
-                    unSelect.selectedIndex = i;
-                    break;
-                  }
-                }
-                
-                // Populate fornecedor dropdown and select current value
-                const fornecedorSelect = document.getElementById("editProdutoFornecedor");
-                // First, clear existing options except the first one
-                while (fornecedorSelect.options.length > 1) {
-                  fornecedorSelect.remove(1);
-                }
-                
-                // Get unique fornecedores from the table
-                const fornecedores = new Set();
-                document.querySelectorAll(".center-table tbody tr").forEach(row => {
-                  const fornecedorCell = row.querySelectorAll("td")[6];
-                  if (fornecedorCell && fornecedorCell.textContent.trim()) {
-                    fornecedores.add(fornecedorCell.textContent.trim());
-                  }
-                });
-                
-                // Add fornecedores to dropdown
-                fornecedores.forEach(f => {
-                  const option = document.createElement("option");
-                  option.value = f;
-                  option.textContent = f;
-                  fornecedorSelect.appendChild(option);
-                  
-                  // Select the current fornecedor
-                  if (f === fornecedor) {
-                    option.selected = true;
-                  }
-                });
-                
-                // Set price values
-                document.getElementById("editProdutoCompra").value = compra;
-                document.getElementById("editProdutoVenda").value = venda;
-                
-                // Set numeric values
-                document.getElementById("editProdutoEstoque").value = estoque;
-                document.getElementById("editProdutoEstoqueMinimo").value = estoqueMinimo;
-                
-                // Show the edit popup
-                document.getElementById("editPopupOverlay").style.display = "block";
-                document.getElementById("editProdutoPopup").style.display = "block";
-              }
-            });
-
-            // Handle save button click
-            document.getElementById("salvarEdicaoProduto").addEventListener("click", function(e) {
-              e.preventDefault();
-              
-              if (!rowToEdit) return;
-              
-              // Get values from the form
-              const cod = document.getElementById("editProdutoCod").value;
-              const nome = document.getElementById("editProdutoNome").value;
-              const categoria = document.getElementById("editProdutoCategoria").value;
-              const un = document.getElementById("editProdutoUn").value;
-              const fornecedor = document.getElementById("editProdutoFornecedor").value;
-              let compra = document.getElementById("editProdutoCompra").value;
-              let venda = document.getElementById("editProdutoVenda").value;
-              const estoque = document.getElementById("editProdutoEstoque").value;
-              const estoqueMinimo = document.getElementById("editProdutoEstoqueMinimo").value;
-              
-              // Validate required fields
-              if (!nome || !cod) {
-                alert("Por favor, preencha pelo menos o código e o nome do produto.");
-                return;
-              }
-              
-              // Format price values if needed
-              if (!compra.startsWith("R$")) {
-                compra = "R$ " + compra;
-              }
-              
-              if (!venda.startsWith("R$")) {
-                venda = "R$ " + venda;
-              }
-              
-              // Update the row with new values
-              const cells = rowToEdit.querySelectorAll("td");
-              
-              // Don't update the image if no new file was selected
-              // cells[0] contains the image
-              
-              cells[1].textContent = cod;
-              cells[2].textContent = nome;
-              cells[3].textContent = categoria.charAt(0).toUpperCase() + categoria.slice(1); // Capitalize first letter
-              cells[4].textContent = un;
-              // cells[5] contains the date, don't update
-              cells[6].textContent = fornecedor;
-              cells[7].textContent = compra;
-              cells[8].textContent = venda;
-              cells[9].textContent = estoque;
-              cells[10].textContent = estoqueMinimo;
-              
-              // Handle file upload if a new image was selected
-              const fileInput = document.getElementById("editProdutoFoto");
-              if (fileInput.files && fileInput.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                  cells[0].querySelector("img").src = e.target.result;
-                  // Save to localStorage after image is loaded
-                  salvarProdutosNoLocalStorage();
-                };
-                reader.readAsDataURL(fileInput.files[0]);
-              } else {
-                // Save to localStorage immediately if no new image
-                salvarProdutosNoLocalStorage();
-              }
-              
-              // Close the popup
-              document.getElementById("editPopupOverlay").style.display = "none";
-              document.getElementById("editProdutoPopup").style.display = "none";
-              
-              // Reset the form
-              document.querySelector("#editProdutoPopup form").reset();
-              rowToEdit = null;
-            });
-
-            // Handle cancel button click
-            document.getElementById("cancelarEdicaoProduto").addEventListener("click", function(e) {
-              e.preventDefault();
-              
-              // Close the popup
-              document.getElementById("editPopupOverlay").style.display = "none";
-              document.getElementById("editProdutoPopup").style.display = "none";
-              
-              // Reset the form
-              document.querySelector("#editProdutoPopup form").reset();
-              rowToEdit = null;
-            });
-
-            // Close edit popup when clicking on overlay
-            document.getElementById("editPopupOverlay").addEventListener("click", function() {
-              document.getElementById("editPopupOverlay").style.display = "none";
-              document.getElementById("editProdutoPopup").style.display = "none";
-              document.querySelector("#editProdutoPopup form").reset();
-              rowToEdit = null;
-            });
-
-            // Add validation for price fields in edit form
-            const editCampoCompra = document.getElementById("editProdutoCompra");
-            const editCampoVenda = document.getElementById("editProdutoVenda");
-
-            [editCampoCompra, editCampoVenda].forEach((campo) => {
-              campo.addEventListener("input", function() {
-                let valor = this.value.replace("R$ ", "").trim();
-                const valorFormatado = formatarValorReais(valor);
-                this.value = `R$ ${valorFormatado}`;
-              });
-
-              campo.addEventListener("focus", function() {
-                if (!this.value.startsWith("R$")) {
-                  this.value = "R$ ";
-                }
-              });
-
-              campo.addEventListener("blur", function() {
-                if (this.value === "R$ ") {
-                  this.value = "";
-                }
-              });
-            });
-
-            // Add validation for numeric fields in edit form
-            const editCampoEstoque = document.getElementById("editProdutoEstoque");
-            const editCampoEstoqueMinimo = document.getElementById("editProdutoEstoqueMinimo");
-
-            [editCampoEstoque, editCampoEstoqueMinimo].forEach((campo) => {
-              campo.addEventListener("input", function() {
-                this.value = this.value.replace(/\D/g, "");
-              });
-            });
-          });
-          
-        </script>
+    <div
+      id="popupConfirmacao"
+      class="popup-confirmacao-overlay"
+      style="display: none"
+    >
+      <div class="popup-confirmacao">
+        <i class="fas fa-check-circle"></i>
+        <!-- Ícone de sucesso -->
+        <h3>Produto cadastrado com sucesso!</h3>
+        <p>O produto foi adicionado com sucesso ao sistema.</p>
+        <button id="btnFecharConfirmacao">Fechar</button>
       </div>
-      <div class="popup" id="deletePopup">
-        <h3>Confirmação de Exclusão</h3>
-        <p>Tem certeza que deseja excluir este produto?</p>
-        <div class="button-group">
-          <button id="confirmDelete">Excluir</button>
-          <button id="cancelDelete">Cancelar</button>
+    </div>
+    <!-- Popup de confirmação de exclusão -->
+    <div
+      id="popupExcluir"
+      class="popup-confirmacao-overlay"
+      style="display: none"
+    >
+      <div class="popup-confirmacao">
+        <h3>
+          <i class="fas fa-exclamation-triangle" style="color: #f1c40f"></i>
+          Confirmar Exclusão
+        </h3>
+        <p id="mensagemExclusao">
+          Tem certeza que deseja excluir este produto?
+        </p>
+        <div class="popup-botoes">
+          <button id="btnConfirmarExcluir" class="btn-excluir">Excluir</button>
+          <button id="btnCancelarExcluir" class="btn-cancelar">Cancelar</button>
         </div>
       </div>
-    </body>
-  </html></UPDATED_CODE
->
+    </div>
+    <script src="JS/produtos.js"></script>
+  </body>
+</html>
