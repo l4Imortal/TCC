@@ -4,93 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Administrador - Controle de Estoque</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #f4f4f4;
-      }
-
-      nav ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        display: flex;
-        justify-content: space-around;
-        background-color: #333;
-        border-radius: 8px;
-      }
-
-      nav ul li a {
-        display: block;
-        padding: 10px 20px;
-        color: #fff;
-        text-decoration: none;
-        font-weight: bold;
-        transition: background-color 0.3s ease;
-      }
-
-      nav ul li a:hover {
-        background-color: #555;
-      }
-      .container {
-        width: 90%;
-        margin: 20px auto;
-        background-color: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        border: 2px solid #ccc;
-      }
-
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 20px;
-      }
-
-      table, th, td {
-        border: 1px solid #ddd;
-      }
-
-      th, td {
-        padding: 10px;
-        text-align: left;
-      }
-
-      th {
-        background-color: #f2f2f2;
-      }
-
-      .add-button, .option-box button {
-        background-color: #4CAF50;
-        color: white;
-        padding: 10px 20px;
-        text-decoration: none;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-family: Arial, sans-serif;
-        font-size: 14px;
-        transition: background-color 0.3s ease, transform 0.3s ease;
-      }
-
-      .add-button:hover, .option-box button:hover {
-        background-color: #45a049;
-        transform: scale(1.05);
-      }
-
-      footer {
-        text-align: center;
-        padding: 10px;
-        background-color: #333;
-        color: white;
-        position: fixed;
-        width: 100%;
-        bottom: 0;
-      }
-    </style>
+    <link rel="stylesheet" href="CSS/adminstrador.css" />
+    
   </head>
   <body>
     <div class="container">
@@ -104,6 +19,7 @@
           <li><a href="fornecedores.html">Fornecedores</a></li>
           <li><a href="entradas.html">Entradas</a></li>
           <li><a href="saidas.html">Saídas</a></li>
+          <li><a href="relatorios.html">Relatórios</a></li>
         </ul>
       </nav>
       <div class="container">
@@ -150,12 +66,7 @@
                 Ir para Configurações
               </button>
             </div>
-            <div class="option-box">
-              <h2>Relatórios</h2>
-              <button onclick="window.location.href='relatorios.html'">
-                Ir para Relatórios
-              </button>
-            </div>
+            
           </section>
         </main>
       </div>
