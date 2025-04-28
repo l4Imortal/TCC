@@ -1,0 +1,325 @@
+let currentRowToDelete = null;
+      
+document.addEventListener("DOMContentLoaded", () => {
+  const novoFornecedorButton = document.getElementById("novoFornecedorBtn");
+  const popupOverlay = document.getElementById("popupOverlay");
+  const popup = document.getElementById("popup");
+  const deletePopup = document.getElementById("deletePopup");
+  const fecharPopupButton = document.getElementById("fecharPopup");
+  const codigoFornecedorInput = document.getElementById("codigoFornecedor");
+  const fornecedorForm = document.getElementById("fornecedorForm");
+  const tabelaBody = document.querySelector("table tbody");
+  const confirmDeleteButton = document.getElementById("confirmDelete");
+  const cancelDeleteButton = document.getElementById("cancelDelete");
+  const deleteMessage = document.getElementById("deleteMessage");
+  const popupTitle = document.getElementById("popupTitle");
+  const salvarFornecedorButton = document.getElementById("salvarFornecedor");
+  const editModeInput = document.getElementById("editMode");
+
+  // Função para gerar o próximo código
+  function gerarProximoCodigo() {
+    // Buscar todos os códigos existentes na tabela
+    const rows = document.querySelector("table tbody").querySelectorAll("tr");
+    let maxCodigo = 0;
+    
+    // Encontrar o maior código
+    rows.forEach(row => {
+      const codigo = parseInt(row.cells[0].textContent);
+      if (!isNaN(codigo) && codigo > maxCodigo) {
+        maxCodigo = codigo;
+      }
+    });
+    
+    // Retornar o próximo código (maior + 1)
+    return maxCodigo + 1;
+  }
+
+  // Função para formatar CNPJ
+  function formatarCNPJ(cnpj) {
+    cnpj = cnpj.replace(/\D/g, '');
+    return cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
+  }
+
+  // Função para formatar telefone
+  function formatarTelefone(telefone) {
+    telefone = telefone.replace(/\D/g, '');
+    if (telefone.length === 11) {
+      return telefone.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
+    } else if (telefone.length === 10) {
+      return telefone.replace(/^(\d{2})(\d{4})(\d{4})$/, '($1) $2-$3');
+    }
+    return telefone;
+  }
+
+  // Adicionar máscaras aos campos
+  document.getElementById("cnpjFornecedor").addEventListener("input", function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length <= 14) {
+      e.target.value = formatarCNPJ(value);
+    } else {
+      e.target.value = formatarCNPJ(value.substring(0, 14));
+    }
+  });
+
+  document.getElementById("contatoFornecedor").addEventListener("input", function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length <= 11) {
+      e.target.value = formatarTelefone(value);
+    } else {
+      e.target.value = formatarTelefone(value.substring(0, 11));
+    }
+  });
+
+  document.getElementById("estadoFornecedor").addEventListener("input", function(e) {
+    e.target.value = e.target.value.toUpperCase();
+  });
+
+  // Abrir o pop-up de novo fornecedor
+  novoFornecedorButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    
+    // Resetar o formulário
+    fornecedorForm.reset();
+    
+    // Configurar para modo de criação
+    editModeInput.value = "false";
+    popupTitle.textContent = "Cadastrar Novo Fornecedor";
+    salvarFornecedorButton.textContent = "Cadastrar";
+    
+    // Gerar próximo código
+    codigoFornecedorInput.value = gerarProximoCodigo();
+    
+    // Mostrar popup
+    popupOverlay.style.display = "block";
+    popup.style.display = "block";
+    deletePopup.style.display = "none";
+  });
+
+  // Fechar o pop-up
+  fecharPopupButton.addEventListener("click", () => {
+    popupOverlay.style.display = "none";
+    popup.style.display = "none";
+  });
+
+  // Fechar popup ao clicar no overlay
+  popupOverlay.addEventListener("click", (e) => {
+    if (e.target === popupOverlay) {
+      popupOverlay.style.display = "none";
+      popup.style.display = "none";
+      deletePopup.style.display = "none";
+      currentRowToDelete = null;
+    }
+  });
+
+  // Cadastrar/Editar fornecedor
+  fornecedorForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const isEditMode = editModeInput.value === "true";
+    const codigo = codigoFornecedorInput.value;
+    const nome = document.getElementById("nomeFornecedor").value;
+    const cnpj = document.getElementById("cnpjFornecedor").value;
+    const cep = document.getElementById("cepFornecedor").value;
+    const endereco = document.getElementById("enderecoFornecedor").value;
+    const cidade = document.getElementById("cidadeFornecedor").value;
+    const estado = document.getElementById("estadoFornecedor").value;
+    const email = document.getElementById("emailFornecedor").value;
+    const contato = document.getElementById("contatoFornecedor").value;
+    const numero = document.getElementById("numeroFornecedor").value;
+
+    if (isEditMode) {
+      // Atualizar linha existente
+      const rowToUpdate = document.querySelector(`tr[data-id="${codigo}"]`);
+      if (rowToUpdate) {
+        rowToUpdate.cells[0].textContent = codigo;
+        rowToUpdate.cells[1].textContent = nome;
+        rowToUpdate.cells[2].textContent = cnpj;
+        rowToUpdate.cells[3].textContent = cep;
+        rowToUpdate.cells[4].textContent = endereco;
+        rowToUpdate.cells[5].textContent = cidade;
+        rowToUpdate.cells[6].textContent = estado;
+        rowToUpdate.cells[7].textContent = email;
+        rowToUpdate.cells[8].textContent = contato;
+
+        alert("Fornecedor atualizado com sucesso!");
+      }
+    } else {
+      // Adicionar nova linha
+      const novaLinha = document.createElement("tr");
+      novaLinha.setAttribute("data-id", codigo);
+
+      const dataCadastro = new Date().toLocaleDateString();
+
+      novaLinha.innerHTML = `
+        <td>${codigo}</td>
+        <td>${nome}</td>
+        <td>${cnpj}</td>
+        <td>${cep}</td>
+        <td>${endereco}</td>
+        <td>${numero}</td>
+        <td>${cidade}</td>
+        <td>${estado}</td>
+        <td>${email}</td>
+        <td>${contato}</td>
+        <td>${dataCadastro}</td>
+        <td>
+          <a href="#" class="edit-button" onclick="showEditPopup(event, ${codigo})">
+            <i class="fas fa-edit" style="color: #4caf50; font-size: 20px;"></i>
+          </a>
+          <a href="#" class="delete-button" onclick="showDeletePopup(event, '${nome}')">
+            <i class="fas fa-trash" style="color: #dc3545; font-size: 20px;"></i>
+          </a>
+        </td>
+      `;
+      tabelaBody.appendChild(novaLinha);
+
+      alert("Fornecedor cadastrado com sucesso!");
+    }
+
+    // Fechar o pop-up
+    popupOverlay.style.display = "none";
+    popup.style.display = "none";
+  });
+
+  // Manipuladores de eventos para o popup de exclusão
+  confirmDeleteButton.addEventListener("click", () => {
+    if (currentRowToDelete) {
+      currentRowToDelete.remove();
+      
+      // Fechar o popup
+      popupOverlay.style.display = "none";
+      deletePopup.style.display = "none";
+      
+      // Mostrar mensagem de sucesso
+      alert("Fornecedor excluído com sucesso!");
+      
+      // Limpar a referência
+      currentRowToDelete = null;
+    }
+  });
+
+  cancelDeleteButton.addEventListener("click", () => {
+    popupOverlay.style.display = "none";
+    deletePopup.style.display = "none";
+    currentRowToDelete = null;
+  });
+});
+
+// Função para mostrar o popup de edição
+function showEditPopup(event, id) {
+  event.preventDefault();
+  
+  // Obter a linha da tabela
+  const row = event.target.closest("tr");
+  if (!row) return;
+  
+  // Obter os dados da linha
+  const codigo = row.cells[0].textContent;
+  const nome = row.cells[1].textContent;
+  const cnpj = row.cells[2].textContent;
+  const cidade = row.cells[3].textContent;
+  const estado = row.cells[4].textContent;
+  const email = row.cells[5].textContent;
+  const contato = row.cells[6].textContent;
+  
+  // Preencher o formulário
+  document.getElementById("editMode").value = "true";
+  document.getElementById("popupTitle").textContent = "Editar Fornecedor";
+  document.getElementById("salvarFornecedor").textContent = "Atualizar";
+  
+  document.getElementById("codigoFornecedor").value = codigo;
+  document.getElementById("nomeFornecedor").value = nome;
+  document.getElementById("cnpjFornecedor").value = cnpj;
+  document.getElementById("cidadeFornecedor").value = cidade;
+  document.getElementById("estadoFornecedor").value = estado;
+  document.getElementById("emailFornecedor").value = email;
+  document.getElementById("contatoFornecedor").value = contato;
+  
+  // Mostrar o popup
+  document.getElementById("popupOverlay").style.display = "block";
+  document.getElementById("popup").style.display = "block";
+}
+
+// Função para mostrar o popup de exclusão
+function showDeletePopup(event, itemName) {
+  // Prevent default behavior and event bubbling
+  event.preventDefault();
+  event.stopPropagation();
+  
+  console.log("Delete popup triggered for:", itemName); // Debug log
+  
+  const popupOverlay = document.getElementById("popupOverlay");
+  const deletePopup = document.getElementById("deletePopup");
+  const deleteMessage = document.getElementById("deleteMessage");
+  
+  if (!popupOverlay || !deletePopup || !deleteMessage) {
+    console.error("Popup elements not found!");
+    return;
+  }
+  
+  // Store the row to be deleted - make sure to get the actual row
+  const clickedElement = event.target.closest("a.delete-button");
+  if (!clickedElement) {
+    console.error("Delete button not found!");
+    return;
+  }
+  
+  currentRowToDelete = clickedElement.closest("tr");
+  if (!currentRowToDelete) {
+    console.error("Table row not found!");
+    return;
+  }
+  
+  // Set the confirmation message
+  deleteMessage.textContent = `Tem certeza que deseja excluir "${itemName}"?`;
+  
+  // Show the popup
+  popupOverlay.style.display = "block";
+  deletePopup.style.display = "block";
+  
+  return false; // Prevent any default behavior
+}
+
+// Adicionar máscara de CEP com hífen automaticamente
+document.getElementById("cepFornecedor").addEventListener("input", function (e) {
+  let cep = e.target.value.replace(/\D/g, ""); // Remove caracteres não numéricos
+
+  if (cep.length > 5) {
+    cep = cep.slice(0, 5) + "-" + cep.slice(5, 8); // Adiciona o hífen no formato XXXXX-XXX
+  }
+
+  e.target.value = cep; // Atualiza o valor do campo
+});
+
+// Buscar informações do CEP usando a API ViaCEP
+document.getElementById("cepFornecedor").addEventListener("blur", function (e) {
+  const cep = e.target.value.replace(/\D/g, ""); // Remove caracteres não numéricos
+
+  if (cep.length === 8) {
+    // Chamar a API ViaCEP
+    fetch(`https://viacep.com.br/ws/${cep}/json/`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Erro ao buscar o CEP");
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.erro) {
+          alert("CEP não encontrado!");
+          return;
+        }
+
+        // Preencher os campos com os dados retornados
+        document.getElementById("enderecoFornecedor").value = data.logradouro || "";
+        document.getElementById("cidadeFornecedor").value = data.localidade || "";
+        document.getElementById("estadoFornecedor").value = data.uf || "";
+      })
+      .catch(error => {
+        console.error("Erro ao buscar o CEP:", error);
+        alert("Não foi possível buscar o CEP. Tente novamente.");
+      });
+  } else {
+    alert("CEP inválido! Certifique-se de que possui 8 dígitos.");
+  }
+});
