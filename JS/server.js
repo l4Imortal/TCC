@@ -192,8 +192,207 @@ app.delete('/api/fornecedores/:id', (req, res) => {
   });
 });
 
+// CRUD para Movimentações
+
+// GET - Listar todas as movimentações
+app.get('/api/movimentacoes', (req, res) => {
+  db.query('SELECT * FROM movimentacoes', (err, results) => {
+    if (err) {
+      console.error('Erro ao buscar movimentações:', err.message);
+      return res.status(500).send('Erro no servidor');
+    }
+    res.json(results);
+  });
+});
+
+// GET - Buscar uma movimentação específica pelo ID
+app.get('/api/movimentacoes/:id', (req, res) => {
+  const id = req.params.id;
+  db.query('SELECT * FROM movimentacoes WHERE id_movimentacao = ?', [id], (err, results) => {
+    if (err) {
+      console.error('Erro ao buscar movimentação:', err.message);
+      return res.status(500).send('Erro no servidor');
+    }
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'Movimentação não encontrada' });
+    }
+    res.json(results[0]);
+  });
+});
+
+// POST - Criar uma nova movimentação
+app.post('/api/movimentacoes', (req, res) => {
+  const { id_produto, tipo_movimentacao, quantidade, data_movimentacao } = req.body;
+
+  // Validação básica
+  if (!id_produto || !tipo_movimentacao || !quantidade) {
+    return res.status(400).json({ error: 'Campos obrigatórios: id_produto, tipo_movimentacao, quantidade' });
+  }
+
+  const query = 'INSERT INTO movimentacoes (id_produto, tipo_movimentacao, quantidade, data_movimentacao) VALUES (?, ?, ?, ?)';
+  db.query(query, [id_produto, tipo_movimentacao, quantidade, data_movimentacao || new Date()], (err, results) => {
+    if (err) {
+      console.error('Erro ao criar movimentação:', err.message);
+      return res.status(500).send('Erro no servidor');
+    }
+
+    res.status(201).json({
+      id: results.insertId,
+      message: 'Movimentação criada com sucesso'
+    });
+  });
+});
+
+// PUT - Atualizar uma movimentação existente
+app.put('/api/movimentacoes/:id', (req, res) => {
+  const id = req.params.id;
+  const { id_produto, tipo_movimentacao, quantidade, data_movimentacao } = req.body;
+
+  // Validação básica
+  if (!id_produto || !tipo_movimentacao || !quantidade) {
+    return res.status(400).json({ error: 'Campos obrigatórios: id_produto, tipo_movimentacao, quantidade' });
+  }
+
+  const query = 'UPDATE movimentacoes SET id_produto = ?, tipo_movimentacao = ?, quantidade = ?, data_movimentacao = ? WHERE id_movimentacao = ?';
+  db.query(query, [id_produto, tipo_movimentacao, quantidade, data_movimentacao || new Date(), id], (err, results) => {
+    if (err) {
+      console.error('Erro ao atualizar movimentação:', err.message);
+      return res.status(500).send('Erro no servidor');
+    }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: 'Movimentação não encontrada' });
+    }
+
+    res.json({
+      message: 'Movimentação atualizada com sucesso'
+    });
+  });
+});
+
+// DELETE - Remover uma movimentação
+app.delete('/api/movimentacoes/:id', (req, res) => {
+  const id = req.params.id;
+
+  db.query('DELETE FROM movimentacoes WHERE id_movimentacao = ?', [id], (err, results) => {
+    if (err) {
+      console.error('Erro ao excluir movimentação:', err.message);
+      return res.status(500).send('Erro no servidor');
+    }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: 'Movimentação não encontrada' });
+    }
+
+    res.json({
+      message: 'Movimentação excluída com sucesso'
+    });
+  });
+});
+
 // Iniciar o servidor
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
+});
+
+// CRUD para Usuários
+
+// GET - Listar todos os usuários
+app.get('/api/usuarios', (req, res) => {
+  db.query('SELECT id_usuario, username FROM usuarios', (err, results) => {
+    if (err) {
+      console.error('Erro ao buscar usuários:', err.message);
+      return res.status(500).send('Erro no servidor');
+    }
+    res.json(results);
+  });
+});
+
+// GET - Buscar um usuário específico pelo ID
+app.get('/api/usuarios/:id', (req, res) => {
+  const id = req.params.id;
+  db.query('SELECT id_usuario, username FROM usuarios WHERE id_usuario = ?', [id], (err, results) => {
+    if (err) {
+      console.error('Erro ao buscar usuário:', err.message);
+      return res.status(500).send('Erro no servidor');
+    }
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'Usuário não encontrado' });
+    }
+    res.json(results[0]);
+  });
+});
+
+// POST - Criar um novo usuário
+app.post('/api/usuarios', (req, res) => {
+  const { username, senha } = req.body;
+
+  // Validação básica
+  if (!username || !senha) {
+    return res.status(400).json({ error: 'Campos obrigatórios: username e senha' });
+  }
+
+  const query = 'INSERT INTO usuarios (username, senha) VALUES (?, ?)';
+  db.query(query, [username, senha], (err, results) => {
+    if (err) {
+      if (err.code === 'ER_DUP_ENTRY') {
+        return res.status(400).json({ error: 'Usuário já existe' });
+      }
+      console.error('Erro ao criar usuário:', err.message);
+      return res.status(500).send('Erro no servidor');
+    }
+
+    res.status(201).json({
+      id: results.insertId,
+      message: 'Usuário criado com sucesso'
+    });
+  });
+});
+
+// PUT - Atualizar um usuário existente
+app.put('/api/usuarios/:id', (req, res) => {
+  const id = req.params.id;
+  const { username, senha } = req.body;
+
+  // Validação básica
+  if (!username || !senha) {
+    return res.status(400).json({ error: 'Campos obrigatórios: username e senha' });
+  }
+
+  const query = 'UPDATE usuarios SET username = ?, senha = ? WHERE id_usuario = ?';
+  db.query(query, [username, senha, id], (err, results) => {
+    if (err) {
+      console.error('Erro ao atualizar usuário:', err.message);
+      return res.status(500).send('Erro no servidor');
+    }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: 'Usuário não encontrado' });
+    }
+
+    res.json({
+      message: 'Usuário atualizado com sucesso'
+    });
+  });
+});
+
+// DELETE - Remover um usuário
+app.delete('/api/usuarios/:id', (req, res) => {
+  const id = req.params.id;
+
+  db.query('DELETE FROM usuarios WHERE id_usuario = ?', [id], (err, results) => {
+    if (err) {
+      console.error('Erro ao excluir usuário:', err.message);
+      return res.status(500).send('Erro no servidor');
+    }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: 'Usuário não encontrado' });
+    }
+
+    res.json({
+      message: 'Usuário excluído com sucesso'
+    });
+  });
 });
 
