@@ -78,7 +78,7 @@ btnConfirmarExcluir.addEventListener("click", () => {
   if (produtoParaExcluir) {
     const produtosSalvos = JSON.parse(localStorage.getItem("produtos")) || [];
     const novosProdutos = produtosSalvos.filter(
-      (p) => p.sku !== produtoParaExcluir.produto.sku
+      (p) => p.ean !== produtoParaExcluir.produto.ean
     );
     localStorage.setItem("produtos", JSON.stringify(novosProdutos)); // Atualiza o localStorage
 
@@ -140,31 +140,63 @@ btnFecharEditarPopup.addEventListener("click", () => {
 });
 
 // Salva as alterações feitas no produto
-formEditarProduto.addEventListener("submit", (event) => {
-  event.preventDefault(); // Evita o envio padrão do formulário
+formEditarProduto.addEventListener("submit", async function (event) {
+  event.preventDefault();
 
-  // Atualiza os dados do produto
-  produtoParaEditar.ean = formEditarProduto.editarEanProduto.value;
-  produtoParaEditar.nome = formEditarProduto.editarNomeProduto.value;
-  produtoParaEditar.categoria = formEditarProduto.editarCategoriaProduto.value;
-  produtoParaEditar.unidade = formEditarProduto.editarUnidadeProduto.value;
-  produtoParaEditar.fornecedor =
-    formEditarProduto.editarFornecedorProduto.value;
-  produtoParaEditar.estoqueMinimo = formEditarProduto.editarEstoqueMinimo.value;
+  // Obter os valores do formulário
+  const editarFotoProduto =
+    document.getElementById("editarFotoProduto").files[0];
+  const editarEanProduto = document.getElementById("editarEanProduto").value;
+  const editarNomeProduto = document.getElementById("editarNomeProduto").value;
+  const editarCategoriaProduto = document.getElementById(
+    "editarCategoriaProduto"
+  ).value;
+  const editarUnidadeProduto = document.getElementById(
+    "editarUnidadeProduto"
+  ).value;
+  const editarFornecedorProduto = document.getElementById(
+    "editarFornecedorProduto"
+  ).value;
+  const editarEstoqueMinimo = document.getElementById(
+    "editarEstoqueMinimo"
+  ).value;
 
-  // Atualiza o produto no localStorage
+  // Atualizar a imagem do produto
+  let novaFotoBase64 = null;
+  if (editarFotoProduto) {
+    novaFotoBase64 = await converterImagemParaBase64(editarFotoProduto);
+    const imgElement = document.querySelector(
+      `img[data-ean="${editarEanProduto}"]`
+    );
+    if (imgElement) {
+      imgElement.src = novaFotoBase64; // Atualiza a imagem na tabela
+    }
+  }
+
+  // Atualizar os dados do produto no localStorage
   const produtosSalvos = JSON.parse(localStorage.getItem("produtos")) || [];
-  const novosProdutos = produtosSalvos.map((produto) =>
-    produto.ean === produtoParaEditar.ean ? produtoParaEditar : produto
+  const produtoIndex = produtosSalvos.findIndex(
+    (p) => p.ean === editarEanProduto
   );
-  localStorage.setItem("produtos", JSON.stringify(novosProdutos));
 
-  // Recarrega os produtos na tabela
-  carregarProdutosNaTabela();
+  if (produtoIndex !== -1) {
+    produtosSalvos[produtoIndex] = {
+      ...produtosSalvos[produtoIndex],
+      nome: editarNomeProduto,
+      categoria: editarCategoriaProduto,
+      unidade: editarUnidadeProduto,
+      fornecedor: editarFornecedorProduto,
+      estoqueMinimo: editarEstoqueMinimo,
+      foto: novaFotoBase64 || produtosSalvos[produtoIndex].foto, // Atualiza a foto se houver uma nova
+    };
+    localStorage.setItem("produtos", JSON.stringify(produtosSalvos));
+  }
 
-  // Fecha o popup de edição
+  // Fechar o popup de edição
   popupEditarProduto.style.display = "none";
-  produtoParaEditar = null; // Reseta a variável
+
+  // Recarregar a tabela para refletir as alterações
+  carregarProdutosNaTabela();
 });
 
 // Adiciona o evento de clique no botão "Editar" para cada linha da tabela
