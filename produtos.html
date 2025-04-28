@@ -37,7 +37,7 @@
               <thead>
                 <tr>
                   <th>Foto</th>
-                  <th>SKU</th>
+                  <th>EAN</th>
                   <th>Produto</th>
                   <th>Categoria</th>
                   <th>UN</th>
@@ -51,9 +51,10 @@
                 <!-- Linhas da tabela serão adicionadas aqui -->
                 <tr>
                   <td>
-                    <button class="btn-editar">Editar</button>
-                  </td>
-                  <td>
+                    <button class="btn-editar">
+                      <i class="fas fa-edit"></i>
+                      <!-- Ícone de lápis -->
+                    </button>
                     <button class="btn-excluir">
                       <i class="fas fa-trash-alt"></i>
                       <!-- Ícone de lixeira -->
@@ -78,11 +79,15 @@
             accept="image/*"
           /><br /><br />
 
-          <label for="skuProduto">SKU:</label>
+          <label for="eanProduto">EAN:</label>
           <input
             type="text"
-            id="skuProduto"
-            name="skuProduto"
+            id="eanProduto"
+            name="eanProduto"
+            pattern="\d{13}"
+            title="O EAN deve conter exatamente 13 dígitos."
+            placeholder="Exemplo: X XXXXXX XXXXXX"
+            maxlength="13"
             required
           /><br /><br />
 
@@ -169,6 +174,89 @@
         </div>
       </div>
     </div>
+
+    <!-- Popup de Editar Produto -->
+    <div id="popupEditarProduto" class="popup-overlay" style="display: none">
+      <div class="popup">
+        <h3>Editar Produto</h3>
+        <form id="formEditarProduto">
+          <label for="editarFotoProduto">Foto:</label>
+          <input
+            type="file"
+            id="editarFotoProduto"
+            name="editarFotoProduto"
+            accept="image/*"
+          /><br /><br />
+
+          <label for="editarEanProduto">EAN:</label>
+          <input
+            type="text"
+            id="editarEanProduto"
+            name="editarEanProduto"
+            pattern="\d{13}"
+            title="O EAN deve conter exatamente 13 dígitos."
+            maxlength="13"
+            readonly
+          /><br /><br />
+
+          <label for="editarNomeProduto">Produto:</label>
+          <input
+            type="text"
+            id="editarNomeProduto"
+            name="editarNomeProduto"
+            required
+          /><br /><br />
+
+          <label for="editarCategoriaProduto">Categoria:</label>
+          <select
+            id="editarCategoriaProduto"
+            name="editarCategoriaProduto"
+            required
+          >
+            <option value="Camiseta">Camiseta</option>
+            <option value="Blusa">Blusa</option>
+            <option value="Calça">Calça</option>
+            <option value="Shorts">Shorts</option>
+            <option value="Sapato">Sapato</option>
+            <option value="Acessorio">Acessório</option></select
+          ><br /><br />
+
+          <label for="editarUnidadeProduto">Unidade de Conversão:</label>
+          <select
+            id="editarUnidadeProduto"
+            name="editarUnidadeProduto"
+            required
+          >
+            <option value="UN">UN</option>
+            <option value="CX">CX</option></select
+          ><br /><br />
+
+          <label for="editarFornecedorProduto">Fornecedor:</label>
+          <select
+            id="editarFornecedorProduto"
+            name="editarFornecedorProduto"
+            required
+          >
+            <option value="" disabled selected>
+              Nenhum fornecedor disponível
+            </option>
+          </select>
+          <br /><br />
+
+          <label for="editarEstoqueMinimo">Estoque Mínimo:</label>
+          <input
+            type="number"
+            id="editarEstoqueMinimo"
+            name="editarEstoqueMinimo"
+            required
+          /><br /><br />
+
+          <button type="submit">Salvar Alterações</button>
+          <button type="button" id="btnFecharEditarPopup">Cancelar</button>
+        </form>
+      </div>
+    </div>
+
     <script src="JS/produtos.js"></script>
   </body>
 </html>
