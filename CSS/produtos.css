@@ -394,3 +394,53 @@ a {
 .btn-excluir i {
   pointer-events: none; /* Evita que o clique seja registrado no ícone */
 }
+
+.btn-editar {
+  background: none;
+  border: none;
+  color: #4caf50; /* Cor azul */
+  font-size: 1.2rem; /* Tamanho do ícone */
+  cursor: pointer;
+  transition: transform 0.2s, color 0.3s;
+  margin-right: 0 5px; /* Espaçamento entre os botões */
+}
+
+.btn-editar:hover {
+  color: #4caf; /* Azul mais escuro no hover */
+  transform: scale(1.1); /* Efeito de zoom no hover */
+}
+
+.btn-editar i {
+  pointer-events: none; /* Evita que o clique seja registrado no ícone */
+}
+
+/* Popup de edição */
+#popupEditarProduto {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+#popupEditarProduto .popup {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+#popupEditarProduto .popup h3 {
+  margin-bottom: 20px;
+}
+
+#popupEditarProduto .popup button {
+  margin: 10px 5px;
+}
