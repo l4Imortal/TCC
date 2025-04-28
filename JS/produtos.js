@@ -97,9 +97,9 @@ function adicionarEventosExcluir() {
   botoesExcluir.forEach((botao) => {
     botao.addEventListener("click", (event) => {
       const linha = event.target.closest("tr");
-      const sku = linha.children[1].textContent; // Obtém o SKU da linha
+      const ean = linha.children[1].textContent; // Obtém o EAN da linha
       const produtosSalvos = JSON.parse(localStorage.getItem("produtos")) || [];
-      const produto = produtosSalvos.find((p) => p.sku === sku);
+      const produto = produtosSalvos.find((p) => p.ean === ean);
 
       if (produto) {
         exibirPopupExcluir(produto, linha);
@@ -108,7 +108,83 @@ function adicionarEventosExcluir() {
   });
 }
 
-// Função para carregar os produtos do localStorage e exibi-los na tabela
+const popupEditarProduto = document.getElementById("popupEditarProduto");
+const formEditarProduto = document.getElementById("formEditarProduto");
+const btnFecharEditarPopup = document.getElementById("btnFecharEditarPopup");
+
+let produtoParaEditar = null; // Variável para armazenar o produto a ser editado
+
+// Função para abrir o popup de edição e preencher os campos
+function preencherFormularioEdicao(produto) {
+  produtoParaEditar = produto;
+
+  // Preenche os campos do formulário de edição
+  formEditarProduto.editarEanProduto.value = produto.ean;
+  formEditarProduto.editarNomeProduto.value = produto.nome;
+  formEditarProduto.editarCategoriaProduto.value = produto.categoria;
+  formEditarProduto.editarUnidadeProduto.value = produto.unidade;
+  formEditarProduto.editarFornecedorProduto.value = produto.fornecedor;
+  formEditarProduto.editarEstoqueMinimo.value = produto.estoqueMinimo;
+
+  // Desabilita o campo de fornecedor
+  formEditarProduto.editarFornecedorProduto.disabled = true;
+
+  // Exibe o popup de edição
+  popupEditarProduto.style.display = "flex";
+}
+
+// Fecha o popup de edição
+btnFecharEditarPopup.addEventListener("click", () => {
+  popupEditarProduto.style.display = "none";
+  produtoParaEditar = null; // Reseta a variável
+});
+
+// Salva as alterações feitas no produto
+formEditarProduto.addEventListener("submit", (event) => {
+  event.preventDefault(); // Evita o envio padrão do formulário
+
+  // Atualiza os dados do produto
+  produtoParaEditar.ean = formEditarProduto.editarEanProduto.value;
+  produtoParaEditar.nome = formEditarProduto.editarNomeProduto.value;
+  produtoParaEditar.categoria = formEditarProduto.editarCategoriaProduto.value;
+  produtoParaEditar.unidade = formEditarProduto.editarUnidadeProduto.value;
+  produtoParaEditar.fornecedor =
+    formEditarProduto.editarFornecedorProduto.value;
+  produtoParaEditar.estoqueMinimo = formEditarProduto.editarEstoqueMinimo.value;
+
+  // Atualiza o produto no localStorage
+  const produtosSalvos = JSON.parse(localStorage.getItem("produtos")) || [];
+  const novosProdutos = produtosSalvos.map((produto) =>
+    produto.ean === produtoParaEditar.ean ? produtoParaEditar : produto
+  );
+  localStorage.setItem("produtos", JSON.stringify(novosProdutos));
+
+  // Recarrega os produtos na tabela
+  carregarProdutosNaTabela();
+
+  // Fecha o popup de edição
+  popupEditarProduto.style.display = "none";
+  produtoParaEditar = null; // Reseta a variável
+});
+
+// Adiciona o evento de clique no botão "Editar" para cada linha da tabela
+function adicionarEventosEditar() {
+  const botoesEditar = document.querySelectorAll(".btn-editar");
+  botoesEditar.forEach((botao) => {
+    botao.addEventListener("click", (event) => {
+      const linha = event.target.closest("tr");
+      const ean = linha.children[1].textContent; // Obtém o EAN da linha
+      const produtosSalvos = JSON.parse(localStorage.getItem("produtos")) || [];
+      const produto = produtosSalvos.find((p) => p.ean === ean);
+
+      if (produto) {
+        preencherFormularioEdicao(produto);
+      }
+    });
+  });
+}
+
+// Atualize a função carregarProdutosNaTabela para incluir os eventos de edição
 function carregarProdutosNaTabela() {
   const produtosSalvos = JSON.parse(localStorage.getItem("produtos")) || [];
   const tabelaProdutos = document.querySelector(".center-table tbody");
@@ -117,8 +193,14 @@ function carregarProdutosNaTabela() {
   produtosSalvos.forEach((produto) => {
     const novaLinha = document.createElement("tr");
     novaLinha.innerHTML = `
-      <td>Foto</td> <!-- Substitua por lógica para exibir a foto, se necessário -->
-      <td>${produto.sku}</td>
+      <td>
+        ${
+          produto.foto
+            ? `<img src="${produto.foto}" alt="Foto do Produto" style="width: 50px; height: 50px; object-fit: cover;" />`
+            : "Sem Foto"
+        }
+      </td>
+      <td>${produto.ean}</td>
       <td>${produto.nome}</td>
       <td>${produto.categoria}</td>
       <td>${produto.unidade}</td>
@@ -126,7 +208,9 @@ function carregarProdutosNaTabela() {
       <td>${produto.fornecedor}</td>
       <td>${produto.estoqueMinimo}</td>
       <td>
-        <button class="btn-editar">Editar</button>
+        <button class="btn-editar">
+          <i class="fas fa-edit"></i> <!-- Ícone de lápis -->
+        </button>
         <button class="btn-excluir">
           <i class="fas fa-trash-alt"></i> <!-- Ícone de lixeira -->
         </button>
@@ -135,7 +219,8 @@ function carregarProdutosNaTabela() {
     tabelaProdutos.appendChild(novaLinha);
   });
 
-  // Adiciona os eventos de exclusão
+  // Adiciona os eventos de edição e exclusão
+  adicionarEventosEditar();
   adicionarEventosExcluir();
 }
 
@@ -151,11 +236,18 @@ btnFecharPopup.addEventListener("click", () => {
 });
 
 // Fecha o popup ao enviar o formulário e adiciona os dados na tabela
-formNovoProduto.addEventListener("submit", (event) => {
+formNovoProduto.addEventListener("submit", async (event) => {
   event.preventDefault(); // Evita o envio padrão do formulário
 
+  const ean = formNovoProduto.eanProduto.value;
+
+  // Verifica se o EAN tem exatamente 13 dígitos
+  if (!/^\d{13}$/.test(ean)) {
+    alert("O EAN deve conter exatamente 13 dígitos.");
+    return;
+  }
+
   // Captura os valores do formulário
-  const sku = formNovoProduto.skuProduto.value;
   const nome = formNovoProduto.nomeProduto.value;
   const categoria = formNovoProduto.categoriaProduto.value;
   const unidade = formNovoProduto.unidadeProduto.value;
@@ -170,15 +262,23 @@ formNovoProduto.addEventListener("submit", (event) => {
     .toString()
     .padStart(2, "0")}/${dataAtual.getFullYear()}`;
 
+  // Converte a imagem para Base64 (se fornecida)
+  const fotoFile = formNovoProduto.fotoProduto.files[0];
+  let fotoBase64 = ""; // Define como vazio por padrão
+  if (fotoFile) {
+    fotoBase64 = await converterImagemParaBase64(fotoFile);
+  }
+
   // Cria um objeto com os dados do produto
   const novoProduto = {
-    sku,
+    ean,
     nome,
     categoria,
     unidade,
     fornecedor,
     estoqueMinimo,
     data: dataFormatada,
+    foto: fotoBase64, // Adiciona a foto em Base64 (ou vazio se não fornecida)
   };
 
   // Salva o produto no localStorage
@@ -197,3 +297,31 @@ formNovoProduto.addEventListener("submit", (event) => {
 
 // Carrega os produtos salvos no localStorage ao carregar a página
 window.addEventListener("load", carregarProdutosNaTabela);
+
+// Limita a entrada no campo de EAN para apenas números e 13 dígitos
+document.getElementById("eanProduto").addEventListener("input", (event) => {
+  const input = event.target;
+  input.value = input.value.replace(/\D/g, ""); // Remove caracteres não numéricos
+  if (input.value.length > 13) {
+    input.value = input.value.slice(0, 13); // Limita a 13 caracteres
+  }
+});
+
+// Reforça a validação no formulário de edição (caso necessário)
+document
+  .getElementById("editarEanProduto")
+  .addEventListener("input", (event) => {
+    const input = event.target;
+    input.value = input.value.replace(/\D/g, ""); // Remove caracteres não numéricos
+    if (input.value.length > 13) {
+      input.value = input.value.slice(0, 13); // Limita a 13 caracteres
+    }
+  });
+function converterImagemParaBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+    reader.readAsDataURL(file);
+  });
+}
