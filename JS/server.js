@@ -49,7 +49,7 @@ app.post('/api/produtos', (req, res) => {
   const query = `INSERT INTO produtos (nome,descricao,preco,categoria) VALUES("${req.body.nome}","${req.body.descricao}",${req.body.preco},"${req.body.categoria}");`
   console.log ("query", query);
   db.query(query, (err, results) => { // Ajuste a tabela para o seu caso
-   
+    
     res.json(true); // Retornar os dados como JSON
   });
 });
@@ -83,7 +83,7 @@ app.put('/api/produtos/:id', (req, res) => {
   });
 });
 
-// Endpoints para Fornecedores
+// CRUD para Fornecedores
 
 // GET - Listar todos os fornecedores
 app.get('/api/fornecedores', (req, res) => {
@@ -117,23 +117,22 @@ app.get('/api/fornecedores/:id', (req, res) => {
 // POST - Criar um novo fornecedor
 app.post('/api/fornecedores', (req, res) => {
   const { nome, cnpj, telefone, email, endereco } = req.body;
-  
+
   // Validação básica
-  if (!nome) {
-    return res.status(400).json({ error: 'Nome do fornecedor é obrigatório' });
+  if (!nome || !cnpj) {
+    return res.status(400).json({ error: 'Campos obrigatórios: nome e cnpj' });
   }
-  
-  const query = 'INSERT INTO fornecedores (nome, cnpj, telefone, email, endereco) VALUES (?, ?, ?, ?, ?)';
-  db.query(query, [nome, cnpj, telefone, email, endereco], (err, results) => {
+
+  const query = 'INSERT INTO fornecedores (nome, cnpj, telefone, email, endereco, data_cadastro) VALUES (?, ?, ?, ?, ?, ?)';
+  db.query(query, [nome, cnpj, telefone, email, endereco, new Date()], (err, results) => {
     if (err) {
-      // Verificar se é erro de CNPJ duplicado (chave única)
       if (err.code === 'ER_DUP_ENTRY') {
         return res.status(400).json({ error: 'CNPJ já cadastrado' });
       }
       console.error('Erro ao cadastrar fornecedor:', err.message);
       return res.status(500).send('Erro no servidor');
     }
-    
+
     res.status(201).json({
       id: results.insertId,
       message: 'Fornecedor cadastrado com sucesso'
@@ -145,27 +144,26 @@ app.post('/api/fornecedores', (req, res) => {
 app.put('/api/fornecedores/:id', (req, res) => {
   const id = req.params.id;
   const { nome, cnpj, telefone, email, endereco } = req.body;
-  
+
   // Validação básica
-  if (!nome) {
-    return res.status(400).json({ error: 'Nome do fornecedor é obrigatório' });
+  if (!nome || !cnpj) {
+    return res.status(400).json({ error: 'Campos obrigatórios: nome e cnpj' });
   }
-  
+
   const query = 'UPDATE fornecedores SET nome = ?, cnpj = ?, telefone = ?, email = ?, endereco = ? WHERE id_fornecedor = ?';
   db.query(query, [nome, cnpj, telefone, email, endereco, id], (err, results) => {
     if (err) {
-      // Verificar se é erro de CNPJ duplicado
       if (err.code === 'ER_DUP_ENTRY') {
         return res.status(400).json({ error: 'CNPJ já cadastrado para outro fornecedor' });
       }
       console.error('Erro ao atualizar fornecedor:', err.message);
       return res.status(500).send('Erro no servidor');
     }
-    
+
     if (results.affectedRows === 0) {
       return res.status(404).json({ error: 'Fornecedor não encontrado' });
     }
-    
+
     res.json({
       message: 'Fornecedor atualizado com sucesso'
     });
@@ -175,17 +173,17 @@ app.put('/api/fornecedores/:id', (req, res) => {
 // DELETE - Remover um fornecedor
 app.delete('/api/fornecedores/:id', (req, res) => {
   const id = req.params.id;
-  
+
   db.query('DELETE FROM fornecedores WHERE id_fornecedor = ?', [id], (err, results) => {
     if (err) {
       console.error('Erro ao excluir fornecedor:', err.message);
       return res.status(500).send('Erro no servidor');
     }
-    
+
     if (results.affectedRows === 0) {
       return res.status(404).json({ error: 'Fornecedor não encontrado' });
     }
-    
+
     res.json({
       message: 'Fornecedor excluído com sucesso'
     });
