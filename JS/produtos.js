@@ -10,13 +10,17 @@ const btnFecharConfirmacao = document.getElementById("btnFecharConfirmacao");
 
 // Função para exibir o popup de confirmação
 function exibirPopupConfirmacao() {
-  popupConfirmacao.style.display = "flex";
+  if (popupConfirmacao) {
+    popupConfirmacao.style.display = "flex";
+  }
 }
 
 // Fecha o popup de confirmação ao clicar no botão "Fechar"
-btnFecharConfirmacao.addEventListener("click", () => {
-  popupConfirmacao.style.display = "none";
-});
+if (btnFecharConfirmacao) {
+  btnFecharConfirmacao.addEventListener("click", () => {
+    popupConfirmacao.style.display = "none";
+  });
+}
 
 // Simula uma lista de fornecedores cadastrados (pode ser substituído por dados reais)
 const fornecedoresCadastrados = []; // Lista vazia para simular nenhum fornecedor cadastrado
@@ -26,6 +30,8 @@ const fornecedorProduto = document.getElementById("fornecedorProduto");
 
 // Preenche o campo de fornecedores com os dados disponíveis
 function carregarFornecedores() {
+  if (!fornecedorProduto) return;
+  
   if (fornecedoresCadastrados.length > 0) {
     fornecedorProduto.innerHTML = ""; // Limpa as opções existentes
     fornecedoresCadastrados.forEach((fornecedor) => {
@@ -45,11 +51,77 @@ function carregarFornecedores() {
 // Seleciona a tabela onde os produtos serão adicionados
 const tabelaProdutos = document.querySelector(".center-table tbody");
 
-// Função para salvar os produtos no localStorage
-function salvarProdutoNoLocalStorage(produto) {
-  const produtosSalvos = JSON.parse(localStorage.getItem("produtos")) || [];
-  produtosSalvos.push(produto);
-  localStorage.setItem("produtos", JSON.stringify(produtosSalvos));
+// Função para salvar produto no servidor
+function salvarProdutoNoServidor(produto) {
+  // Adaptar o objeto produto para o formato esperado pela API
+  const produtoParaAPI = {
+    nome: produto.nome,
+    descricao: produto.descricao || produto.categoria, // Usando categoria como descrição se não houver descrição
+    preco: produto.preco || 0, // Adicionando um preço padrão se não existir
+    categoria: produto.categoria
+  };
+
+  // Enviar para o servidor usando fetch API
+  return fetch('http://localhost:3000/api/produtos', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(produtoParaAPI)
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Erro ao cadastrar produto');
+    }
+    return response.json();
+  });
+}
+
+// Função para carregar produtos do servidor
+function carregarProdutos() {
+  fetch('http://localhost:3000/api/produtos')
+    .then(response => {
+      console.log('Status da resposta:', response.status);
+      return response.json();
+    })
+    .then(produtos => {
+      console.log('Produtos recebidos:', produtos);
+      // Aqui você pode atualizar a interface com os produtos
+      exibirProdutosNaTabela(produtos);
+    })
+    .catch(error => {
+      console.error('Erro ao carregar produtos:', error.message, error.stack);
+    });
+}
+
+// Função para exibir produtos na tabela
+function exibirProdutosNaTabela(produtos) {
+  const tabela = document.getElementById('tabelaProdutos');
+  if (!tabela) {
+    console.error('Elemento tabelaProdutos não encontrado');
+    return;
+  }
+  
+  tabela.innerHTML = ''; // Limpa a tabela
+  
+  produtos.forEach(produto => {
+    const linha = document.createElement('tr');
+    linha.innerHTML = `
+      <td>${produto.nome}</td>
+      <td>${produto.descricao}</td>
+      <td>R$ ${produto.preco.toFixed(2)}</td>
+      <td>${produto.categoria}</td>
+      <td>
+        <button class="btn-editar" data-id="${produto.id_produto}">Editar</button>
+        <button class="btn-excluir" data-id="${produto.id_produto}">Excluir</button>
+      </td>
+    `;
+    tabela.appendChild(linha);
+  });
+  
+  // Adiciona os eventos aos botões
+  adicionarEventosEditar();
+  adicionarEventosExcluir();
 }
 
 // Seleciona o popup de exclusão e os botões
@@ -57,39 +129,55 @@ const popupExcluir = document.getElementById("popupExcluir");
 const btnConfirmarExcluir = document.getElementById("btnConfirmarExcluir");
 const btnCancelarExcluir = document.getElementById("btnCancelarExcluir");
 const mensagemExclusao = document.getElementById("mensagemExclusao");
-
 let produtoParaExcluir = null; // Variável para armazenar o produto a ser excluído
 
 // Função para exibir o popup de exclusão
 function exibirPopupExcluir(produto, linha) {
+  if (!popupExcluir || !mensagemExclusao) return;
+  
   produtoParaExcluir = { produto, linha }; // Armazena o produto e a linha
   mensagemExclusao.textContent = `Tem certeza que deseja excluir o produto "${produto.nome}"?`;
   popupExcluir.style.display = "flex";
 }
 
 // Fecha o popup de exclusão
-btnCancelarExcluir.addEventListener("click", () => {
-  popupExcluir.style.display = "none";
-  produtoParaExcluir = null; // Reseta a variável
-});
-
-// Confirma a exclusão do produto
-btnConfirmarExcluir.addEventListener("click", () => {
-  if (produtoParaExcluir) {
-    const produtosSalvos = JSON.parse(localStorage.getItem("produtos")) || [];
-    const novosProdutos = produtosSalvos.filter(
-      (p) => p.ean !== produtoParaExcluir.produto.ean
-    );
-    localStorage.setItem("produtos", JSON.stringify(novosProdutos)); // Atualiza o localStorage
-
-    // Remove a linha da tabela
-    produtoParaExcluir.linha.remove();
-
-    // Fecha o popup
+if (btnCancelarExcluir) {
+  btnCancelarExcluir.addEventListener("click", () => {
     popupExcluir.style.display = "none";
     produtoParaExcluir = null; // Reseta a variável
-  }
-});
+  });
+}
+
+// Confirma a exclusão do produto
+if (btnConfirmarExcluir) {
+  btnConfirmarExcluir.addEventListener("click", () => {
+    if (produtoParaExcluir) {
+      const id = produtoParaExcluir.produto.id_produto;
+      
+      // Excluir do servidor
+      fetch(`http://localhost:3000/api/produtos/${id}`, {
+        method: 'DELETE'
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Erro ao excluir produto');
+        }
+        return response.json();
+      })
+      .then(data => {
+        // Remove a linha da tabela
+        produtoParaExcluir.linha.remove();
+        // Fecha o popup
+        popupExcluir.style.display = "none";
+        produtoParaExcluir = null; // Reseta a variável
+      })
+      .catch(error => {
+        console.error('Erro:', error);
+        alert('Erro ao excluir produto: ' + error.message);
+      });
+    }
+  });
+}
 
 // Adiciona o evento de clique no botão "Excluir" para cada linha da tabela
 function adicionarEventosExcluir() {
@@ -97,263 +185,317 @@ function adicionarEventosExcluir() {
   botoesExcluir.forEach((botao) => {
     botao.addEventListener("click", (event) => {
       const linha = event.target.closest("tr");
-      const ean = linha.children[1].textContent; // Obtém o EAN da linha
-      const produtosSalvos = JSON.parse(localStorage.getItem("produtos")) || [];
-      const produto = produtosSalvos.find((p) => p.ean === ean);
-
-      if (produto) {
-        exibirPopupExcluir(produto, linha);
-      }
+      const id = botao.getAttribute('data-id');
+      
+      // Buscar o produto pelo ID
+      fetch(`http://localhost:3000/api/produtos/${id}`)
+        .then(response => response.json())
+        .then(produto => {
+          if (Array.isArray(produto) && produto.length > 0) {
+            exibirPopupExcluir({id_produto: id, nome: produto[0].nome}, linha);
+          } else {
+            exibirPopupExcluir({id_produto: id, nome: produto.nome}, linha);
+          }
+        })
+        .catch(error => {
+          console.error('Erro ao buscar produto para exclusão:', error);
+        });
     });
   });
 }
 
+// Seleciona o popup de edição e seus elementos
 const popupEditarProduto = document.getElementById("popupEditarProduto");
 const formEditarProduto = document.getElementById("formEditarProduto");
 const btnFecharEditarPopup = document.getElementById("btnFecharEditarPopup");
-
 let produtoParaEditar = null; // Variável para armazenar o produto a ser editado
 
 // Função para abrir o popup de edição e preencher os campos
 function preencherFormularioEdicao(produto) {
+  if (!popupEditarProduto) return;
+  
+  // Se o produto vier como array (da API), pega o primeiro item
+  if (Array.isArray(produto) && produto.length > 0) {
+    produto = produto[0];
+  }
+  
   produtoParaEditar = produto;
-
+  
   // Preenche os campos do formulário de edição
-  formEditarProduto.editarEanProduto.value = produto.ean;
-  formEditarProduto.editarNomeProduto.value = produto.nome;
-  formEditarProduto.editarCategoriaProduto.value = produto.categoria;
-  formEditarProduto.editarUnidadeProduto.value = produto.unidade;
-  formEditarProduto.editarFornecedorProduto.value = produto.fornecedor;
-  formEditarProduto.editarEstoqueMinimo.value = produto.estoqueMinimo;
-
-  // Desabilita o campo de fornecedor
-  formEditarProduto.editarFornecedorProduto.disabled = true;
-
+  const editarNomeProduto = document.getElementById("editarNomeProduto");
+  const editarCategoriaProduto = document.getElementById("editarCategoriaProduto");
+  
+  if (editarNomeProduto) editarNomeProduto.value = produto.nome;
+  if (editarCategoriaProduto) editarCategoriaProduto.value = produto.categoria;
+  
   // Exibe o popup de edição
   popupEditarProduto.style.display = "flex";
 }
 
 // Fecha o popup de edição
-btnFecharEditarPopup.addEventListener("click", () => {
-  popupEditarProduto.style.display = "none";
-  produtoParaEditar = null; // Reseta a variável
-});
+if (btnFecharEditarPopup) {
+  btnFecharEditarPopup.addEventListener("click", () => {
+    popupEditarProduto.style.display = "none";
+    produtoParaEditar = null; // Reseta a variável
+  });
+}
 
 // Salva as alterações feitas no produto
-formEditarProduto.addEventListener("submit", async function (event) {
-  event.preventDefault();
-
-  // Obter os valores do formulário
-  const editarFotoProduto =
-    document.getElementById("editarFotoProduto").files[0];
-  const editarEanProduto = document.getElementById("editarEanProduto").value;
-  const editarNomeProduto = document.getElementById("editarNomeProduto").value;
-  const editarCategoriaProduto = document.getElementById(
-    "editarCategoriaProduto"
-  ).value;
-  const editarUnidadeProduto = document.getElementById(
-    "editarUnidadeProduto"
-  ).value;
-  const editarFornecedorProduto = document.getElementById(
-    "editarFornecedorProduto"
-  ).value;
-  const editarEstoqueMinimo = document.getElementById(
-    "editarEstoqueMinimo"
-  ).value;
-
-  // Atualizar a imagem do produto
-  let novaFotoBase64 = null;
-  if (editarFotoProduto) {
-    novaFotoBase64 = await converterImagemParaBase64(editarFotoProduto);
-    const imgElement = document.querySelector(
-      `img[data-ean="${editarEanProduto}"]`
-    );
-    if (imgElement) {
-      imgElement.src = novaFotoBase64; // Atualiza a imagem na tabela
-    }
-  }
-
-  // Atualizar os dados do produto no localStorage
-  const produtosSalvos = JSON.parse(localStorage.getItem("produtos")) || [];
-  const produtoIndex = produtosSalvos.findIndex(
-    (p) => p.ean === editarEanProduto
-  );
-
-  if (produtoIndex !== -1) {
-    produtosSalvos[produtoIndex] = {
-      ...produtosSalvos[produtoIndex],
-      nome: editarNomeProduto,
-      categoria: editarCategoriaProduto,
-      unidade: editarUnidadeProduto,
-      fornecedor: editarFornecedorProduto,
-      estoqueMinimo: editarEstoqueMinimo,
-      foto: novaFotoBase64 || produtosSalvos[produtoIndex].foto, // Atualiza a foto se houver uma nova
+if (formEditarProduto) {
+  formEditarProduto.addEventListener("submit", function (event) {
+    event.preventDefault();
+    
+    if (!produtoParaEditar) return;
+    
+    // Obter os valores do formulário
+    const id = produtoParaEditar.id_produto;
+    const editarNomeProduto = document.getElementById("editarNomeProduto");
+    const editarCategoriaProduto = document.getElementById("editarCategoriaProduto");
+    
+    const nome = editarNomeProduto ? editarNomeProduto.value : '';
+    const categoria = editarCategoriaProduto ? editarCategoriaProduto.value : '';
+    const descricao = categoria; // Usando categoria como descrição
+    const preco = produtoParaEditar.preco || 0;
+    
+    // Preparar o objeto para atualização
+    const produtoAtualizado = {
+      nome,
+      descricao,
+      preco,
+      categoria
     };
-    localStorage.setItem("produtos", JSON.stringify(produtosSalvos));
-  }
-
-  // Fechar o popup de edição
-  popupEditarProduto.style.display = "none";
-
-  // Recarregar a tabela para refletir as alterações
-  carregarProdutosNaTabela();
-});
+    
+    // Enviar para o servidor
+    fetch(`http://localhost:3000/api/produtos/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(produtoAtualizado)
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Erro ao atualizar produto');
+      }
+      return response.json();
+    })
+    .then(data => {
+      // Fechar o popup de edição
+      popupEditarProduto.style.display = "none";
+      // Recarregar a tabela para refletir as alterações
+      carregarProdutosNaTabela();
+    })
+    .catch(error => {
+      console.error('Erro:', error);
+      alert('Erro ao atualizar produto: ' + error.message);
+    });
+  });
+}
 
 // Adiciona o evento de clique no botão "Editar" para cada linha da tabela
 function adicionarEventosEditar() {
   const botoesEditar = document.querySelectorAll(".btn-editar");
   botoesEditar.forEach((botao) => {
     botao.addEventListener("click", (event) => {
-      const linha = event.target.closest("tr");
-      const ean = linha.children[1].textContent; // Obtém o EAN da linha
-      const produtosSalvos = JSON.parse(localStorage.getItem("produtos")) || [];
-      const produto = produtosSalvos.find((p) => p.ean === ean);
-
-      if (produto) {
-        preencherFormularioEdicao(produto);
-      }
+      const id = botao.getAttribute('data-id');
+      
+      // Buscar o produto pelo ID
+      fetch(`http://localhost:3000/api/produtos/${id}`)
+        .then(response => response.json())
+        .then(produto => {
+          preencherFormularioEdicao(produto);
+        })
+        .catch(error => {
+          console.error('Erro ao buscar produto para edição:', error);
+        });
     });
   });
 }
 
-// Atualize a função carregarProdutosNaTabela para incluir os eventos de edição
+// Função para carregar produtos na tabela
 function carregarProdutosNaTabela() {
-  const produtosSalvos = JSON.parse(localStorage.getItem("produtos")) || [];
-  const tabelaProdutos = document.querySelector(".center-table tbody");
-  tabelaProdutos.innerHTML = ""; // Limpa a tabela antes de carregar os produtos
-
-  produtosSalvos.forEach((produto) => {
-    const novaLinha = document.createElement("tr");
-    novaLinha.innerHTML = `
-      <td>
-        ${
-          produto.foto
-            ? `<img src="${produto.foto}" alt="Foto do Produto" style="width: 50px; height: 50px; object-fit: cover;" />`
-            : "Sem Foto"
-        }
-      </td>
-      <td>${produto.ean}</td>
-      <td>${produto.nome}</td>
-      <td>${produto.categoria}</td>
-      <td>${produto.unidade}</td>
-      <td>${produto.data}</td>
-      <td>${produto.fornecedor}</td>
-      <td>${produto.estoqueMinimo}</td>
-      <td>
-        <button class="btn-editar">
-          <i class="fas fa-edit"></i> <!-- Ícone de lápis -->
-        </button>
-        <button class="btn-excluir">
-          <i class="fas fa-trash-alt"></i> <!-- Ícone de lixeira -->
-        </button>
-      </td>
-    `;
-    tabelaProdutos.appendChild(novaLinha);
-  });
-
-  // Adiciona os eventos de edição e exclusão
-  adicionarEventosEditar();
-  adicionarEventosExcluir();
+  fetch('http://localhost:3000/api/produtos')
+    .then(response => {
+      console.log('Status da resposta:', response.status);
+      return response.json();
+    })
+    .then(produtos => {
+      console.log('Produtos recebidos:', produtos);
+      const tabelaProdutos = document.querySelector(".center-table tbody");
+      if (!tabelaProdutos) {
+        console.error('Elemento .center-table tbody não encontrado');
+        return;
+      }
+      
+      tabelaProdutos.innerHTML = ""; // Limpa a tabela antes de carregar os produtos
+      
+      produtos.forEach((produto) => {
+        const novaLinha = document.createElement("tr");
+        novaLinha.innerHTML = `
+          <td>
+            ${
+              produto.foto
+                ? `<img src="${produto.foto}" alt="Foto do Produto" style="width: 50px; height: 50px; object-fit: cover;" />`
+                : "Sem Foto"
+            }
+          </td>
+          <td>${produto.id_produto}</td>
+          <td>${produto.nome}</td>
+          <td>${produto.categoria}</td>
+          <td>${produto.unidade || 'Unidade'}</td>
+          <td>${produto.data || new Date().toLocaleDateString()}</td>
+          <td>${produto.fornecedor || 'N/A'}</td>
+          <td>${produto.estoqueMinimo || '0'}</td>
+          <td>
+            <button class="btn-editar" data-id="${produto.id_produto}">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn-excluir" data-i
+            <button class="btn-editar" data-id="${produto.id_produto}">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn-excluir" data-id="${produto.id_produto}">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </td>
+        `;
+        tabelaProdutos.appendChild(novaLinha);
+      });
+      
+      // Adiciona os eventos de edição e exclusão
+      adicionarEventosEditar();
+      adicionarEventosExcluir();
+    })
+    .catch(error => {
+      console.error('Erro ao carregar produtos:', error.message, error.stack);
+      alert('Erro ao carregar produtos do servidor: ' + error.message);
+    });
 }
 
 // Exibe o popup ao clicar no botão "Novo Produto"
-btnNovoProduto.addEventListener("click", () => {
-  popupNovoProduto.style.display = "flex";
-  carregarFornecedores();
-});
-
-// Fecha o popup ao clicar no botão "Fechar"
-btnFecharPopup.addEventListener("click", () => {
-  popupNovoProduto.style.display = "none";
-});
-
-// Fecha o popup ao enviar o formulário e adiciona os dados na tabela
-formNovoProduto.addEventListener("submit", async (event) => {
-  event.preventDefault(); // Evita o envio padrão do formulário
-
-  const ean = formNovoProduto.eanProduto.value;
-
-  // Verifica se o EAN tem exatamente 13 dígitos
-  if (!/^\d{13}$/.test(ean)) {
-    alert("O EAN deve conter exatamente 13 dígitos.");
-    return;
-  }
-
-  // Captura os valores do formulário
-  const nome = formNovoProduto.nomeProduto.value;
-  const categoria = formNovoProduto.categoriaProduto.value;
-  const unidade = formNovoProduto.unidadeProduto.value;
-  const fornecedor = formNovoProduto.fornecedorProduto.value;
-  const estoqueMinimo = formNovoProduto.estoqueMinimo.value;
-
-  // Obtém a data atual
-  const dataAtual = new Date();
-  const dataFormatada = `${dataAtual.getDate().toString().padStart(2, "0")}/${(
-    dataAtual.getMonth() + 1
-  )
-    .toString()
-    .padStart(2, "0")}/${dataAtual.getFullYear()}`;
-
-  // Converte a imagem para Base64 (se fornecida)
-  const fotoFile = formNovoProduto.fotoProduto.files[0];
-  let fotoBase64 = ""; // Define como vazio por padrão
-  if (fotoFile) {
-    fotoBase64 = await converterImagemParaBase64(fotoFile);
-  }
-
-  // Cria um objeto com os dados do produto
-  const novoProduto = {
-    ean,
-    nome,
-    categoria,
-    unidade,
-    fornecedor,
-    estoqueMinimo,
-    data: dataFormatada,
-    foto: fotoBase64, // Adiciona a foto em Base64 (ou vazio se não fornecida)
-  };
-
-  // Salva o produto no localStorage
-  salvarProdutoNoLocalStorage(novoProduto);
-
-  // Recarrega os produtos na tabela
-  carregarProdutosNaTabela();
-
-  // Exibe o popup de confirmação
-  exibirPopupConfirmacao();
-
-  // Fecha o popup de cadastro e reseta o formulário
-  popupNovoProduto.style.display = "none";
-  formNovoProduto.reset(); // Limpa os campos do formulário
-});
-
-// Carrega os produtos salvos no localStorage ao carregar a página
-window.addEventListener("load", carregarProdutosNaTabela);
-
-// Limita a entrada no campo de EAN para apenas números e 13 dígitos
-document.getElementById("eanProduto").addEventListener("input", (event) => {
-  const input = event.target;
-  input.value = input.value.replace(/\D/g, ""); // Remove caracteres não numéricos
-  if (input.value.length > 13) {
-    input.value = input.value.slice(0, 13); // Limita a 13 caracteres
-  }
-});
-
-// Reforça a validação no formulário de edição (caso necessário)
-document
-  .getElementById("editarEanProduto")
-  .addEventListener("input", (event) => {
-    const input = event.target;
-    input.value = input.value.replace(/\D/g, ""); // Remove caracteres não numéricos
-    if (input.value.length > 13) {
-      input.value = input.value.slice(0, 13); // Limita a 13 caracteres
+if (btnNovoProduto) {
+  btnNovoProduto.addEventListener("click", () => {
+    if (popupNovoProduto) {
+      popupNovoProduto.style.display = "flex";
+      carregarFornecedores();
     }
   });
+}
+
+// Fecha o popup ao clicar no botão "Fechar"
+if (btnFecharPopup) {
+  btnFecharPopup.addEventListener("click", () => {
+    if (popupNovoProduto) {
+      popupNovoProduto.style.display = "none";
+    }
+  });
+}
+
+// Evento de submissão do formulário de novo produto
+if (formNovoProduto) {
+  formNovoProduto.addEventListener("submit", async (event) => {
+    event.preventDefault(); // Evita o envio padrão do formulário
+    
+    // Captura os valores do formulário
+    const nome = formNovoProduto.nomeProduto ? formNovoProduto.nomeProduto.value : '';
+    const categoria = formNovoProduto.categoriaProduto ? formNovoProduto.categoriaProduto.value : '';
+    const descricao = categoria; // Usando categoria como descrição
+    const preco = 0; // Valor padrão para preço
+    
+    // Cria um objeto com os dados do produto
+    const novoProduto = {
+      nome,
+      descricao,
+      preco,
+      categoria
+    };
+    
+    // Salva o produto no servidor
+    salvarProdutoNoServidor(novoProduto)
+      .then(data => {
+        // Recarrega os produtos na tabela
+        carregarProdutosNaTabela();
+        // Exibe o popup de confirmação
+        exibirPopupConfirmacao();
+        // Fecha o popup de cadastro e reseta o formulário
+        if (popupNovoProduto) {
+          popupNovoProduto.style.display = "none";
+        }
+        formNovoProduto.reset(); // Limpa os campos do formulário
+      })
+      .catch(error => {
+        console.error('Erro:', error);
+        alert('Erro ao cadastrar produto: ' + error.message);
+      });
+  });
+}
+
+// Carrega os produtos ao carregar a página
+window.addEventListener("load", carregarProdutosNaTabela);
+
+// Função para converter imagem para Base64
 function converterImagemParaBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result);
     reader.onerror = (error) => reject(error);
     reader.readAsDataURL(file);
+  });
+}
+
+// Verifica se os elementos de EAN existem antes de adicionar eventos
+const eanProdutoElement = document.getElementById("eanProduto");
+if (eanProdutoElement) {
+  eanProdutoElement.addEventListener("input", (event) => {
+    const input = event.target;
+    input.value = input.value.replace(/\D/g, ""); // Remove caracteres não numéricos
+    if (input.value.length > 13) {
+      input.value = input.value.slice(0, 13); // Limita a 13 caracteres
+    }
+  });
+}
+
+const editarEanProdutoElement = document.getElementById("editarEanProduto");
+if (editarEanProdutoElement) {
+  editarEanProdutoElement.addEventListener("input", (event) => {
+    const input = event.target;
+    input.value = input.value.replace(/\D/g, ""); // Remove caracteres não numéricos
+    if (input.value.length > 13) {
+      input.value = input.value.slice(0, 13); // Limita a 13 caracteres
+    }
+  });
+}
+
+// Abrir popup de cadastro - usando querySelector com verificação
+const btnNovoProdutoAlt = document.querySelector('.btn-novo-produto');
+if (btnNovoProdutoAlt) {
+  btnNovoProdutoAlt.addEventListener('click', function() {
+    const popup = document.querySelector('#popupCadastrarProduto');
+    if (popup) popup.style.display = 'flex';
+  });
+}
+
+// Fechar popups (botões cancelar)
+document.querySelectorAll('.popup button[type="button"]').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const popup = this.closest('.popup-overlay');
+    if (popup) popup.style.display = 'none';
+  });
+});
+
+// Fechar popups de confirmação
+document.querySelectorAll('.btn-cancelar').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const popup = this.closest('.popup-confirmacao-overlay');
+    if (popup) popup.style.display = 'none';
+  });
+});
+
+// Confirmação após cadastro ou edição
+const btnConfirmacaoCadastro = document.querySelector('#popupConfirmacaoCadastro button');
+if (btnConfirmacaoCadastro) {
+  btnConfirmacaoCadastro.addEventListener('click', function() {
+    const popup = document.querySelector('#popupConfirmacaoCadastro');
+    if (popup) popup.style.display = 'none';
   });
 }

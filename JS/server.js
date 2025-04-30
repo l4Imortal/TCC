@@ -1,14 +1,18 @@
 const express = require('express');
 const mysql = require('mysql2');
+const cors = require('cors'); // Adicionar esta linha para importar o CORS
 const app = express();
 const PORT = 3000; // Usar uma porta adequada para HTTP
+
+// Habilitar CORS para todas as rotas
+app.use(cors());
 app.use(express.json()); // Para permitir o envio de JSON no corpo da requisição
 
 // Configurações do banco de dados
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: '1234',
+  password: 'cursoads',
   database: 'estoque'
 });
 
@@ -21,9 +25,9 @@ db.connect((err) => {
   console.log('Conectado ao MySQL!');
 });
 
-// Endpoint para buscar dados
+// Endpoint para buscar dados de produtos
 app.get('/api/produtos', (req, res) => {
-  db.query('SELECT * FROM produtos', (err, results) => { // Ajuste a tabela para o seu caso
+  db.query('SELECT * FROM produtos', (err, results) => {
     if (err) {
       console.error('Erro ao buscar dados:', err.message);
       res.status(500).send('Erro no servidor');
@@ -32,31 +36,12 @@ app.get('/api/produtos', (req, res) => {
     res.json(results); // Retornar os dados como JSON
   });
 });
-// Endpoint para buscar dados
-app.get('/api/produtos', (req, res) => {
-  db.query('SELECT * FROM produtos', (err, results) => { // Ajuste a tabela para o seu caso
-    if (err) {
-      console.error('Erro ao buscar dados:', err.message);
-      res.status(500).send('Erro no servidor');
-      return;
-    }
-    res.json(results); // Retornar os dados como JSON
-  });
-});
-app.post('/api/produtos', (req, res) => {
-  const id = req.params.id;
-  console.log( req.body);
-  const query = `INSERT INTO produtos (nome,descricao,preco,categoria) VALUES("${req.body.nome}","${req.body.descricao}",${req.body.preco},"${req.body.categoria}");`
-  console.log ("query", query);
-  db.query(query, (err, results) => { // Ajuste a tabela para o seu caso
-    
-    res.json(true); // Retornar os dados como JSON
-  });
-});
+
+// Endpoint para buscar dados de um produto específico
 app.get('/api/produtos/:id', (req, res) => {
   const id = req.params.id;
   console.log('ID recebido:', id);
-  db.query('SELECT * FROM produtos WHERE id_produto='+id, (err, results) => { // Ajuste a tabela para o seu caso
+  db.query('SELECT * FROM produtos WHERE id_produto = ?', [id], (err, results) => {
     if (err) {
       console.error('Erro ao buscar dados:', err.message);
       res.status(500).send('Erro no servidor');
@@ -65,21 +50,73 @@ app.get('/api/produtos/:id', (req, res) => {
     res.json(results); // Retornar os dados como JSON
   });
 });
-app.delete('/api/produtos/:id', (req, res) => {
-  const id = req.params.id;
-  console.log('ID recebido:', id);
-  db.query('DELETE FROM produtos WHERE id_produto='+id, (err, results) => { // Ajuste a tabela para o seu caso
-    
-    res.json(true); // Retornar os dados como JSON
+
+// Endpoint para criar um novo produto
+app.post('/api/produtos', (req, res) => {
+  const { nome, descricao, preco, categoria } = req.body;
+
+  // Validação básica
+  if (!nome || !descricao || !preco || !categoria) {
+    return res.status(400).json({ error: 'Campos obrigatórios: nome, descrição, preço, categoria' });
+  }
+
+  const query = 'INSERT INTO produtos (nome, descricao, preco, categoria) VALUES (?, ?, ?, ?)';
+  db.query(query, [nome, descricao, preco, categoria], (err, results) => {
+    if (err) {
+      console.error('Erro ao cadastrar produto:', err.message);
+      return res.status(500).send('Erro no servidor');
+    }
+    res.status(201).json({
+      id: results.insertId,
+      message: 'Produto cadastrado com sucesso'
+    });
   });
 });
+
+// Endpoint para atualizar um produto existente
 app.put('/api/produtos/:id', (req, res) => {
   const id = req.params.id;
-  const query = `UPDATE produtos SET nome="${req.body.nome}", descricao="${req.body.descricao}", preco=${req.body.preco}, categoria="${req.body.categoria}" WHERE id_produto=${id};`
-  console.log('ID recebido:', id);
-  db.query(query, (err, results) => { // Ajuste a tabela para o seu caso
-    
-    res.json(true); // Retornar os dados como JSON
+  const { nome, descricao, preco, categoria } = req.body;
+
+  // Validação básica
+  if (!nome || !descricao || !preco || !categoria) {
+    return res.status(400).json({ error: 'Campos obrigatórios: nome, descrição, preço, categoria' });
+  }
+
+  const query = 'UPDATE produtos SET nome = ?, descricao = ?, preco = ?, categoria = ? WHERE id_produto = ?';
+  db.query(query, [nome, descricao, preco, categoria, id], (err, results) => {
+    if (err) {
+      console.error('Erro ao atualizar produto:', err.message);
+      return res.status(500).send('Erro no servidor');
+    }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: 'Produto não encontrado' });
+    }
+
+    res.json({
+      message: 'Produto atualizado com sucesso'
+    });
+  });
+});
+
+// Endpoint para excluir um produto
+app.delete('/api/produtos/:id', (req, res) => {
+  const id = req.params.id;
+
+  db.query('DELETE FROM produtos WHERE id_produto = ?', [id], (err, results) => {
+    if (err) {
+      console.error('Erro ao excluir produto:', err.message);
+      return res.status(500).send('Erro no servidor');
+    }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: 'Produto não encontrado' });
+    }
+
+    res.json({
+      message: 'Produto excluído com sucesso'
+    });
   });
 });
 
@@ -288,11 +325,6 @@ app.delete('/api/movimentacoes/:id', (req, res) => {
   });
 });
 
-// Iniciar o servidor
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
-});
-
 // CRUD para Usuários
 
 // GET - Listar todos os usuários
@@ -323,19 +355,16 @@ app.get('/api/usuarios/:id', (req, res) => {
 
 // POST - Criar um novo usuário
 app.post('/api/usuarios', (req, res) => {
-  const { username, senha } = req.body;
+  const { username, senha, nome, email } = req.body;
 
   // Validação básica
-  if (!username || !senha) {
-    return res.status(400).json({ error: 'Campos obrigatórios: username e senha' });
+  if (!username || !senha || !nome || !email) {
+    return res.status(400).json({ error: 'Campos obrigatórios: username, senha, nome, email' });
   }
 
-  const query = 'INSERT INTO usuarios (username, senha) VALUES (?, ?)';
-  db.query(query, [username, senha], (err, results) => {
+  const query = 'INSERT INTO usuarios (username, senha, nome, email) VALUES (?, ?, ?, ?)';
+  db.query(query, [username, senha, nome, email], (err, results) => {
     if (err) {
-      if (err.code === 'ER_DUP_ENTRY') {
-        return res.status(400).json({ error: 'Usuário já existe' });
-      }
       console.error('Erro ao criar usuário:', err.message);
       return res.status(500).send('Erro no servidor');
     }
@@ -350,15 +379,15 @@ app.post('/api/usuarios', (req, res) => {
 // PUT - Atualizar um usuário existente
 app.put('/api/usuarios/:id', (req, res) => {
   const id = req.params.id;
-  const { username, senha } = req.body;
+  const { username, senha, nome, email } = req.body;
 
   // Validação básica
-  if (!username || !senha) {
-    return res.status(400).json({ error: 'Campos obrigatórios: username e senha' });
+  if (!username || !senha || !nome || !email) {
+    return res.status(400).json({ error: 'Campos obrigatórios: username, senha, nome, email' });
   }
 
-  const query = 'UPDATE usuarios SET username = ?, senha = ? WHERE id_usuario = ?';
-  db.query(query, [username, senha, id], (err, results) => {
+  const query = 'UPDATE usuarios SET username = ?, senha = ?, nome = ?, email = ? WHERE id_usuario = ?';
+  db.query(query, [username, senha, nome, email, id], (err, results) => {
     if (err) {
       console.error('Erro ao atualizar usuário:', err.message);
       return res.status(500).send('Erro no servidor');
@@ -394,3 +423,7 @@ app.delete('/api/usuarios/:id', (req, res) => {
   });
 });
 
+// Iniciar o servidor
+app.listen(PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT}`);
+});
