@@ -3,29 +3,27 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Relatórios - Controle de Estoque</title>
+  <title>Relatórios - StoQ</title>
   <link rel="stylesheet" href="CSS/relatorios.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 </head>
 <body>
   <div class="container">
     <header>
-      <h1>Relatórios - Controle de Estoque</h1>
+      <h1>Relatórios - StoQ</h1>
     </header>
     <nav>
       <ul>
-        <li><a href="index.html">Dashboard</a></li>
+        <li><a href="index.html">Página Inicial</a></li>
         <li><a href="produtos.html">Produtos</a></li>
         <li><a href="fornecedores.html">Fornecedores</a></li>
         <li><a href="entradas.html">Entradas</a></li>
         <li><a href="saidas.html">Saídas</a></li>
-        <li><a href="relatorios.html" class="active">Relatórios</a></li>
       </ul>
     </nav>
     <main>
       <section class="reports">
         <h2>Relatórios do Sistema</h2>
-        
         <div class="reports-container">
           <!-- Tipos de Relatórios -->
           <div class="report-card">
@@ -33,9 +31,6 @@
             <div class="tabs">
               <div class="tab active" onclick="mudarTab('estoque')">Estoque Atual</div>
               <div class="tab" onclick="mudarTab('movimentacoes')">Movimentações</div>
-              <div class="tab" onclick="mudarTab('produtos')">Produtos</div>
-              <div class="tab" onclick="mudarTab('vendas')">Vendas</div>
-              <div class="tab" onclick="mudarTab('fornecedores')">Fornecedores</div>
             </div>
             
             <!-- Relatório de Estoque Atual -->
@@ -47,48 +42,19 @@
                     <label for="estoque-categoria">Categoria:</label>
                     <select id="estoque-categoria">
                       <option value="">Todas as Categorias</option>
-                      <option value="1">Eletrônicos</option>
-                      <option value="2">Alimentos</option>
-                      <option value="3">Vestuário</option>
-                    </select>
-                  </div>
-                  <div class="filter-item">
-                    <label for="estoque-fornecedor">Fornecedor:</label>
-                    <select id="estoque-fornecedor">
-                      <option value="">Todos os Fornecedores</option>
-                      <option value="1">Fornecedor A</option>
-                      <option value="2">Fornecedor B</option>
-                      <option value="3">Fornecedor C</option>
-                    </select>
-                  </div>
-                  <div class="filter-item">
-                    <label for="estoque-status">Status:</label>
-                    <select id="estoque-status">
-                      <option value="">Todos</option>
-                      <option value="normal">Normal</option>
-                      <option value="baixo">Estoque Baixo</option>
-                      <option value="critico">Estoque Crítico</option>
+                      <option value="Camiseta">Camiseta</option>
+                      <option value="Blusa">Blusa</option>
+                      <option value="Calça">Calça</option>
                     </select>
                   </div>
                 </div>
               </div>
-              
               <div class="report-actions">
                 <button id="btnGerarRelatorioEstoque" class="btn btn-primary">Gerar Relatório</button>
-                <div class="export-options">
-                  <button id="btnExportarPDF" class="btn btn-secondary">Exportar PDF</button>
-                  <button id="btnExportarExcel" class="btn btn-secondary">Exportar Excel</button>
-                  <button id="btnImprimir" class="btn btn-secondary">Imprimir</button>
-                </div>
+                <button id="btnExportarPDF" class="btn btn-secondary">Exportar PDF</button>
               </div>
-              
               <div id="tabela-estoque-container" class="report-preview">
                 <p>Clique em "Gerar Relatório" para visualizar os dados do estoque.</p>
-              </div>
-              
-              <div class="chart-container">
-                <img src="https://via.placeholder.com/800x300" alt="Gráfico de Estoque" class="chart-image">
-                <p class="chart-caption">Distribuição de Estoque por Categoria</p>
               </div>
             </div>
             
@@ -105,101 +71,41 @@
                     <label for="mov-data-fim">Data Fim:</label>
                     <input type="date" id="mov-data-fim">
                   </div>
-                  <div class="filter-item">
-                    <label for="mov-tipo">Tipo:</label>
-                    <select id="mov-tipo">
-                      <option value="">Todos</option>
-                      <option value="entrada">Entrada</option>
-                      <option value="saida">Saída</option>
-                    </select>
-                  </div>
                 </div>
               </div>
-              
               <div class="report-actions">
                 <button id="btnGerarRelatorioMovimentacoes" class="btn btn-primary">Gerar Relatório</button>
-                <div class="export-options">
-                  <button id="btnExportarPDF" class="btn btn-secondary">Exportar PDF</button>
-                  <button id="btnExportarExcel" class="btn btn-secondary">Exportar Excel</button>
-                  <button id="btnImprimir" class="btn btn-secondary">Imprimir</button>
-                </div>
+                <button id="btnExportarPDF" class="btn btn-secondary">Exportar PDF</button>
               </div>
-              
               <div id="tabela-movimentacoes-container" class="report-preview">
                 <p>Clique em "Gerar Relatório" para visualizar as movimentações.</p>
-              </div>
-              
-              <div class="chart-container">
-                <img src="https://via.placeholder.com/800x300" alt="Gráfico de Movimentações" class="chart-image">
-                <p class="chart-caption">Movimentações por Período</p>
-              </div>
-            </div>
-            
-            <!-- Outros relatórios (produtos, vendas, fornecedores) seguiriam o mesmo padrão -->
-            <div id="produtos-tab" class="tab-content">
-              <div class="filter-section">
-                <h4>Filtros de Produtos</h4>
-                <!-- Filtros específicos para produtos -->
-              </div>
-              <div class="report-actions">
-                <button class="btn btn-primary">Gerar Relatório</button>
-                <div class="export-options">
-                  <button class="btn btn-secondary">Exportar PDF</button>
-                  <button class="btn btn-secondary">Exportar Excel</button>
-                  <button class="btn btn-secondary">Imprimir</button>
-                </div>
-              </div>
-              <div class="report-preview">
-                <p>Selecione os filtros e clique em "Gerar Relatório" para visualizar os dados.</p>
-              </div>
-            </div>
-            
-            <div id="vendas-tab" class="tab-content">
-              <div class="filter-section">
-                <h4>Filtros de Vendas</h4>
-                <!-- Filtros específicos para vendas -->
-              </div>
-              <div class="report-actions">
-                <button class="btn btn-primary">Gerar Relatório</button>
-                <div class="export-options">
-                  <button class="btn btn-secondary">Exportar PDF</button>
-                  <button class="btn btn-secondary">Exportar Excel</button>
-                  <button class="btn btn-secondary">Imprimir</button>
-                </div>
-              </div>
-              <div class="report-preview">
-                <p>Selecione os filtros e clique em "Gerar Relatório" para visualizar os dados.</p>
-              </div>
-            </div>
-            
-            <div id="fornecedores-tab" class="tab-content">
-              <div class="filter-section">
-                <h4>Filtros de Fornecedores</h4>
-                <!-- Filtros específicos para fornecedores -->
-              </div>
-              <div class="report-actions">
-                <button class="btn btn-primary">Gerar Relatório</button>
-                <div class="export-options">
-                  <button class="btn btn-secondary">Exportar PDF</button>
-                  <button class="btn btn-secondary">Exportar Excel</button>
-                  <button class="btn btn-secondary">Imprimir</button>
-                </div>
-              </div>
-              <div class="report-preview">
-                <p>Selecione os filtros e clique em "Gerar Relatório" para visualizar os dados.</p>
               </div>
             </div>
           </div>
         </div>
       </section>
     </main>
-    
-    <footer>
-      <p>&copy; 2023 Sistema de Controle de Estoque. Todos os direitos reservados.</p>
-    </footer>
   </div>
   
-  <!-- Scripts -->
   <script src="JS/relatorios.js"></script>
+  <script>
+    function mudarTab(tabId) {
+      // Esconde todas as tabs
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // Remove a classe active de todas as abas
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // Ativa a tab selecionada
+      document.getElementById(tabId + '-tab').classList.add('active');
+      
+      // Ativa o botão da tab
+      document.querySelector(`.tab[onclick="mudarTab('${tabId}')"]`).classList.add('active');
+    }
+  </script>
 </body>
 </html>
