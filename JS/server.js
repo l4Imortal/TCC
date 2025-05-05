@@ -328,6 +328,35 @@ app.delete('/api/usuario/:id', (req, res) => {
   });
 });
 
+// Endpoint para autenticar usuário
+app.post('/api/login', (req, res) => {
+  const { username, password } = req.body;
+
+  // Validação básica
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Usuário e senha são obrigatórios' });
+  }
+
+  // Consultar o banco de dados para verificar as credenciais
+  const query = 'SELECT id_usuario, login FROM usuario WHERE login = ? AND senha = ?';
+  db.query(query, [username, password], (err, results) => {
+    if (err) {
+      console.error('Erro ao autenticar usuário:', err.message);
+      return res.status(500).send('Erro no servidor');
+    }
+
+    if (results.length === 0) {
+      return res.status(401).json({ error: 'Usuário ou senha inválidos' });
+    }
+
+    // Retornar sucesso com os dados do usuário
+    res.json({
+      message: 'Login bem-sucedido',
+      user: results[0]
+    });
+  });
+});
+
 // Iniciar o servidor
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
