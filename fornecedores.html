@@ -12,7 +12,6 @@
     <header>
       <h1>Fornecedores - StoQ</h1>
     </header>
-
     <nav>
       <ul>
         <li><a href="index.html">Página Inicial</a></li>
@@ -22,13 +21,12 @@
         <li><a href="relatorios.html">Relatórios</a></li>
       </ul>
     </nav>
-
     <main>
       <section class="suppliers">
         <h2>Lista de Fornecedores</h2>
         
         <div class="button-container">
-          <a href="#" id="btnNovoFornecedor" class="btn-novo-fornecedor">Novo Fornecedor</a>
+          <a href="#" id="novoFornecedorBtn" class="btn-novo-fornecedor">Novo Fornecedor</a>
         </div>
         
         <div class="table-container">
@@ -41,10 +39,11 @@
                 <th>Telefone</th>
                 <th>Email</th>
                 <th>Endereço</th>
+                <th>Data Cadastro</th>
                 <th>Ações</th>
               </tr>
             </thead>
-            <tbody id="tabelaFornecedores">
+            <tbody>
               <!-- Os fornecedores serão carregados dinamicamente pelo JavaScript -->
             </tbody>
           </table>
@@ -53,21 +52,24 @@
     </main>
   </div>
 
-  <!-- Popup para Cadastro de Novo Fornecedor -->
-  <div id="popupNovoFornecedor" class="popup-overlay">
-    <div class="popup">
+  <!-- Popup para Cadastro/Edição de Fornecedor -->
+  <div id="popupOverlay" class="popup-overlay">
+    <div id="popup" class="popup">
       <div class="popup-header">
-        <h2>Cadastrar Novo Fornecedor</h2>
-        <button id="btnFecharPopup" class="btn-fechar"><i class="fas fa-times"></i></button>
+        <h2 id="popupTitle">Cadastrar Novo Fornecedor</h2>
+        <button id="fecharPopup" class="btn-fechar"><i class="fas fa-times"></i></button>
       </div>
-      <form id="formNovoFornecedor">
+      <form id="fornecedorForm">
+        <input type="hidden" id="editMode" value="false">
+        <input type="hidden" id="codigoFornecedor" value="">
+        
         <div class="form-group">
           <label for="nomeFornecedor">Nome*:</label>
           <input type="text" id="nomeFornecedor" name="nomeFornecedor" required />
         </div>
         <div class="form-group">
-          <label for="cnpjFornecedor">CNPJ:</label>
-          <input type="text" id="cnpjFornecedor" name="cnpjFornecedor" />
+          <label for="cnpjFornecedor">CNPJ*:</label>
+          <input type="text" id="cnpjFornecedor" name="cnpjFornecedor" required />
         </div>
         <div class="form-group">
           <label for="telefoneFornecedor">Telefone:</label>
@@ -78,84 +80,36 @@
           <input type="email" id="emailFornecedor" name="emailFornecedor" />
         </div>
         <div class="form-group">
+          <label for="cepFornecedor">CEP:</label>
+          <input type="text" id="cepFornecedor" name="cepFornecedor" maxlength="9" />
+        </div>
+        <div class="form-group">
           <label for="enderecoFornecedor">Endereço:</label>
           <input type="text" id="enderecoFornecedor" name="enderecoFornecedor" />
         </div>
         <div class="form-actions">
-          <button type="button" class="btn-cancelar">Cancelar</button>
-          <button type="submit" class="btn-salvar">Salvar</button>
+          <button type="button" id="btnCancelar" class="btn-cancelar">Cancelar</button>
+          <button type="submit" id="salvarFornecedor" class="btn-salvar">Salvar</button>
         </div>
       </form>
     </div>
-  </div>
 
-  <!-- Popup para Edição de Fornecedor -->
-  <div id="popupEditarFornecedor" class="popup-overlay popup-editar">
-    <div class="popup">
-      <div class="popup-header">
-        <h2>Editar Fornecedor</h2>
-        <button id="btnFecharEditarPopup" class="btn-fechar"><i class="fas fa-times"></i></button>
-      </div>
-      <form id="formEditarFornecedor">
-        <div class="form-group">
-          <label for="editarNomeFornecedor">Nome*:</label>
-          <input type="text" id="editarNomeFornecedor" name="editarNomeFornecedor" required />
-        </div>
-        <div class="form-group">
-          <label for="editarCnpjFornecedor">CNPJ:</label>
-          <input type="text" id="editarCnpjFornecedor" name="editarCnpjFornecedor" />
-        </div>
-        <div class="form-group">
-          <label for="editarTelefoneFornecedor">Telefone:</label>
-          <input type="text" id="editarTelefoneFornecedor" name="editarTelefoneFornecedor" />
-        </div>
-        <div class="form-group">
-          <label for="editarEmailFornecedor">Email:</label>
-          <input type="email" id="editarEmailFornecedor" name="editarEmailFornecedor" />
-        </div>
-        <div class="form-group">
-          <label for="editarEnderecoFornecedor">Endereço:</label>
-          <input type="text" id="editarEnderecoFornecedor" name="editarEnderecoFornecedor" />
-        </div>
-        <div class="form-actions">
-          <button type="button" class="btn-cancelar">Cancelar</button>
-          <button type="submit" class="btn-salvar">Salvar</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Popup de Confirmação de Cadastro -->
-  <div id="popupConfirmacao" class="popup-overlay popup-confirmacao-overlay">
-    <div class="popup popup-confirmacao">
-      <div class="popup-header">
-        <h2>Sucesso!</h2>
-        <button id="btnFecharConfirmacao" class="btn-fechar"><i class="fas fa-times"></i></button>
-      </div>
-      <div class="popup-content">
-        <p>Fornecedor cadastrado com sucesso!</p>
-        <button class="btn-ok">OK</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Popup de Confirmação de Exclusão -->
-  <div id="popupExcluir" class="popup-overlay popup-confirmacao-overlay">
-    <div class="popup popup-confirmacao">
+    <!-- Popup de Confirmação de Exclusão -->
+    <div id="deletePopup" class="popup popup-confirmacao">
       <div class="popup-header">
         <h2>Confirmar Exclusão</h2>
-        <button class="btn-fechar"><i class="fas fa-times"></i></button>
+        <button id="btnFecharExcluir" class="btn-fechar"><i class="fas fa-times"></i></button>
       </div>
       <div class="popup-content">
-        <p id="mensagemExclusao">Tem certeza que deseja excluir este fornecedor?</p>
+        <p id="deleteMessage">Tem certeza que deseja excluir este fornecedor?</p>
         <div class="form-actions">
-          <button id="btnCancelarExcluir" class="btn-cancelar">Cancelar</button>
-          <button id="btnConfirmarExcluir" class="btn-excluir">Excluir</button>
+          <button id="cancelDelete" class="btn-cancelar">Cancelar</button>
+          <button id="confirmDelete" class="btn-excluir">Excluir</button>
         </div>
       </div>
     </div>
   </div>
 
-  <script src="JS/fornecedor.js"></script>
+  <script src="JS/fornecedores.js"></script>
 </body>
 </html>

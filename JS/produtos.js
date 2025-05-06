@@ -29,24 +29,42 @@ const fornecedoresCadastrados = []; // Lista vazia para simular nenhum fornecedo
 const fornecedorProduto = document.getElementById("fornecedorProduto");
 
 // Preenche o campo de fornecedores com os dados disponíveis
+// Função para carregar fornecedores do servidor
 function carregarFornecedores() {
   if (!fornecedorProduto) return;
   
-  if (fornecedoresCadastrados.length > 0) {
-    fornecedorProduto.innerHTML = ""; // Limpa as opções existentes
-    fornecedoresCadastrados.forEach((fornecedor) => {
-      const option = document.createElement("option");
-      option.value = fornecedor;
-      option.textContent = fornecedor;
-      fornecedorProduto.appendChild(option);
+  // Buscar fornecedores do servidor
+  fetch('http://localhost:3000/api/fornecedores')
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Erro ao buscar fornecedores');
+      }
+      return response.json();
+    })
+    .then(fornecedores => {
+      if (fornecedores && fornecedores.length > 0) {
+        fornecedorProduto.innerHTML = '<option value="" disabled selected>Selecione um fornecedor</option>'; // Opção padrão
+        
+        fornecedores.forEach((fornecedor) => {
+          const option = document.createElement("option");
+          option.value = fornecedor.nome; // Ou fornecedor.id_fornecedor, dependendo do que você precisa
+          option.textContent = fornecedor.nome;
+          fornecedorProduto.appendChild(option);
+        });
+        
+        fornecedorProduto.disabled = false; // Habilita o campo
+      } else {
+        fornecedorProduto.innerHTML = '<option value="" disabled selected>Nenhum fornecedor disponível</option>';
+        fornecedorProduto.disabled = true; // Desabilita o campo
+      }
+    })
+    .catch(error => {
+      console.error('Erro ao carregar fornecedores:', error);
+      fornecedorProduto.innerHTML = '<option value="" disabled selected>Erro ao carregar fornecedores</option>';
+      fornecedorProduto.disabled = true;
     });
-    fornecedorProduto.disabled = false; // Habilita o campo
-  } else {
-    fornecedorProduto.innerHTML =
-      '<option value="" disabled selected>Nenhum fornecedor disponível</option>';
-    fornecedorProduto.disabled = true; // Desabilita o campo
-  }
 }
+
 
 // Seleciona a tabela onde os produtos serão adicionados
 const tabelaProdutos = document.querySelector(".center-table tbody");
@@ -55,10 +73,13 @@ const tabelaProdutos = document.querySelector(".center-table tbody");
 function salvarProdutoNoServidor(produto) {
   // Adaptar o objeto produto para o formato esperado pela API
   const produtoParaAPI = {
-    nome: produto.nome,
-    descricao: produto.descricao || produto.categoria, // Usando categoria como descrição se não houver descrição
-    preco: produto.preco || 0, // Adicionando um preço padrão se não existir
-    categoria: produto.categoria
+    ean: produto.ean || "",
+    produto: produto.nome, // Usando 'nome' do formulário para o campo 'produto' do banco
+    categoria: produto.categoria,
+    un: produto.unidade || "UN",
+    data: produto.data || new Date().toISOString().split('T')[0], // Data atual no formato YYYY-MM-DD
+    fornecedor: produto.fornecedor || 'N/A',
+    estoque_minimo: produto.estoqueMinimo || 0
   };
 
   // Enviar para o servidor usando fetch API
@@ -107,13 +128,17 @@ function exibirProdutosNaTabela(produtos) {
   produtos.forEach(produto => {
     const linha = document.createElement('tr');
     linha.innerHTML = `
-      <td>${produto.nome}</td>
-      <td>${produto.descricao}</td>
-      <td>R$ ${produto.preco.toFixed(2)}</td>
+      <td>${produto.produto}</td>
       <td>${produto.categoria}</td>
-      <td>
-        <button class="btn-editar" data-id="${produto.id_produto}">Editar</button>
-        <button class="btn-excluir" data-id="${produto.id_produto}">Excluir</button>
+      <td>${produto.un || 'UN'}</td>
+      <td>${produto.fornecedor || 'N/A'}</td>
+      <td class="acoes-coluna">
+        <button class="btn-editar" data-id="${produto.id_produto}">
+          <i class="fas fa-edit"></i>
+        </button>
+        <button class="btn-excluir" data-id="${produto.id_produto}">
+          <i class="fas fa-trash-alt"></i>
+        </button>
       </td>
     `;
     tabela.appendChild(linha);
@@ -136,7 +161,7 @@ function exibirPopupExcluir(produto, linha) {
   if (!popupExcluir || !mensagemExclusao) return;
   
   produtoParaExcluir = { produto, linha }; // Armazena o produto e a linha
-  mensagemExclusao.textContent = `Tem certeza que deseja excluir o produto "${produto.nome}"?`;
+  mensagemExclusao.textContent = `Tem certeza que deseja excluir o produto "${produto.produto || produto.nome}"?`;
   popupExcluir.style.display = "flex";
 }
 
@@ -165,19 +190,32 @@ if (btnConfirmarExcluir) {
         return response.json();
       })
       .then(data => {
-        // Remove a linha da tabela
-        produtoParaExcluir.linha.remove();
+        // Verifica se a linha existe antes de tentar removê-la
+        if (produtoParaExcluir.linha && typeof produtoParaExcluir.linha.remove === 'function') {
+          produtoParaExcluir.linha.remove();
+        } else {
+          // Se não conseguir remover a linha específica, recarrega toda a tabela
+          carregarProdutosNaTabela();
+        }
+        
         // Fecha o popup
-        popupExcluir.style.display = "none";
+        if (popupExcluir) {
+          popupExcluir.style.display = "none";
+        }
+        
         produtoParaExcluir = null; // Reseta a variável
       })
       .catch(error => {
         console.error('Erro:', error);
         alert('Erro ao excluir produto: ' + error.message);
+        
+        // Recarrega a tabela mesmo em caso de erro para garantir consistência
+        carregarProdutosNaTabela();
       });
     }
   });
 }
+
 
 // Adiciona o evento de clique no botão "Excluir" para cada linha da tabela
 function adicionarEventosExcluir() {
@@ -192,9 +230,9 @@ function adicionarEventosExcluir() {
         .then(response => response.json())
         .then(produto => {
           if (Array.isArray(produto) && produto.length > 0) {
-            exibirPopupExcluir({id_produto: id, nome: produto[0].nome}, linha);
+            exibirPopupExcluir({id_produto: id, produto: produto[0].produto}, linha);
           } else {
-            exibirPopupExcluir({id_produto: id, nome: produto.nome}, linha);
+            exibirPopupExcluir({id_produto: id, produto: produto.produto}, linha);
           }
         })
         .catch(error => {
@@ -222,15 +260,81 @@ function preencherFormularioEdicao(produto) {
   produtoParaEditar = produto;
   
   // Preenche os campos do formulário de edição
+  const editarEanProduto = document.getElementById("editarEanProduto");
   const editarNomeProduto = document.getElementById("editarNomeProduto");
   const editarCategoriaProduto = document.getElementById("editarCategoriaProduto");
+  const editarUnidadeProduto = document.getElementById("editarUnidadeProduto");
+  const editarFornecedorProduto = document.getElementById("editarFornecedorProduto");
+  const editarEstoqueMinimo = document.getElementById("editarEstoqueMinimo");
   
-  if (editarNomeProduto) editarNomeProduto.value = produto.nome;
-  if (editarCategoriaProduto) editarCategoriaProduto.value = produto.categoria;
+  if (editarEanProduto) editarEanProduto.value = produto.ean || '';
+  if (editarNomeProduto) editarNomeProduto.value = produto.produto || '';
+  if (editarCategoriaProduto) editarCategoriaProduto.value = produto.categoria || '';
+  if (editarUnidadeProduto) editarUnidadeProduto.value = produto.un || 'UN';
+  if (editarEstoqueMinimo) editarEstoqueMinimo.value = produto.estoque_minimo || 0;
+  
+  // Carregar fornecedores no select de edição
+  carregarFornecedoresParaEdicao(produto.fornecedor);
   
   // Exibe o popup de edição
   popupEditarProduto.style.display = "flex";
 }
+
+// Função para carregar fornecedores no formulário de edição
+function carregarFornecedoresParaEdicao(fornecedorAtual) {
+  const editarFornecedorProduto = document.getElementById("editarFornecedorProduto");
+  if (!editarFornecedorProduto) return;
+  
+  // Buscar fornecedores do servidor
+  fetch('http://localhost:3000/api/fornecedores')
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Erro ao buscar fornecedores');
+      }
+      return response.json();
+    })
+    .then(fornecedores => {
+      editarFornecedorProduto.innerHTML = ''; // Limpa as opções existentes
+      
+      if (fornecedores && fornecedores.length > 0) {
+        // Adiciona opção padrão
+        const defaultOption = document.createElement("option");
+        defaultOption.value = "";
+        defaultOption.textContent = "Selecione um fornecedor";
+        defaultOption.disabled = true;
+        editarFornecedorProduto.appendChild(defaultOption);
+        
+        fornecedores.forEach((fornecedor) => {
+          const option = document.createElement("option");
+          option.value = fornecedor.nome; // Ou fornecedor.id_fornecedor
+          option.textContent = fornecedor.nome;
+          
+          // Se for o fornecedor atual do produto, seleciona esta opção
+          if (fornecedor.nome === fornecedorAtual) {
+            option.selected = true;
+          }
+          
+          editarFornecedorProduto.appendChild(option);
+        });
+        
+        editarFornecedorProduto.disabled = false;
+      } else {
+        const option = document.createElement("option");
+        option.value = "";
+        option.textContent = "Nenhum fornecedor disponível";
+        option.disabled = true;
+        option.selected = true;
+        editarFornecedorProduto.appendChild(option);
+        editarFornecedorProduto.disabled = true;
+      }
+    })
+    .catch(error => {
+      console.error('Erro ao carregar fornecedores para edição:', error);
+      editarFornecedorProduto.innerHTML = '<option value="" disabled selected>Erro ao carregar fornecedores</option>';
+      editarFornecedorProduto.disabled = true;
+    });
+}
+
 
 // Fecha o popup de edição
 if (btnFecharEditarPopup) {
@@ -249,21 +353,37 @@ if (formEditarProduto) {
     
     // Obter os valores do formulário
     const id = produtoParaEditar.id_produto;
+    const editarEanProduto = document.getElementById("editarEanProduto");
     const editarNomeProduto = document.getElementById("editarNomeProduto");
     const editarCategoriaProduto = document.getElementById("editarCategoriaProduto");
+    const editarUnidadeProduto = document.getElementById("editarUnidadeProduto");
+    const editarFornecedorProduto = document.getElementById("editarFornecedorProduto");
+    const editarEstoqueMinimo = document.getElementById("editarEstoqueMinimo");
     
-    const nome = editarNomeProduto ? editarNomeProduto.value : '';
-    const categoria = editarCategoriaProduto ? editarCategoriaProduto.value : '';
-    const descricao = categoria; // Usando categoria como descrição
-    const preco = produtoParaEditar.preco || 0;
+    // Verificar se os campos obrigatórios estão preenchidos
+    if (!editarNomeProduto || !editarNomeProduto.value.trim()) {
+      alert("O nome do produto é obrigatório");
+      return;
+    }
     
-    // Preparar o objeto para atualização
+    if (!editarCategoriaProduto || !editarCategoriaProduto.value.trim()) {
+      alert("A categoria do produto é obrigatória");
+      return;
+    }
+    
+    // Preparar o objeto para atualização - usando o formato esperado pela API
     const produtoAtualizado = {
-      nome,
-      descricao,
-      preco,
-      categoria
+      nome: editarNomeProduto ? editarNomeProduto.value : '',
+      descricao: '', // Se não tiver campo de descrição, envie vazio
+      preco: 0, // Se não tiver campo de preço, envie 0
+      categoria: editarCategoriaProduto ? editarCategoriaProduto.value : '',
+      ean: editarEanProduto ? editarEanProduto.value : '',
+      un: editarUnidadeProduto ? editarUnidadeProduto.value : 'UN',
+      fornecedor: editarFornecedorProduto ? editarFornecedorProduto.value : '',
+      estoque_minimo: editarEstoqueMinimo ? editarEstoqueMinimo.value : 0
     };
+    
+    console.log('Enviando dados para atualização:', produtoAtualizado);
     
     // Enviar para o servidor
     fetch(`http://localhost:3000/api/produtos/${id}`, {
@@ -274,23 +394,36 @@ if (formEditarProduto) {
       body: JSON.stringify(produtoAtualizado)
     })
     .then(response => {
+      console.log('Status da resposta:', response.status);
+      
+      // Se a resposta não for ok, converter para json e lançar erro com a mensagem
       if (!response.ok) {
-        throw new Error('Erro ao atualizar produto');
+        return response.json().then(errorData => {
+          throw new Error(errorData.error || 'Erro ao atualizar produto');
+        });
       }
+      
       return response.json();
     })
     .then(data => {
+      console.log('Resposta de sucesso:', data);
+      
       // Fechar o popup de edição
       popupEditarProduto.style.display = "none";
+      
+      // Exibir mensagem de sucesso
+      alert('Produto atualizado com sucesso!');
+      
       // Recarregar a tabela para refletir as alterações
       carregarProdutosNaTabela();
     })
     .catch(error => {
-      console.error('Erro:', error);
+      console.error('Erro detalhado:', error);
       alert('Erro ao atualizar produto: ' + error.message);
     });
   });
 }
+
 
 // Adiciona o evento de clique no botão "Editar" para cada linha da tabela
 function adicionarEventosEditar() {
@@ -339,18 +472,14 @@ function carregarProdutosNaTabela() {
                 : "Sem Foto"
             }
           </td>
-          <td>${produto.id_produto}</td>
-          <td>${produto.nome}</td>
+          <td>${produto.ean || 'N/A'}</td>
+          <td>${produto.produto || produto.nome}</td>
           <td>${produto.categoria}</td>
-          <td>${produto.unidade || 'Unidade'}</td>
+          <td>${produto.un || 'UN'}</td>
           <td>${produto.data || new Date().toLocaleDateString()}</td>
           <td>${produto.fornecedor || 'N/A'}</td>
-          <td>${produto.estoqueMinimo || '0'}</td>
-          <td>
-            <button class="btn-editar" data-id="${produto.id_produto}">
-              <i class="fas fa-edit"></i>
-            </button>
-            <button class="btn-excluir" data-i
+          <td>${produto.estoque_minimo || '0'}</td>
+          <td class="acoes-coluna">
             <button class="btn-editar" data-id="${produto.id_produto}">
               <i class="fas fa-edit"></i>
             </button>
@@ -397,17 +526,21 @@ if (formNovoProduto) {
     event.preventDefault(); // Evita o envio padrão do formulário
     
     // Captura os valores do formulário
+    const ean = formNovoProduto.eanProduto ? formNovoProduto.eanProduto.value : '';
     const nome = formNovoProduto.nomeProduto ? formNovoProduto.nomeProduto.value : '';
     const categoria = formNovoProduto.categoriaProduto ? formNovoProduto.categoriaProduto.value : '';
-    const descricao = categoria; // Usando categoria como descrição
-    const preco = 0; // Valor padrão para preço
+    const unidade = formNovoProduto.unidadeProduto ? formNovoProduto.unidadeProduto.value : 'UN';
+    const fornecedor = formNovoProduto.fornecedorProduto ? formNovoProduto.fornecedorProduto.value : '';
+    const estoqueMinimo = formNovoProduto.estoqueMinimo ? formNovoProduto.estoqueMinimo.value : 0;
     
     // Cria um objeto com os dados do produto
     const novoProduto = {
+      ean,
       nome,
-      descricao,
-      preco,
-      categoria
+      categoria,
+      unidade,
+      fornecedor,
+      estoqueMinimo
     };
     
     // Salva o produto no servidor
@@ -497,5 +630,83 @@ if (btnConfirmacaoCadastro) {
   btnConfirmacaoCadastro.addEventListener('click', function() {
     const popup = document.querySelector('#popupConfirmacaoCadastro');
     if (popup) popup.style.display = 'none';
+  });
+}
+// Salva as alterações feitas no produto
+if (formEditarProduto) {
+  formEditarProduto.addEventListener("submit", function (event) {
+    event.preventDefault();
+    
+    if (!produtoParaEditar) return;
+    
+    // Obter os valores do formulário
+    const id = produtoParaEditar.id_produto;
+    const editarEanProduto = document.getElementById("editarEanProduto");
+    const editarNomeProduto = document.getElementById("editarNomeProduto");
+    const editarCategoriaProduto = document.getElementById("editarCategoriaProduto");
+    const editarUnidadeProduto = document.getElementById("editarUnidadeProduto");
+    const editarFornecedorProduto = document.getElementById("editarFornecedorProduto");
+    const editarEstoqueMinimo = document.getElementById("editarEstoqueMinimo");
+    
+    // Validação básica
+    if (!editarNomeProduto || !editarNomeProduto.value.trim()) {
+      alert("O nome do produto é obrigatório");
+      return;
+    }
+    
+    if (!editarCategoriaProduto || !editarCategoriaProduto.value.trim()) {
+      alert("A categoria do produto é obrigatória");
+      return;
+    }
+    
+    // Preparar o objeto para atualização - usando EXATAMENTE os nomes de campos que o servidor espera
+    const produtoAtualizado = {
+      ean: editarEanProduto ? editarEanProduto.value : '',
+      produto: editarNomeProduto ? editarNomeProduto.value : '',
+      categoria: editarCategoriaProduto ? editarCategoriaProduto.value : '',
+      un: editarUnidadeProduto ? editarUnidadeProduto.value : 'UN',
+      data: new Date().toISOString().split('T')[0], // Data atual no formato YYYY-MM-DD
+      fornecedor: editarFornecedorProduto ? editarFornecedorProduto.value : '',
+      estoque_minimo: editarEstoqueMinimo ? editarEstoqueMinimo.value : 0
+    };
+    
+    console.log('Enviando dados para atualização:', produtoAtualizado);
+    
+    // Enviar para o servidor
+    fetch(`http://localhost:3000/api/produtos/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(produtoAtualizado)
+    })
+    .then(response => {
+      console.log('Status da resposta:', response.status);
+      
+      // Se a resposta não for ok, converter para json e lançar erro com a mensagem
+      if (!response.ok) {
+        return response.json().then(errorData => {
+          throw new Error(errorData.error || 'Erro ao atualizar produto');
+        });
+      }
+      
+      return response.json();
+    })
+    .then(data => {
+      console.log('Resposta de sucesso:', data);
+      
+      // Fechar o popup de edição
+      popupEditarProduto.style.display = "none";
+      
+      // Exibir mensagem de sucesso
+      alert('Produto atualizado com sucesso!');
+      
+      // Recarregar a tabela para refletir as alterações
+      carregarProdutosNaTabela();
+    })
+    .catch(error => {
+      console.error('Erro detalhado:', error);
+      alert('Erro ao atualizar produto: ' + error.message);
+    });
   });
 }

@@ -1,6 +1,5 @@
-let currentRowToDelete = null;
-      
 document.addEventListener("DOMContentLoaded", () => {
+  // Selecionar elementos do DOM
   const novoFornecedorButton = document.getElementById("novoFornecedorBtn");
   const popupOverlay = document.getElementById("popupOverlay");
   const popup = document.getElementById("popup");
@@ -15,6 +14,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const popupTitle = document.getElementById("popupTitle");
   const salvarFornecedorButton = document.getElementById("salvarFornecedor");
   const editModeInput = document.getElementById("editMode");
+  
+  let fornecedorParaExcluir = null; // Variável para armazenar o fornecedor a ser excluído
 
   // Função para gerar o próximo código
   function gerarProximoCodigo() {
@@ -52,274 +53,362 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Adicionar máscaras aos campos
-  document.getElementById("cnpjFornecedor").addEventListener("input", function(e) {
-    let value = e.target.value.replace(/\D/g, '');
-    if (value.length <= 14) {
-      e.target.value = formatarCNPJ(value);
-    } else {
-      e.target.value = formatarCNPJ(value.substring(0, 14));
-    }
-  });
+  const cnpjInput = document.getElementById("cnpjFornecedor");
+  if (cnpjInput) {
+    cnpjInput.addEventListener("input", function(e) {
+      let value = e.target.value.replace(/\D/g, '');
+      if (value.length <= 14) {
+        e.target.value = formatarCNPJ(value);
+      } else {
+        e.target.value = formatarCNPJ(value.substring(0, 14));
+      }
+    });
+  }
 
-  document.getElementById("contatoFornecedor").addEventListener("input", function(e) {
-    let value = e.target.value.replace(/\D/g, '');
-    if (value.length <= 11) {
-      e.target.value = formatarTelefone(value);
-    } else {
-      e.target.value = formatarTelefone(value.substring(0, 11));
-    }
-  });
+  const telefoneInput = document.getElementById("telefoneFornecedor");
+  if (telefoneInput) {
+    telefoneInput.addEventListener("input", function(e) {
+      let value = e.target.value.replace(/\D/g, '');
+      if (value.length <= 11) {
+        e.target.value = formatarTelefone(value);
+      } else {
+        e.target.value = formatarTelefone(value.substring(0, 11));
+      }
+    });
+  }
 
-  document.getElementById("estadoFornecedor").addEventListener("input", function(e) {
-    e.target.value = e.target.value.toUpperCase();
-  });
+  // Adicionar máscara de CEP
+  const cepInput = document.getElementById("cepFornecedor");
+  if (cepInput) {
+    cepInput.addEventListener("input", function(e) {
+      let cep = e.target.value.replace(/\D/g, ""); // Remove caracteres não numéricos
+      if (cep.length > 5) {
+        cep = cep.slice(0, 5) + "-" + cep.slice(5, 8); // Adiciona o hífen no formato XXXXX-XXX
+      }
+      e.target.value = cep; // Atualiza o valor do campo
+    });
+
+    // Buscar endereço pelo CEP
+    cepInput.addEventListener("blur", function() {
+      const cep = this.value.replace(/\D/g, '');
+      if (cep.length === 8) {
+        fetch(`https://viacep.com.br/ws/${cep}/json/`)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error("Erro ao buscar o CEP");
+            }
+            return response.json();
+          })
+          .then(data => {
+            if (data.erro) {
+              alert("CEP não encontrado!");
+              return;
+            }
+            
+            // Preencher o campo de endereço com os dados retornados
+            const enderecoCompleto = `${data.logradouro}, ${data.bairro}, ${data.localidade}-${data.uf}, ${cep}`;
+            document.getElementById("enderecoFornecedor").value = enderecoCompleto;
+          })
+          .catch(error => {
+            console.error("Erro ao buscar o CEP:", error);
+            alert("Não foi possível buscar o CEP. Tente novamente.");
+          });
+      } else if (cep.length > 0) {
+        alert("CEP inválido! Certifique-se de que possui 8 dígitos.");
+      }
+    });
+  }
 
   // Abrir o pop-up de novo fornecedor
-  novoFornecedorButton.addEventListener("click", (e) => {
-    e.preventDefault();
-    
-    // Resetar o formulário
-    fornecedorForm.reset();
-    
-    // Configurar para modo de criação
-    editModeInput.value = "false";
-    popupTitle.textContent = "Cadastrar Novo Fornecedor";
-    salvarFornecedorButton.textContent = "Cadastrar";
-    
-    // Gerar próximo código
-    codigoFornecedorInput.value = gerarProximoCodigo();
-    
-    // Mostrar popup
-    popupOverlay.style.display = "block";
-    popup.style.display = "block";
-    deletePopup.style.display = "none";
-  });
+  if (novoFornecedorButton) {
+    novoFornecedorButton.addEventListener("click", (e) => {
+      e.preventDefault();
+      
+      // Resetar o formulário
+      fornecedorForm.reset();
+      
+      // Configurar para modo de criação
+      editModeInput.value = "false";
+      popupTitle.textContent = "Cadastrar Novo Fornecedor";
+      salvarFornecedorButton.textContent = "Cadastrar";
+      
+      // Gerar próximo código
+      codigoFornecedorInput.value = gerarProximoCodigo();
+      
+      // Mostrar popup
+      popupOverlay.style.display = "block";
+      popup.style.display = "block";
+      deletePopup.style.display = "none";
+    });
+  }
 
   // Fechar o pop-up
-  fecharPopupButton.addEventListener("click", () => {
-    popupOverlay.style.display = "none";
-    popup.style.display = "none";
-  });
-
-  // Fechar popup ao clicar no overlay
-  popupOverlay.addEventListener("click", (e) => {
-    if (e.target === popupOverlay) {
+  if (fecharPopupButton) {
+    fecharPopupButton.addEventListener("click", () => {
       popupOverlay.style.display = "none";
       popup.style.display = "none";
-      deletePopup.style.display = "none";
-      currentRowToDelete = null;
-    }
-  });
+    });
+  }
+
+  // Fechar popup ao clicar no overlay
+  if (popupOverlay) {
+    popupOverlay.addEventListener("click", (e) => {
+      if (e.target === popupOverlay) {
+        popupOverlay.style.display = "none";
+        popup.style.display = "none";
+        deletePopup.style.display = "none";
+        fornecedorParaExcluir = null;
+      }
+    });
+  }
 
   // Cadastrar/Editar fornecedor
-  fornecedorForm.addEventListener("submit", (e) => {
-    e.preventDefault();
+  if (fornecedorForm) {
+    fornecedorForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const isEditMode = editModeInput.value === "true";
+      const id_fornecedor = codigoFornecedorInput.value;
+      const nome = document.getElementById("nomeFornecedor").value;
+      const cnpj = document.getElementById("cnpjFornecedor").value;
+      const telefone = document.getElementById("telefoneFornecedor").value;
+      const email = document.getElementById("emailFornecedor").value;
+      const endereco = document.getElementById("enderecoFornecedor").value;
 
-    const isEditMode = editModeInput.value === "true";
-    const codigo = codigoFornecedorInput.value;
-    const nome = document.getElementById("nomeFornecedor").value;
-    const cnpj = document.getElementById("cnpjFornecedor").value;
-    const cep = document.getElementById("cepFornecedor").value;
-    const endereco = document.getElementById("enderecoFornecedor").value;
-    const cidade = document.getElementById("cidadeFornecedor").value;
-    const estado = document.getElementById("estadoFornecedor").value;
-    const email = document.getElementById("emailFornecedor").value;
-    const contato = document.getElementById("contatoFornecedor").value;
-    const numero = document.getElementById("numeroFornecedor").value;
-
-    if (isEditMode) {
-      // Atualizar linha existente
-      const rowToUpdate = document.querySelector(`tr[data-id="${codigo}"]`);
-      if (rowToUpdate) {
-        rowToUpdate.cells[0].textContent = codigo;
-        rowToUpdate.cells[1].textContent = nome;
-        rowToUpdate.cells[2].textContent = cnpj;
-        rowToUpdate.cells[3].textContent = cep;
-        rowToUpdate.cells[4].textContent = endereco;
-        rowToUpdate.cells[5].textContent = cidade;
-        rowToUpdate.cells[6].textContent = estado;
-        rowToUpdate.cells[7].textContent = email;
-        rowToUpdate.cells[8].textContent = contato;
-
-        alert("Fornecedor atualizado com sucesso!");
+      if (isEditMode) {
+        // Atualizar fornecedor existente
+        fetch(`http://localhost:3000/api/fornecedores/${id_fornecedor}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            nome,
+            cnpj,
+            telefone,
+            email,
+            endereco
+          })
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Erro ao atualizar fornecedor');
+          }
+          return response.json();
+        })
+        .then(data => {
+          alert("Fornecedor atualizado com sucesso!");
+          // Recarregar a lista de fornecedores
+          carregarFornecedores();
+          // Fechar o popup
+          popupOverlay.style.display = "none";
+          popup.style.display = "none";
+        })
+        .catch(error => {
+          console.error('Erro:', error);
+          alert('Erro ao atualizar fornecedor: ' + error.message);
+        });
+      } else {
+        // Cadastrar novo fornecedor
+        fetch('http://localhost:3000/api/fornecedores', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            nome,
+            cnpj,
+            telefone,
+            email,
+            endereco
+          })
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Erro ao cadastrar fornecedor');
+          }
+          return response.json();
+        })
+        .then(data => {
+          alert("Fornecedor cadastrado com sucesso!");
+          // Recarregar a lista de fornecedores
+          carregarFornecedores();
+          // Fechar o popup
+          popupOverlay.style.display = "none";
+          popup.style.display = "none";
+        })
+        .catch(error => {
+          console.error('Erro:', error);
+          alert('Erro ao cadastrar fornecedor: ' + error.message);
+        });
       }
-    } else {
-      // Adicionar nova linha
-      const novaLinha = document.createElement("tr");
-      novaLinha.setAttribute("data-id", codigo);
-
-      const dataCadastro = new Date().toLocaleDateString();
-
-      novaLinha.innerHTML = `
-        <td>${codigo}</td>
-        <td>${nome}</td>
-        <td>${cnpj}</td>
-        <td>${cep}</td>
-        <td>${endereco}</td>
-        <td>${numero}</td>
-        <td>${cidade}</td>
-        <td>${estado}</td>
-        <td>${email}</td>
-        <td>${contato}</td>
-        <td>${dataCadastro}</td>
-        <td>
-          <a href="#" class="edit-button" onclick="showEditPopup(event, ${codigo})">
-            <i class="fas fa-edit" style="color: #4caf50; font-size: 20px;"></i>
-          </a>
-          <a href="#" class="delete-button" onclick="showDeletePopup(event, '${nome}')">
-            <i class="fas fa-trash" style="color: #dc3545; font-size: 20px;"></i>
-          </a>
-        </td>
-      `;
-      tabelaBody.appendChild(novaLinha);
-
-      alert("Fornecedor cadastrado com sucesso!");
-    }
-
-    // Fechar o pop-up
-    popupOverlay.style.display = "none";
-    popup.style.display = "none";
-  });
+    });
+  }
 
   // Manipuladores de eventos para o popup de exclusão
-  confirmDeleteButton.addEventListener("click", () => {
-    if (currentRowToDelete) {
-      currentRowToDelete.remove();
-      
-      // Fechar o popup
+  if (confirmDeleteButton) {
+    confirmDeleteButton.addEventListener("click", () => {
+      if (fornecedorParaExcluir) {
+        const id = fornecedorParaExcluir;
+        
+        // Excluir do servidor
+        fetch(`http://localhost:3000/api/fornecedores/${id}`, {
+          method: 'DELETE'
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Erro ao excluir fornecedor');
+          }
+          return response.json();
+        })
+        .then(data => {
+          // Fechar o popup
+          popupOverlay.style.display = "none";
+          deletePopup.style.display = "none";
+          
+          // Mostrar mensagem de sucesso
+          alert("Fornecedor excluído com sucesso!");
+          
+          // Recarregar a lista de fornecedores
+          carregarFornecedores();
+          
+          // Limpar a referência
+          fornecedorParaExcluir = null;
+        })
+        .catch(error => {
+          console.error('Erro:', error);
+          alert('Erro ao excluir fornecedor: ' + error.message);
+        });
+      }
+    });
+  }
+
+  if (cancelDeleteButton) {
+    cancelDeleteButton.addEventListener("click", () => {
       popupOverlay.style.display = "none";
       deletePopup.style.display = "none";
-      
-      // Mostrar mensagem de sucesso
-      alert("Fornecedor excluído com sucesso!");
-      
-      // Limpar a referência
-      currentRowToDelete = null;
-    }
-  });
-
-  cancelDeleteButton.addEventListener("click", () => {
-    popupOverlay.style.display = "none";
-    deletePopup.style.display = "none";
-    currentRowToDelete = null;
-  });
-});
-
-// Função para mostrar o popup de edição
-function showEditPopup(event, id) {
-  event.preventDefault();
-  
-  // Obter a linha da tabela
-  const row = event.target.closest("tr");
-  if (!row) return;
-  
-  // Obter os dados da linha
-  const codigo = row.cells[0].textContent;
-  const nome = row.cells[1].textContent;
-  const cnpj = row.cells[2].textContent;
-  const cidade = row.cells[3].textContent;
-  const estado = row.cells[4].textContent;
-  const email = row.cells[5].textContent;
-  const contato = row.cells[6].textContent;
-  
-  // Preencher o formulário
-  document.getElementById("editMode").value = "true";
-  document.getElementById("popupTitle").textContent = "Editar Fornecedor";
-  document.getElementById("salvarFornecedor").textContent = "Atualizar";
-  
-  document.getElementById("codigoFornecedor").value = codigo;
-  document.getElementById("nomeFornecedor").value = nome;
-  document.getElementById("cnpjFornecedor").value = cnpj;
-  document.getElementById("cidadeFornecedor").value = cidade;
-  document.getElementById("estadoFornecedor").value = estado;
-  document.getElementById("emailFornecedor").value = email;
-  document.getElementById("contatoFornecedor").value = contato;
-  
-  // Mostrar o popup
-  document.getElementById("popupOverlay").style.display = "block";
-  document.getElementById("popup").style.display = "block";
-}
-
-// Função para mostrar o popup de exclusão
-function showDeletePopup(event, itemName) {
-  // Prevent default behavior and event bubbling
-  event.preventDefault();
-  event.stopPropagation();
-  
-  console.log("Delete popup triggered for:", itemName); // Debug log
-  
-  const popupOverlay = document.getElementById("popupOverlay");
-  const deletePopup = document.getElementById("deletePopup");
-  const deleteMessage = document.getElementById("deleteMessage");
-  
-  if (!popupOverlay || !deletePopup || !deleteMessage) {
-    console.error("Popup elements not found!");
-    return;
-  }
-  
-  // Store the row to be deleted - make sure to get the actual row
-  const clickedElement = event.target.closest("a.delete-button");
-  if (!clickedElement) {
-    console.error("Delete button not found!");
-    return;
-  }
-  
-  currentRowToDelete = clickedElement.closest("tr");
-  if (!currentRowToDelete) {
-    console.error("Table row not found!");
-    return;
-  }
-  
-  // Set the confirmation message
-  deleteMessage.textContent = `Tem certeza que deseja excluir "${itemName}"?`;
-  
-  // Show the popup
-  popupOverlay.style.display = "block";
-  deletePopup.style.display = "block";
-  
-  return false; // Prevent any default behavior
-}
-
-// Adicionar máscara de CEP com hífen automaticamente
-document.getElementById("cepFornecedor").addEventListener("input", function (e) {
-  let cep = e.target.value.replace(/\D/g, ""); // Remove caracteres não numéricos
-
-  if (cep.length > 5) {
-    cep = cep.slice(0, 5) + "-" + cep.slice(5, 8); // Adiciona o hífen no formato XXXXX-XXX
+      fornecedorParaExcluir = null;
+    });
   }
 
-  e.target.value = cep; // Atualiza o valor do campo
-});
-
-// Buscar informações do CEP usando a API ViaCEP
-document.getElementById("cepFornecedor").addEventListener("blur", function (e) {
-  const cep = e.target.value.replace(/\D/g, ""); // Remove caracteres não numéricos
-
-  if (cep.length === 8) {
-    // Chamar a API ViaCEP
-    fetch(`https://viacep.com.br/ws/${cep}/json/`)
+  // Função para editar fornecedor
+  function editarFornecedor(id) {
+    // Buscar dados do fornecedor no servidor
+    fetch(`http://localhost:3000/api/fornecedores/${id}`)
       .then(response => {
         if (!response.ok) {
-          throw new Error("Erro ao buscar o CEP");
+          throw new Error('Erro ao buscar fornecedor');
         }
         return response.json();
       })
-      .then(data => {
-        if (data.erro) {
-          alert("CEP não encontrado!");
-          return;
-        }
-
-        // Preencher os campos com os dados retornados
-        document.getElementById("enderecoFornecedor").value = data.logradouro || "";
-        document.getElementById("cidadeFornecedor").value = data.localidade || "";
-        document.getElementById("estadoFornecedor").value = data.uf || "";
+      .then(fornecedor => {
+        // Preencher o formulário
+        document.getElementById("editMode").value = "true";
+        document.getElementById("popupTitle").textContent = "Editar Fornecedor";
+        document.getElementById("salvarFornecedor").textContent = "Atualizar";
+        
+        document.getElementById("codigoFornecedor").value = fornecedor.id_fornecedor;
+        document.getElementById("nomeFornecedor").value = fornecedor.nome;
+        document.getElementById("cnpjFornecedor").value = fornecedor.cnpj;
+        document.getElementById("telefoneFornecedor").value = fornecedor.telefone || "";
+        document.getElementById("emailFornecedor").value = fornecedor.email || "";
+        document.getElementById("enderecoFornecedor").value = fornecedor.endereco || "";
+        
+        // Mostrar o popup
+        popupOverlay.style.display = "block";
+        popup.style.display = "block";
       })
       .catch(error => {
-        console.error("Erro ao buscar o CEP:", error);
-        alert("Não foi possível buscar o CEP. Tente novamente.");
+        console.error('Erro ao buscar fornecedor:', error);
+        alert('Erro ao buscar dados do fornecedor: ' + error.message);
       });
-  } else {
-    alert("CEP inválido! Certifique-se de que possui 8 dígitos.");
   }
+
+  // Função para excluir fornecedor
+  function excluirFornecedor(id, nome) {
+    fornecedorParaExcluir = id;
+    
+    // Configurar mensagem de confirmação
+    if (deleteMessage) {
+      deleteMessage.textContent = `Tem certeza que deseja excluir "${nome}"?`;
+    }
+    
+    // Mostrar popup de confirmação
+    popupOverlay.style.display = "block";
+    deletePopup.style.display = "block";
+  }
+
+  // Função para adicionar eventos aos botões após carregar os fornecedores
+  function adicionarEventosBotoes() {
+    // Adicionar eventos aos botões de editar
+    document.querySelectorAll(".btn-editar").forEach(botao => {
+      botao.addEventListener("click", function() {
+        const id = this.getAttribute("data-id");
+        editarFornecedor(id);
+      });
+    });
+
+    // Adicionar eventos aos botões de excluir
+    document.querySelectorAll(".btn-excluir").forEach(botao => {
+      botao.addEventListener("click", function() {
+        const id = this.getAttribute("data-id");
+        const nome = this.closest("tr").cells[1].textContent;
+        excluirFornecedor(id, nome);
+      });
+    });
+  }
+
+  // Função para carregar fornecedores do servidor
+  function carregarFornecedores() {
+    fetch('http://localhost:3000/api/fornecedores')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Erro ao buscar fornecedores');
+        }
+        return response.json();
+      })
+      .then(fornecedores => {
+        if (!tabelaBody) {
+          console.error('Elemento da tabela não encontrado');
+          return;
+        }
+        
+        tabelaBody.innerHTML = ""; // Limpa a tabela
+        
+        fornecedores.forEach(fornecedor => {
+          const novaLinha = document.createElement("tr");
+          novaLinha.setAttribute("data-id", fornecedor.id_fornecedor);
+          
+          
+          novaLinha.innerHTML = `
+  <td>${fornecedor.id_fornecedor}</td>
+  <td>${fornecedor.nome}</td>
+  <td>${fornecedor.cnpj || ""}</td>
+  <td>${fornecedor.telefone || ""}</td>
+  <td>${fornecedor.email || ""}</td>
+  <td>${fornecedor.endereco || ""}</td>
+  <td>-</td>
+  <td class="acoes-coluna">
+    <button class="btn-editar" data-id="${fornecedor.id_fornecedor}">
+      <i class="fas fa-edit"></i>
+    </button>
+    <button class="btn-excluir" data-id="${fornecedor.id_fornecedor}">
+      <i class="fas fa-trash-alt"></i>
+    </button>
+  </td>
+`;
+
+          tabelaBody.appendChild(novaLinha);
+        });
+        
+        // Adicionar eventos aos botões após carregar os fornecedores
+        adicionarEventosBotoes();
+      })
+      .catch(error => {
+        console.error('Erro ao carregar fornecedores:', error);
+        alert('Erro ao carregar fornecedores: ' + error.message);
+      });
+  }
+
+  // Carregar fornecedores ao iniciar a página
+  carregarFornecedores();
 });
