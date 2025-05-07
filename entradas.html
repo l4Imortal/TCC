@@ -36,7 +36,7 @@
             <table>
               <thead>
                 <tr>
-                  <th>Código</th>
+                  <th>EAN</th>
                   <th>Produto</th>
                   <th>Quantidade</th>
                   <th>Fornecedor</th>
@@ -46,38 +46,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr data-id="1">
-                  <td>1</td>
-                  <td>Notebook</td>
-                  <td>10</td>
-                  <td>Distribuidora ABC</td>
-                  <td>NF-12345</td>
-                  <td>10/03/2023</td>
-                  <td>
-                    <a href="#" class="edit-button" onclick="showEditPopup(event, 1)">
-                      <i class="fas fa-edit" style="color: #4caf50; font-size: 20px"></i>
-                    </a>
-                    <a href="#" class="delete-button" onclick="showDeletePopup(event, 'Notebook')">
-                      <i class="fas fa-trash" style="color: #dc3545; font-size: 20px"></i>
-                    </a>
-                  </td>
-                </tr>
-                <tr data-id="2">
-                  <td>2</td>
-                  <td>Mouse</td>
-                  <td>50</td>
-                  <td>Fornecedora XYZ</td>
-                  <td>NF-54321</td>
-                  <td>12/03/2023</td>
-                  <td>
-                    <a href="#" class="edit-button" onclick="showEditPopup(event, 2)">
-                      <i class="fas fa-edit" style="color: #4caf50; font-size: 20px"></i>
-                    </a>
-                    <a href="#" class="delete-button" onclick="showDeletePopup(event, 'Mouse')">
-                      <i class="fas fa-trash" style="color: #dc3545; font-size: 20px"></i>
-                    </a>
-                  </td>
-                </tr>
+                <!-- Nenhum produto pré-cadastrado -->
               </tbody>
             </table>
           </div>
@@ -93,9 +62,6 @@
       <h3 id="popupTitle">Cadastrar Nova Entrada</h3>
       <form id="entradaForm">
         <input type="hidden" id="editMode" value="false">
-        
-        <label for="codigoEntrada">Código</label>
-        <input type="text" id="codigoEntrada" readonly />
         
         <label for="dataEntrada">Data de Entrada*</label>
         <input type="date" id="dataEntrada" required />
@@ -120,265 +86,36 @@
         </select>
         
         <label for="notaFiscalEntrada">Nota Fiscal*</label>
-        <input type="text" id="notaFiscalEntrada" required />
+        <input type="text" id="notaFiscalEntrada" maxlength="11" required />
+        
+        <label for="eanEntrada">EAN*</label>
+        <input 
+          type="text" 
+          id="eanEntrada" 
+          maxlength="13" 
+          required 
+        />
         
         <label for="valorEntrada">Valor Unitário (R$)</label>
         <input type="number" id="valorEntrada" step="0.01" min="0" />
-        
-        <label for="observacoesEntrada">Observações</label>
-        <input type="text" id="observacoesEntrada" placeholder="Observações adicionais" />
         
         <div class="button-group">
           <button type="submit" id="salvarEntrada">Salvar</button>
           <button type="button" id="cancelarEntrada">Cancelar</button>
         </div>
-        </form>
-        </div>
+      </form>
+    </div>
         
-        <!-- Popup de confirmação de exclusão -->
-        <div class="popup" id="deletePopup">
-          <h3>Confirmar Exclusão</h3>
-          <p id="deleteMessage">Tem certeza que deseja excluir esta entrada?</p>
-          <div class="button-group">
-            <button type="button" id="confirmDelete">Excluir</button>
-            <button type="button" id="cancelDelete">Cancelar</button>
-          </div>
-        </div>
+    <!-- Popup de confirmação de exclusão -->
+    <div class="popup" id="deletePopup">
+      <h3>Confirmar Exclusão</h3>
+      <p id="deleteMessage">Tem certeza que deseja excluir esta entrada?</p>
+      <div class="button-group">
+        <button type="button" id="confirmDelete">Excluir</button>
+        <button type="button" id="cancelDelete">Cancelar</button>
+      </div>
+    </div>
         
-        <script>
-          // Global variable to store the row to be deleted
-          let currentRowToDelete = null;
-          
-          document.addEventListener("DOMContentLoaded", () => {
-            const novaEntradaBtn = document.getElementById("novaEntradaBtn");
-            const popupOverlay = document.getElementById("popupOverlay");
-            const entradaPopup = document.getElementById("entradaPopup");
-            const entradaForm = document.getElementById("entradaForm");
-            const codigoEntradaInput = document.getElementById("codigoEntrada");
-            const popupTitle = document.getElementById("popupTitle");
-            const editModeInput = document.getElementById("editMode");
-            const cancelarEntradaBtn = document.getElementById("cancelarEntrada");
-            const deletePopup = document.getElementById("deletePopup");
-            const confirmDeleteBtn = document.getElementById("confirmDelete");
-            const cancelDeleteBtn = document.getElementById("cancelDelete");
-            
-            // Função para gerar o próximo código
-            function gerarProximoCodigo() {
-              // Buscar todos os códigos existentes na tabela
-              const rows = document.querySelector("table tbody").querySelectorAll("tr");
-              let maxCodigo = 0;
-              
-              // Encontrar o maior código
-              rows.forEach(row => {
-                const codigo = parseInt(row.cells[0].textContent);
-                if (!isNaN(codigo) && codigo > maxCodigo) {
-                  maxCodigo = codigo;
-                }
-              });
-              
-              // Retornar o próximo código (maior + 1)
-              return maxCodigo + 1;
-            }
-            
-            // Abrir o popup de nova entrada
-            novaEntradaBtn.addEventListener("click", (e) => {
-              e.preventDefault();
-              
-              // Resetar o formulário
-              entradaForm.reset();
-              
-              // Configurar para modo de criação
-              editModeInput.value = "false";
-              popupTitle.textContent = "Cadastrar Nova Entrada";
-              
-              // Definir a data atual como padrão
-              const today = new Date().toISOString().split('T')[0];
-              document.getElementById("dataEntrada").value = today;
-              
-              // Gerar próximo código
-              codigoEntradaInput.value = gerarProximoCodigo();
-              
-              // Mostrar popup
-              popupOverlay.style.display = "block";
-              entradaPopup.style.display = "block";
-            });
-            
-            // Fechar o popup ao clicar no overlay
-            popupOverlay.addEventListener("click", (e) => {
-              if (e.target === popupOverlay) {
-                popupOverlay.style.display = "none";
-                entradaPopup.style.display = "none";
-                deletePopup.style.display = "none";
-                currentRowToDelete = null;
-              }
-            });
-            
-            // Fechar o popup ao clicar em cancelar
-            cancelarEntradaBtn.addEventListener("click", () => {
-              popupOverlay.style.display = "none";
-              entradaPopup.style.display = "none";
-            });
-            
-            // Processar o formulário de entrada
-            entradaForm.addEventListener("submit", (e) => {
-              e.preventDefault();
-              
-              const isEditMode = editModeInput.value === "true";
-              const codigo = codigoEntradaInput.value;
-              const dataEntrada = document.getElementById("dataEntrada").value;
-              const produtoSelect = document.getElementById("produtoEntrada");
-              const produto = produtoSelect.options[produtoSelect.selectedIndex].text;
-              const quantidade = document.getElementById("quantidadeEntrada").value;
-              const fornecedorSelect = document.getElementById("fornecedorEntrada");
-              const fornecedor = fornecedorSelect.options[fornecedorSelect.selectedIndex].text;
-              const notaFiscal = document.getElementById("notaFiscalEntrada").value;
-              
-              // Formatar a data para exibição
-              const dataFormatada = new Date(dataEntrada).toLocaleDateString('pt-BR');
-              
-              if (isEditMode) {
-                // Modo de edição - atualizar linha existente
-                const rowToUpdate = document.querySelector(`tr[data-id="${codigo}"]`);
-                if (rowToUpdate) {
-                  rowToUpdate.cells[1].textContent = produto;
-                  rowToUpdate.cells[2].textContent = quantidade;
-                  rowToUpdate.cells[3].textContent = fornecedor;
-                  rowToUpdate.cells[4].textContent = notaFiscal;
-                  rowToUpdate.cells[5].textContent = dataFormatada;
-                  
-                  alert("Entrada atualizada com sucesso!");
-                }
-              } else {
-                // Modo de criação - adicionar nova linha
-                const tabelaBody = document.querySelector("table tbody");
-                const novaLinha = document.createElement("tr");
-                novaLinha.setAttribute("data-id", codigo);
-                
-                novaLinha.innerHTML = `
-                  <td>${codigo}</td>
-                  <td>${produto}</td>
-                  <td>${quantidade}</td>
-                  <td>${fornecedor}</td>
-                  <td>${notaFiscal}</td>
-                  <td>${dataFormatada}</td>
-                  <td>
-                    <a href="#" class="edit-button" onclick="showEditPopup(event, ${codigo})">
-                      <i class="fas fa-edit" style="color: #4caf50; font-size: 20px;"></i>
-                    </a>
-                    <a href="#" class="delete-button" onclick="showDeletePopup(event, '${produto}')">
-                      <i class="fas fa-trash" style="color: #dc3545; font-size: 20px;"></i>
-                    </a>
-                  </td>
-                `;
-                tabelaBody.appendChild(novaLinha);
-                
-                alert("Entrada cadastrada com sucesso!");
-              }
-              
-              // Fechar o popup
-              popupOverlay.style.display = "none";
-              entradaPopup.style.display = "none";
-            });
-            
-            // Configurar botões do popup de exclusão
-            confirmDeleteBtn.addEventListener("click", () => {
-              if (currentRowToDelete) {
-                currentRowToDelete.remove();
-                
-                // Fechar o popup
-                popupOverlay.style.display = "none";
-                deletePopup.style.display = "none";
-                
-                // Mostrar mensagem de sucesso
-                alert("Entrada excluída com sucesso!");
-                
-                // Limpar a referência
-                currentRowToDelete = null;
-              }
-            });
-            
-            cancelDeleteBtn.addEventListener("click", () => {
-              popupOverlay.style.display = "none";
-              deletePopup.style.display = "none";
-              currentRowToDelete = null;
-            });
-          });
-        
-          // Função para mostrar o popup de edição
-          function showEditPopup(event, id) {
-            event.preventDefault();
-            
-            // Obter a linha da tabela
-            const row = event.target.closest("tr");
-            if (!row) return;
-            
-            // Obter os dados da linha
-            const codigo = row.cells[0].textContent;
-            const produto = row.cells[1].textContent;
-            const quantidade = row.cells[2].textContent;
-            const fornecedor = row.cells[3].textContent;
-            const notaFiscal = row.cells[4].textContent;
-            const dataEntrada = row.cells[5].textContent;
-            
-            // Converter a data para o formato do input date (YYYY-MM-DD)
-            const dataParts = dataEntrada.split('/');
-            const dataFormatada = dataParts.length === 3 ? 
-              `${dataParts[2]}-${dataParts[1].padStart(2, '0')}-${dataParts[0].padStart(2, '0')}` : '';
-            
-            // Preencher o formulário
-            document.getElementById("editMode").value = "true";
-            document.getElementById("popupTitle").textContent = "Editar Entrada";
-            
-            document.getElementById("codigoEntrada").value = codigo;
-            document.getElementById("dataEntrada").value = dataFormatada;
-            
-            // Selecionar o produto no dropdown
-            const produtoSelect = document.getElementById("produtoEntrada");
-            for (let i = 0; i < produtoSelect.options.length; i++) {
-              if (produtoSelect.options[i].text === produto) {
-                produtoSelect.selectedIndex = i;
-                break;
-              }
-            }
-            
-            document.getElementById("quantidadeEntrada").value = quantidade;
-            
-            // Selecionar o fornecedor no dropdown
-            const fornecedorSelect = document.getElementById("fornecedorEntrada");
-            for (let i = 0; i < fornecedorSelect.options.length; i++) {
-              if (fornecedorSelect.options[i].text === fornecedor) {
-                fornecedorSelect.selectedIndex = i;
-                break;
-              }
-            }
-            
-            document.getElementById("notaFiscalEntrada").value = notaFiscal;
-            
-            // Mostrar o popup
-            document.getElementById("popupOverlay").style.display = "block";
-            document.getElementById("entradaPopup").style.display = "block";
-          }
-        
-          // Função para mostrar o popup de exclusão
-          function showDeletePopup(event, itemName) {
-            event.preventDefault();
-            event.stopPropagation();
-            
-            const popupOverlay = document.getElementById("popupOverlay");
-            const deletePopup = document.getElementById("deletePopup");
-            const deleteMessage = document.getElementById("deleteMessage");
-            
-            // Armazenar a linha a ser excluída
-            currentRowToDelete = event.target.closest("tr");
-            
-            // Definir a mensagem de confirmação
-            deleteMessage.textContent = `Tem certeza que deseja excluir a entrada do produto "${itemName}"?`;
-            
-            // Mostrar o popup
-            popupOverlay.style.display = "block";
-            deletePopup.style.display = "block";
-          }
-        </script>
-        </body>
-        </html>
-        
+    <script src="JS/entradas.js"></script>
+  </body>
+</html>
