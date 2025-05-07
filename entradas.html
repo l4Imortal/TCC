@@ -17,9 +17,10 @@
       </header>
       <nav>
         <ul>
+          <li><a href="index.html">Página Inicial</a></li>
           <li><a href="produtos.html">Produtos</a></li>
           <li><a href="fornecedores.html">Fornecedores</a></li>
-          <li><a href="entradas.html">Entradas</a></li> 
+          <li><a href="entradas.html">Entradas</a></li>
           <li><a href="saidas.html">Saídas</a></li>
           <li><a href="relatorios.html">Relatórios</a></li>
         </ul>
@@ -41,6 +42,8 @@
                   <th>Quantidade</th>
                   <th>Fornecedor</th>
                   <th>Nota Fiscal</th>
+                  <th>Valor Unitário</th>
+                  <th>Responsável</th>
                   <th>Data Entrada</th>
                   <th>Ações</th>
                 </tr>
@@ -61,46 +64,79 @@
     <div class="popup" id="entradaPopup">
       <h3 id="popupTitle">Cadastrar Nova Entrada</h3>
       <form id="entradaForm">
-        <input type="hidden" id="editMode" value="false">
-        
-        <label for="dataEntrada">Data de Entrada*</label>
-        <input type="date" id="dataEntrada" required />
-        
-        <label for="produtoEntrada">Produto*</label>
-        <select id="produtoEntrada" required>
-          <option value="">Selecione um produto</option>
-          <option value="1">Notebook</option>
-          <option value="2">Mouse</option>
-          <option value="3">Teclado</option>
-          <option value="4">Monitor</option>
-        </select>
-        
-        <label for="quantidadeEntrada">Quantidade*</label>
-        <input type="number" id="quantidadeEntrada" min="1" required />
-        
-        <label for="fornecedorEntrada">Fornecedor*</label>
-        <select id="fornecedorEntrada" required>
-          <option value="">Selecione um fornecedor</option>
-          <option value="1">Distribuidora ABC</option>
-          <option value="2">Fornecedora XYZ</option>
-        </select>
-        
-        <label for="notaFiscalEntrada">Nota Fiscal*</label>
-        <input type="text" id="notaFiscalEntrada" maxlength="11" required />
-        
-        <label for="eanEntrada">EAN*</label>
-        <input 
-          type="text" 
-          id="eanEntrada" 
-          maxlength="13" 
-          required 
-        />
-        
-        <label for="valorEntrada">Valor Unitário (R$)</label>
-        <input type="number" id="valorEntrada" step="0.01" min="0" />
-        
-        <div class="button-group">
-          <button type="submit" id="salvarEntrada">Salvar</button>
+        <input type="hidden" id="editMode" value="false" />
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="dataEntrada">Data de Entrada*</label>
+            <input type="date" id="dataEntrada" required />
+          </div>
+          <div class="form-group">
+            <label for="eanEntrada">EAN*</label>
+            <input
+              type="text"
+              id="eanEntrada"
+              placeholder="Digite o EAN do produto"
+              maxlength="13"
+              pattern="\d{13}"
+              title="O EAN deve conter exatamente 13 dígitos."
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="produtoEntrada">Produto*</label>
+            <select id="produtoEntrada" required>
+              <option value="">Selecione um produto</option>
+              <!-- Opções serão preenchidas dinamicamente -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="quantidadeEntrada">Quantidade*</label>
+            <input type="number" id="quantidadeEntrada" min="1" required />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="fornecedorEntrada">Fornecedor*</label>
+            <select id="fornecedorEntrada" required>
+              <option value="">Selecione um fornecedor</option>
+              <!-- Opções serão preenchidas dinamicamente -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="notaFiscalEntrada">Nota Fiscal*</label>
+            <input
+              type="text"
+              id="notaFiscalEntrada"
+              placeholder="Digite o número da Nota Fiscal"
+              maxlength="11"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="valorEntrada">Valor Unitário (R$)</label>
+            <input type="number" id="valorEntrada" step="0.01" min="0" />
+          </div>
+          <div class="form-group">
+            <label for="responsavelEntrada">Responsável*</label>
+            <input
+              type="text"
+              id="responsavelEntrada"
+              placeholder="Nome do responsável"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="popup-buttons">
+          <button type="submit" id="salvarEntrada">Cadastrar</button>
           <button type="button" id="cancelarEntrada">Cancelar</button>
         </div>
       </form>

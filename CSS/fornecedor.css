@@ -30,13 +30,13 @@ nav ul {
   border-radius: 8px;
   flex-wrap: wrap;
 }
- 
+
 nav ul li {
   flex: 1;
   min-width: 100px;
   text-align: center;
 }
- 
+
 nav ul li a {
   display: block;
   padding: 0.75rem 1rem;
@@ -46,7 +46,7 @@ nav ul li a {
   transition: background-color 0.3s ease;
   font-size: 0.9rem;
 }
- 
+
 nav ul li a:hover {
   background-color: #555;
 }
@@ -60,11 +60,14 @@ table {
   overflow: hidden;
 }
 
-table, th, td {
+table,
+th,
+td {
   border: 1px solid #ddd;
 }
 
-th, td {
+th,
+td {
   padding: 10px;
   text-align: center;
 }
@@ -84,8 +87,16 @@ tbody tr:hover {
 
 /* Estilo dos botões */
 .button-container {
-  text-align: right;
+  display: flex;
+  justify-content: space-between; /* Mantém o título à esquerda e o botão à direita */
+  align-items: center;
   margin-bottom: 20px;
+}
+
+.button-container h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  text-align: left; /* Alinha o título à esquerda */
 }
 
 #novoFornecedorBtn {
@@ -97,6 +108,7 @@ tbody tr:hover {
   font-weight: bold;
   transition: background-color 0.3s ease;
   display: inline-block;
+  border: none; /* Remove a borda */
 }
 
 #novoFornecedorBtn:hover {
@@ -203,7 +215,7 @@ td a img:hover {
   color: #555;
 }
 
-.form-group input, 
+.form-group input,
 .form-group select {
   width: 100%;
   padding: 12px;
@@ -324,11 +336,11 @@ td a img:hover {
     flex-direction: column;
     gap: 0;
   }
-  
+
   .form-actions {
     flex-direction: column;
   }
-  
+
   .btn-salvar,
   .btn-cancelar,
   .btn-excluir {

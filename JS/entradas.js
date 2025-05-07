@@ -13,6 +13,29 @@ document.addEventListener("DOMContentLoaded", () => {
   const confirmDeleteBtn = document.getElementById("confirmDelete");
   const cancelDeleteBtn = document.getElementById("cancelDelete");
 
+  const produtoSelect = document.getElementById("produtoEntrada");
+  const fornecedorSelect = document.getElementById("fornecedorEntrada");
+
+  // Produtos e fornecedores cadastrados (exemplo)
+  const produtosCadastrados = ["Notebook", "Mouse", "Teclado"];
+  const fornecedoresCadastrados = ["Distribuidora ABC", "Fornecedora XYZ"];
+
+  // Preencher o campo de produtos
+  produtosCadastrados.forEach((produto) => {
+    const option = document.createElement("option");
+    option.value = produto;
+    option.textContent = produto;
+    produtoSelect.appendChild(option);
+  });
+
+  // Preencher o campo de fornecedores
+  fornecedoresCadastrados.forEach((fornecedor) => {
+    const option = document.createElement("option");
+    option.value = fornecedor;
+    option.textContent = fornecedor;
+    fornecedorSelect.appendChild(option);
+  });
+
   // Abrir o popup de nova entrada
   novaEntradaBtn.addEventListener("click", (e) => {
     e.preventDefault();
@@ -53,24 +76,26 @@ document.addEventListener("DOMContentLoaded", () => {
   entradaForm.addEventListener("submit", (e) => {
     e.preventDefault();
 
-    // Obter os valores do formulário
-    const dataEntrada = document.getElementById("dataEntrada").value;
+    const ean = document.getElementById("eanEntrada").value;
     const produto = document.getElementById("produtoEntrada").value;
     const quantidade = document.getElementById("quantidadeEntrada").value;
     const fornecedor = document.getElementById("fornecedorEntrada").value;
-    const notaFiscalInput = document.getElementById("notaFiscalEntrada").value;
-    const ean = document.getElementById("eanEntrada").value;
+    const notaFiscal = document.getElementById("notaFiscalEntrada").value;
+    const valorUnitario = document.getElementById("valorEntrada").value;
+    const responsavel = document.getElementById("responsavelEntrada").value;
+    const dataEntrada = document.getElementById("dataEntrada").value;
 
-    // Formatar a Nota Fiscal com zeros à esquerda
-    const notaFiscalFormatada = formatarNotaFiscalComZeros(notaFiscalInput);
+    // Formatar a Nota Fiscal com zeros à esquerda e pontos
+    const notaFiscalFormatada = `N° ${formatarNotaFiscalComZeros(notaFiscal)}`;
 
-    // Adicionar a nova entrada na tabela
     adicionarEntradaNaTabela(
       ean,
       produto,
       quantidade,
       fornecedor,
-      `N° ${notaFiscalFormatada}`,
+      notaFiscalFormatada,
+      valorUnitario,
+      responsavel,
       dataEntrada
     );
 
@@ -118,17 +143,22 @@ document.addEventListener("DOMContentLoaded", () => {
     quantidade,
     fornecedor,
     notaFiscal,
+    valorUnitario,
+    responsavel,
     dataEntrada
   ) {
     const tabela = document.querySelector("table tbody");
     const novaLinha = document.createElement("tr");
 
+    // Adicionar os dados na ordem correta
     novaLinha.innerHTML = `
       <td>${ean}</td>
       <td>${produto}</td>
       <td>${quantidade}</td>
       <td>${fornecedor}</td>
       <td>${notaFiscal}</td>
+      <td>${valorUnitario}</td>
+      <td>${responsavel}</td>
       <td>${dataEntrada}</td>
       <td>
         <button class="edit-button"><i class="fas fa-edit"></i></button>

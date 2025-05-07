@@ -179,34 +179,34 @@ td .delete-button {
   outline: none; /* Remove o contorno ao focar */
 }
 
-/* Estilo do popup */
-.popup-overlay {
+/* Escurecimento da tela ao abrir o popup */
+#popupOverlay {
   display: none;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.5); /* Escurece a tela */
   z-index: 999;
 }
 
+/* Estilo do popup */
 .popup {
+  background-color: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  width: 500px;
+  max-width: 90%;
   display: none;
   position: fixed;
-  left: 50%;
   top: 50%;
+  left: 50%;
   transform: translate(-50%, -50%);
-  background-color: #ffffff;
-  padding: 30px;
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
   z-index: 1000;
-  width: 90%;
-  max-width: 600px;
-  max-height: 90%;
+  max-height: 90vh;
   overflow-y: auto;
-  font-family: Arial, sans-serif;
 }
 
 .popup h3 {
@@ -214,33 +214,74 @@ td .delete-button {
   font-size: 1.8rem;
   color: #333;
   text-align: center;
-  border-bottom: 3px solid #4caf50;
+  border-bottom: 3px solid #4caf50; /* Verde para o título */
   padding-bottom: 10px;
   margin-bottom: 20px;
 }
 
 .popup form {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  grid-template-columns: 1fr 1fr; /* Duas colunas */
+  gap: 20px; /* Espaçamento entre os campos */
 }
 
-.popup label {
+.popup .form-row {
+  display: contents; /* Permite que os campos sejam organizados no grid */
+}
+
+.popup .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px; /* Espaçamento entre o label e o campo */
+}
+
+.popup-buttons {
+  grid-column: span 2; /* Ocupa as duas colunas */
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px; /* Espaçamento acima dos botões */
+}
+
+.popup-buttons button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
   font-weight: bold;
-  color: #555;
-  margin-bottom: 5px;
+  width: 48%; /* Botões ocupam metade da largura */
+}
+
+#salvarSaida {
+  background-color: #c82333; /* Vermelho para cadastrar */
+  color: white;
+}
+
+#salvarSaida:hover {
+  background-color: #b21f2d;
+  transform: scale(1.05);
+}
+
+#cancelarSaida {
+  background-color: #6c757d; /* Cinza para cancelar */
+  color: white;
+}
+
+#cancelarSaida:hover {
+  background-color: #5a6268;
+  transform: scale(1.05);
 }
 
 .popup input,
 .popup select {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
+  margin-bottom: 20px;
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 1rem;
   box-sizing: border-box;
-  background-color: #f9f9f9;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .popup input:focus,
@@ -251,42 +292,23 @@ td .delete-button {
   background-color: #ffffff;
 }
 
-.button-group {
-  grid-column: span 2;
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
-}
-
-.button-group button {
-  padding: 12px 20px;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  font-weight: bold;
-}
-
-#cadastrarEntrada,
 #salvarEntrada {
-  background-color: #4caf50;
+  background-color: #4caf50; /* Verde para cadastrar */
   color: white;
 }
 
-#cadastrarEntrada:hover,
 #salvarEntrada:hover {
   background-color: #45a049;
   transform: scale(1.05);
 }
 
 #cancelarEntrada {
-  background-color: #dc3545;
+  background-color: #6c757d; /* Cinza para cancelar */
   color: white;
 }
 
 #cancelarEntrada:hover {
-  background-color: #c82333;
+  background-color: #5a6268;
   transform: scale(1.05);
 }
 

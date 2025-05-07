@@ -51,12 +51,14 @@ main {
 .product-info h2 {
   margin-bottom: 20px;
 }
+/* Estilo da tabela de produtos */
 .table-container {
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 20px;
   background-color: #f9f9f9;
 }
+
 .center-table {
   width: 100%;
   border-collapse: collapse;
@@ -64,21 +66,28 @@ main {
   border-radius: 8px;
   overflow: hidden;
 }
+
 .center-table th,
 .center-table td {
   border: 1px solid #ddd;
   padding: 10px;
   text-align: center;
 }
+
 .center-table th {
-  background-color: #f2f2f2;
+  background-color: #333;
+  color: white;
+  font-weight: bold;
 }
+
 .center-table tbody tr:nth-child(even) {
   background-color: #f9f9f9;
 }
+
 .center-table tbody tr:hover {
   background-color: #f1f1f1;
 }
+
 h1,
 h2,
 h3,
@@ -414,6 +423,32 @@ a {
   pointer-events: none; /* Evita que o clique seja registrado no ícone */
 }
 
+/* Estilo dos botões de ação */
+.edit-button i,
+.delete-button i {
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.edit-button i {
+  color: #4caf50; /* Verde para editar */
+}
+
+.delete-button i {
+  color: #dc3545; /* Vermelho para excluir */
+}
+
+.edit-button i:hover {
+  transform: scale(1.2);
+  color: #45a049; /* Tom mais claro de verde no hover */
+}
+
+.delete-button i:hover {
+  transform: scale(1.2);
+  color: #c82333; /* Tom mais claro de vermelho no hover */
+}
+
 /* Popup de edição */
 #popupEditarProduto {
   position: fixed;
@@ -443,4 +478,34 @@ a {
 
 #popupEditarProduto .popup button {
   margin: 10px 5px;
+}
+
+/* Estilo para o container de botões */
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.button-container h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  text-align: left; /* Alinha o título à esquerda */
+}
+
+.button-container .btn-novo-produto {
+  text-decoration: none;
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 0; /* Remove qualquer ajuste vertical */
+}
+
+.button-container .btn-novo-produto:hover {
+  background-color: #45a049;
 }
