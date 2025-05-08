@@ -1,84 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gerenciar Usuários - Controle de Estoque</title>
-  <link rel="stylesheet" href="CSS/gerenciar_usuarios.css" />
-</head>
-<body>
-  <div class="container">
-    <div class="dashboard">
-      <h1>Gerenciar Usuários - Controle de Estoque</h1>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gerenciar Usuários - Controle de Estoque</title>
+    <link rel="stylesheet" href="CSS/gerenciar_usuarios.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      integrity="sha512-dyZ88mC6Up2uqS4hK4t6b8bqk5Rkz9f6Q4Q1z5R5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <div class="dashboard">
+        <h1>Gerenciar Usuários - Controle de Estoque</h1>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="index.html">Início</a></li>
+          <li><a href="produtos.html">Produtos</a></li>
+          <li><a href="fornecedores.html">Fornecedores</a></li>
+          <li><a href="entradas.html">Entradas</a></li>
+          <li><a href="saidas.html">Saídas</a></li>
+          <li><a href="relatorios.html">Relatórios</a></li>
+          <li><a href="administrador.html">Administrador</a></li>
+        </ul>
+      </nav>
+      <main>
+        <section class="user-management">
+          <h2>Usuários Cadastrados</h2>
+          <button
+            class="create-button"
+            onclick="window.location.href='criar_usuario.html'"
+          >
+            Criar Novo Usuário
+          </button>
+          <table class="user-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Usuário</th>
+                <th>Email</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>admin</td>
+                <td>admin</td>
+                <td>admin@email.com</td>
+                <td>
+                  <button class="edit-button" title="Editar">Editar</button>
+                  <button class="delete-button" title="Excluir">Excluir</button>
+                </td>
+              </tr>
+              <!-- Usuários serão carregados dinamicamente aqui -->
+            </tbody>
+          </table>
+        </section>
+      </main>
     </div>
-    <nav>
-      <ul>
-        <li><a href="index.html">Início</a></li>
-        <li><a href="produtos.html">Produtos</a></li>
-        <li><a href="fornecedores.html">Fornecedores</a></li>
-        <li><a href="entradas.html">Entradas</a></li>
-        <li><a href="saidas.html">Saídas</a></li>
-        <li><a href="relatorios.html">Relatórios</a></li>
-        <li><a href="administrador.html">Administrador</a></li>
-      </ul>
-    </nav>
-    <main>
-      <section class="user-management">
-        <h2>Usuários Cadastrados</h2>
-        <button class="create-button" onclick="window.location.href='criar_usuario.html'">
-          Criar Novo Usuário
-        </button>
-        <table class="user-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Nome de Usuário</th>
-              <th>Email</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>1</td>
-              <td>admin</td>
-              <td>admin@example.com</td>
-              <td>
-                <button class="edit-button" onclick="window.location.href='editar_usuario.html?id=1'">Editar</button>
-                <button class="delete-button" onclick="excluirUsuario(1)">Excluir</button>
-              </td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>usuario1</td>
-              <td>usuario1@example.com</td>
-              <td>
-                <button class="edit-button" onclick="window.location.href='editar_usuario.html?id=2'">Editar</button>
-                <button class="delete-button" onclick="excluirUsuario(2)">Excluir</button>
-              </td>
-            </tr>
-            <tr>
-              <td>3</td>
-              <td>usuario2</td>
-              <td>usuario2@example.com</td>
-              <td>
-                <button class="edit-button" onclick="window.location.href='editar_usuario.html?id=3'">Editar</button>
-                <button class="delete-button" onclick="excluirUsuario(3)">Excluir</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-    </main>
-  </div>
-  <footer>
-    <p>© 2025 Controle de Estoque</p>
-  </footer>
-  <script>
-    function excluirUsuario(id) {
-      if (confirm("Tem certeza de que deseja excluir este usuário?")) {
-        console.log(`Usuário com ID ${id} excluído.`);
-      }
-    }
-  </script>
-</body>
+
+    <!-- Popup de confirmação -->
+    <div id="confirmPopup" class="popup-overlay" style="display: none">
+      <div class="popup-box">
+        <div class="popup-icon">
+          <span class="popup-warning-icon">&#x26A0;&#xFE0F;</span>
+        </div>
+        <h2>Confirmar Exclusão</h2>
+        <hr class="popup-divider" />
+        <p id="popupMessage">
+          Tem certeza que deseja excluir o usuário "<span
+            id="usuarioNome"
+          ></span
+          >"?
+        </p>
+        <div class="popup-actions">
+          <button id="confirmDeleteBtn" class="popup-delete-button">
+            Excluir
+          </button>
+          <button id="cancelBtn" class="popup-cancel-button">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <p>© 2025 Controle de Estoque</p>
+    </footer>
+    <script src="JS/gerenciar_usuarios.js"></script>
+  </body>
 </html>

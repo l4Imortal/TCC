@@ -1,121 +1,290 @@
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #1c1429;
-  }
-  
-  nav ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    justify-content: space-around;
-    background-color: #333;
-    border-radius: 8px;
-  }
-  
-  nav ul li a {
-    display: block;
-    padding: 10px 20px;
-    color: #fff;
-    text-decoration: none;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
-  }
-  
-  nav ul li a:hover {
-    background-color: #555;
-  }
-  
-  .dashboard {
-    background-color: #e0e0e0;
-    padding: 20px;
-    text-align: center;
-    border-bottom: 2px solid #ccc;
-  }
-  
-  .container {
-    width: 90%;
-    max-width: 1200px;
-    margin: 20px auto;
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border: 2px solid #ccc;
-  }
-  
-  .user-management {
-    background-color: #e0e0e0;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .user-management h2 {
-    text-align: center;
-  }
-  
-  button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-family: Arial, sans-serif;
-    font-size: 14px;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    margin-bottom: 10px;
-    color: white;
-  }
-  
-  .create-button {
-    background-color: green;
-  }
-  
-  .create-button:hover {
-    background-color: #45a049;
-  }
-  
-  .edit-button {
-    background-color: blue;
-  }
-  
-  .edit-button:hover {
-    background-color: #1e90ff;
-  }
-  
-  .delete-button {
-    background-color: red;
-  }
-  
-  .delete-button:hover {
-    background-color: #ff4500;
-  }
-  
-  .user-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-  
-  .user-table th,
-  .user-table td {
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: left;
-  }
-  
-  .user-table th {
-    background-color: #f2f2f2;
-  }
-  
-  footer {
-    text-align: center;
-    padding: 10px;
-    background-color: #333;
-    color: white;
-    position: fixed;
-    width: 100%;
-    bottom: 0;
-  }
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #1c1429;
+}
+
+nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  justify-content: space-around;
+  background-color: #333;
+  border-radius: 8px;
+}
+
+nav ul li a {
+  display: block;
+  padding: 10px 20px;
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+nav ul li a:hover {
+  background-color: #555;
+}
+
+.dashboard {
+  background-color: #e0e0e0;
+  padding: 20px;
+  text-align: center;
+  border-bottom: 2px solid #ccc;
+}
+
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 20px auto;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border: 2px solid #ccc;
+}
+
+.user-management {
+  background-color: #e0e0e0;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.user-management h2 {
+  text-align: center;
+}
+
+button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  margin-bottom: 10px;
+  color: white;
+}
+
+.create-button {
+  background-color: green;
+}
+
+.create-button:hover {
+  background-color: #45a049;
+}
+
+.edit-button,
+.delete-button {
+  padding: 6px 16px;
+  font-size: 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 400;
+}
+
+.edit-button {
+  background: #4caf50;
+  color: #fff;
+}
+
+.delete-button {
+  background: #e53935;
+  color: #fff;
+  margin-left: 4px;
+}
+
+.edit-button:disabled,
+.delete-button:disabled {
+  background-color: #ccc;
+  color: #fff;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Animação de hover para botões da tabela */
+.edit-button,
+.delete-button {
+  transition: background 0.2s, transform 0.2s;
+}
+
+.edit-button:hover {
+  background: #388e3c;
+  transform: scale(1.05);
+}
+
+.delete-button:hover {
+  background: #b71c1c;
+  transform: scale(1.05);
+}
+
+.user-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 20px;
+  border: none;
+  background: transparent;
+}
+
+.user-table th,
+.user-table td {
+  border: none;
+  padding: 12px 8px;
+  /* Adicione as linhas verticais */
+  border-right: 1px solid #888;
+}
+
+.user-table th:first-child,
+.user-table td:first-child {
+  border-left: 1px solid #888;
+}
+
+.user-table th:last-child,
+.user-table td:last-child {
+  border-right: 1px solid #888; /* Garante a borda na última coluna */
+}
+
+.user-table th {
+  background-color: #333;
+  color: #fff;
+  font-weight: bold;
+  text-align: left;
+  /* Cantos arredondados só nas extremidades */
+  border-radius: 0;
+}
+
+.user-table th:first-child {
+  border-top-left-radius: 8px;
+}
+
+.user-table th:last-child {
+  border-top-right-radius: 8px;
+}
+
+.user-table tr {
+  background-color: #fff;
+}
+
+.user-table td {
+  color: #222;
+}
+
+.user-table tbody tr:hover {
+  background-color: #f2f2f2;
+}
+
+footer {
+  text-align: center;
+  padding: 10px;
+  background-color: #333;
+  color: white;
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+}
+
+/* Popup Overlay */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+/* Popup Box */
+.popup-box {
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px 24px 24px 24px;
+  min-width: 350px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
+  text-align: center;
+  position: relative;
+}
+
+.popup-icon {
+  margin-bottom: 8px;
+}
+
+.popup-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.cancel-button {
+  border: none;
+  border-radius: 8px;
+  padding: 12px 32px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.2s;
+}
+
+/* Mantenha apenas para o popup */
+.popup-delete-button,
+.popup-cancel-button {
+  padding: 12px 32px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.popup-delete-button {
+  background: #e53935;
+  color: #fff;
+}
+
+.popup-cancel-button {
+  background: #757575;
+  color: #fff;
+  margin-left: 16px;
+}
+
+/* Animação de hover para botões do popup */
+.popup-delete-button,
+.popup-cancel-button {
+  transition: background 0.2s, transform 0.2s;
+}
+
+.popup-delete-button:hover {
+  background: #b71c1c;
+  transform: scale(1.05);
+}
+
+.popup-cancel-button:hover {
+  background: #424242;
+  transform: scale(1.05);
+}
+
+/* Ícone de aviso do popup */
+.popup-warning-icon {
+  font-size: 48px;
+  color: #ffa000;
+}
+
+/* Linha divisória do popup */
+.popup-divider {
+  border: 1px solid #e53935;
+  margin: 10px 0;
+}
+
+/* Mensagem do popup */
+#popupMessage {
+  margin-bottom: 24px;
+  color: #555;
+}
