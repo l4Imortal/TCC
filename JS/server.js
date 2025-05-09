@@ -12,7 +12,7 @@ app.use(express.json());
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: 'cursoads',
+  password: '1234',
   database: 'estoque'
 });
 
@@ -562,6 +562,202 @@ app.use((req, res) => {
 app.use((err, req, res, next) => {
   console.error('Erro não tratado:', err);
   res.status(500).json({ error: 'Erro interno no servidor' });
+});
+
+// GET - Listar todas as entradas
+app.get('/api/entradas', (req, res) => {
+  db.query(
+    'SELECT ean, produto, quantidade, fornecedor, nota_fiscal, valor_unitario, responsavel, data_saida FROM entradas',
+    (err, results) => {
+      if (err) {
+        return handleError(res, err, 'Erro ao buscar entradas');
+      }
+      res.json(results);
+    }
+  );
+});
+
+// GET - Buscar uma entrada específica por EAN
+app.get('/api/entradas/:ean', (req, res) => {
+  const ean = req.params.ean;
+  db.query(
+    'SELECT ean, produto, quantidade, fornecedor, nota_fiscal, valor_unitario, responsavel, data_saida FROM entradas WHERE ean = ?',
+    [ean],
+    (err, results) => {
+      if (err) {
+        return handleError(res, err, 'Erro ao buscar entrada');
+      }
+      if (results.length === 0) {
+        return res.status(404).json({ error: 'Entrada não encontrada' });
+      }
+      res.json(results[0]);
+    }
+  );
+});
+
+// POST - Criar uma nova entrada
+app.post('/api/entradas', (req, res) => {
+  const { ean, produto, quantidade, fornecedor, nota_fiscal, valor_unitario, responsavel, data_saida } = req.body;
+
+  // Validação básica
+  if (!ean || !produto || !quantidade || !fornecedor || !nota_fiscal || !valor_unitario || !responsavel || !data_saida) {
+    return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
+  }
+
+  const query = 'INSERT INTO entradas (ean, produto, quantidade, fornecedor, nota_fiscal, valor_unitario, responsavel, data_saida) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+  db.query(query, [ean, produto, quantidade, fornecedor, nota_fiscal, valor_unitario, responsavel, data_saida], (err, results) => {
+    if (err) {
+      return handleError(res, err, 'Erro ao cadastrar entrada');
+    }
+
+    res.status(201).json({
+      id: results.insertId,
+      message: 'Entrada cadastrada com sucesso'
+    });
+  });
+});
+
+// PUT - Atualizar uma entrada existente
+app.put('/api/entradas/:ean', (req, res) => {
+  const ean = req.params.ean;
+  const { produto, quantidade, fornecedor, nota_fiscal, valor_unitario, responsavel, data_saida } = req.body;
+
+  // Validação básica
+  if (!produto || !quantidade || !fornecedor || !nota_fiscal || !valor_unitario || !responsavel || !data_saida) {
+    return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
+  }
+
+  const query = 'UPDATE entradas SET produto = ?, quantidade = ?, fornecedor = ?, nota_fiscal = ?, valor_unitario = ?, responsavel = ?, data_saida = ? WHERE ean = ?';
+  db.query(query, [produto, quantidade, fornecedor, nota_fiscal, valor_unitario, responsavel, data_saida, ean], (err, results) => {
+    if (err) {
+      return handleError(res, err, 'Erro ao atualizar entrada');
+    }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: 'Entrada não encontrada' });
+    }
+
+    res.json({
+      message: 'Entrada atualizada com sucesso'
+    });
+  });
+});
+
+// DELETE - Remover uma entrada
+app.delete('/api/entradas/:ean', (req, res) => {
+  const ean = req.params.ean;
+
+  db.query('DELETE FROM entradas WHERE ean = ?', [ean], (err, results) => {
+    if (err) {
+      return handleError(res, err, 'Erro ao excluir entrada');
+    }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: 'Entrada não encontrada' });
+    }
+
+    res.json({
+      message: 'Entrada excluída com sucesso'
+    });
+  });
+});
+
+// GET - Listar todas as saídas
+app.get('/api/saidas', (req, res) => {
+  db.query(
+    'SELECT ean, produto, quantidade, fornecedor, nota_fiscal, valor_unitario, responsavel, data_saida FROM saidas',
+    (err, results) => {
+      if (err) {
+        return handleError(res, err, 'Erro ao buscar saídas');
+      }
+      res.json(results);
+    }
+  );
+});
+
+// GET - Buscar uma saída específica por EAN
+app.get('/api/saidas/:ean', (req, res) => {
+  const ean = req.params.ean;
+  db.query(
+    'SELECT ean, produto, quantidade, fornecedor, nota_fiscal, valor_unitario, responsavel, data_saida FROM saidas WHERE ean = ?',
+    [ean],
+    (err, results) => {
+      if (err) {
+        return handleError(res, err, 'Erro ao buscar saída');
+      }
+      if (results.length === 0) {
+        return res.status(404).json({ error: 'Saída não encontrada' });
+      }
+      res.json(results[0]);
+    }
+  );
+});
+
+// POST - Criar uma nova saída
+app.post('/api/saidas', (req, res) => {
+  const { ean, produto, quantidade, fornecedor, nota_fiscal, valor_unitario, responsavel, data_saida } = req.body;
+
+  // Validação básica
+  if (!ean || !produto || !quantidade || !fornecedor || !nota_fiscal || !valor_unitario || !responsavel || !data_saida) {
+    return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
+  }
+
+  const query = 'INSERT INTO saidas (ean, produto, quantidade, fornecedor, nota_fiscal, valor_unitario, responsavel, data_saida) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+  db.query(query, [ean, produto, quantidade, fornecedor, nota_fiscal, valor_unitario, responsavel, data_saida], (err, results) => {
+    if (err) {
+      return handleError(res, err, 'Erro ao cadastrar saída');
+    }
+
+    res.status(201).json({
+      id: results.insertId,
+      message: 'Saída cadastrada com sucesso'
+    });
+  });
+});
+
+// PUT - Atualizar uma saída existente
+app.put('/api/saidas/:ean', (req, res) => {
+  const ean = req.params.ean;
+  const { produto, quantidade, fornecedor, nota_fiscal, valor_unitario, responsavel, data_saida } = req.body;
+
+  // Validação básica
+  if (!produto || !quantidade || !fornecedor || !nota_fiscal || !valor_unitario || !responsavel || !data_saida) {
+    return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
+  }
+
+  const query = 'UPDATE saidas SET produto = ?, quantidade = ?, fornecedor = ?, nota_fiscal = ?, valor_unitario = ?, responsavel = ?, data_saida = ? WHERE ean = ?';
+  db.query(query, [produto, quantidade, fornecedor, nota_fiscal, valor_unitario, responsavel, data_saida, ean], (err, results) => {
+    if (err) {
+      return handleError(res, err, 'Erro ao atualizar saída');
+    }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: 'Saída não encontrada' });
+    }
+
+    res.json({
+      message: 'Saída atualizada com sucesso'
+    });
+  });
+});
+
+// DELETE - Remover uma saída
+app.delete('/api/saidas/:ean', (req, res) => {
+  const ean = req.params.ean;
+
+  db.query('DELETE FROM saidas WHERE ean = ?', [ean], (err, results) => {
+    if (err) {
+      return handleError(res, err, 'Erro ao excluir saída');
+    }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: 'Saída não encontrada' });
+    }
+
+    res.json({
+      message: 'Saída excluída com sucesso'
+    });
+  });
 });
 
 // Iniciar o servidor
