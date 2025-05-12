@@ -12,7 +12,7 @@ app.use(express.json());
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: '1234',
+  password: '26216911a',
   database: 'estoque'
 });
 
@@ -553,16 +553,7 @@ app.get('/api/relatorios/movimentacoes', (req, res) => {
   });
 });
 
-// Tratamento de rotas não encontradas
-app.use((req, res) => {
-  res.status(404).json({ error: 'Rota não encontrada' });
-});
 
-// Tratamento global de erros
-app.use((err, req, res, next) => {
-  console.error('Erro não tratado:', err);
-  res.status(500).json({ error: 'Erro interno no servidor' });
-});
 
 // GET - Listar todas as entradas
 app.get('/api/entradas', (req, res) => {
@@ -758,6 +749,135 @@ app.delete('/api/saidas/:ean', (req, res) => {
       message: 'Saída excluída com sucesso'
     });
   });
+});
+
+// PUT - Atualizar uma saída existente usando EAN e nota fiscal
+app.put('/api/saidas/:ean/:notaFiscal', (req, res) => {
+  const ean = req.params.ean;
+  const notaFiscal = req.params.notaFiscal;
+  const { produto, quantidade, fornecedor, nota_fiscal, valor_unitario, responsavel, data_saida } = req.body;
+
+  // Validação básica
+  if (!produto || !quantidade || !fornecedor || !nota_fiscal || !valor_unitario || !responsavel || !data_saida) {
+    return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
+  }
+
+  const query = 'UPDATE saidas SET produto = ?, quantidade = ?, fornecedor = ?, nota_fiscal = ?, valor_unitario = ?, responsavel = ?, data_saida = ? WHERE ean = ? AND nota_fiscal = ?';
+  db.query(query, [produto, quantidade, fornecedor, nota_fiscal, valor_unitario, responsavel, data_saida, ean, notaFiscal], (err, results) => {
+    if (err) {
+      return handleError(res, err, 'Erro ao atualizar saída');
+    }
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: 'Saída não encontrada' });
+    }
+    res.json({
+      message: 'Saída atualizada com sucesso'
+    });
+  });
+});
+
+// DELETE - Remover uma saída usando EAN e nota fiscal
+app.delete('/api/saidas/:ean/:notaFiscal', (req, res) => {
+  const ean = req.params.ean;
+  const notaFiscal = req.params.notaFiscal;
+
+  db.query('DELETE FROM saidas WHERE ean = ? AND nota_fiscal = ?', [ean, notaFiscal], (err, results) => {
+    if (err) {
+      return handleError(res, err, 'Erro ao excluir saída');
+    }
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: 'Saída não encontrada' });
+    }
+    res.json({
+      message: 'Saída excluída com sucesso'
+    });
+  });
+});
+
+// GET - Relatório de entradas por período
+app.get('/api/relatorios/entradas', (req, res) => {
+  // Definir valores padrão para maio de 2025
+  const dataInicioPadrao = '2025-05-01';
+  const dataFimPadrao = '2025-05-31';
+  
+  // Usar os valores da query ou os valores padrão
+  const dataInicio = req.query.dataInicio || dataInicioPadrao;
+  const dataFim = req.query.dataFim || dataFimPadrao;
+  
+  console.log(`Buscando entradas de ${dataInicio} até ${dataFim}`);
+  
+  const query = `
+    SELECT 
+      DATE(data_entrada) as data_entrada,
+      SUM(quantidade) as quantidade_total
+    FROM 
+      entradas
+    WHERE 
+      data_entrada BETWEEN ? AND ?
+    GROUP BY 
+      DATE(data_entrada)
+    ORDER BY 
+      data_entrada
+  `;
+  
+  db.query(query, [dataInicio, dataFim], (err, resultados) => {
+    if (err) {
+      return handleError(res, err, 'Erro ao buscar relatório de entradas');
+    }
+    console.log(`Encontradas ${resultados.length} entradas no período`);
+    res.json(resultados);
+  });
+});
+
+// GET - Relatório de saídas por período
+app.get('/api/relatorios/saidas', (req, res) => {
+  // Definir valores padrão para maio de 2025
+  const dataInicioPadrao = '2025-05-01';
+  const dataFimPadrao = '2025-05-31';
+  
+  // Usar os valores da query ou os valores padrão
+  const dataInicio = req.query.dataInicio || dataInicioPadrao;
+  const dataFim = req.query.dataFim || dataFimPadrao;
+  
+  console.log(`Buscando saídas de ${dataInicio} até ${dataFim}`);
+  
+  const query = `
+    SELECT 
+      DATE(data_saida) as data_saida,
+      SUM(quantidade) as quantidade_total
+    FROM 
+      saidas
+    WHERE 
+      data_saida BETWEEN ? AND ?
+    GROUP BY 
+      DATE(data_saida)
+    ORDER BY 
+      data_saida
+  `;
+  
+  db.query(query, [dataInicio, dataFim], (err, resultados) => {
+    if (err) {
+      return handleError(res, err, 'Erro ao buscar relatório de saídas');
+    }
+    console.log(`Encontradas ${resultados.length} saídas no período`);
+    res.json(resultados);
+  });
+});
+
+
+
+
+
+
+// Tratamento de rotas não encontradas
+app.use((req, res) => {
+  res.status(404).json({ error: 'Rota não encontrada' });
+});
+
+// Tratamento global de erros
+app.use((err, req, res, next) => {
+  console.error('Erro não tratado:', err);
+  res.status(500).json({ error: 'Erro interno no servidor' });
 });
 
 // Iniciar o servidor
