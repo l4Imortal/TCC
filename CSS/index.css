@@ -184,19 +184,11 @@ nav ul li a:hover {
   border-color: #145523;
 }
 
-/* Gráficos */
-.charts {
-  display: flex;
-  justify-content: space-between;
-  gap: 1.25rem;
-  flex-wrap: wrap;
-  margin-top: 1.25rem;
-  flex: 1;
-}
-
+/* Modificar o tamanho do contêiner do gráfico */
 .chart {
   flex: 1;
   min-width: 300px;
+ 
   background-color: #fff;
   padding: 1.25rem;
   border-radius: 8px;
@@ -204,12 +196,30 @@ nav ul li a:hover {
   margin-bottom: 1.25rem;
   display: flex;
   flex-direction: column;
+  margin: 0 auto; /* Centralizar o gráfico */
+  height: 400px; /* Definir uma altura específica */
 }
 
+/* Ajustar o tamanho do canvas */
 canvas {
   max-width: 100%;
+  max-height: 350px; /* Limitar a altura do canvas */
   flex: 1;
 }
+
+/* Ajustar o contêiner dos gráficos */
+.charts {
+  display: flex;
+  justify-content: center; /* Centralizar o gráfico */
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  margin-top: 1.25rem;
+  flex: 1;
+  width: 80%; /* Reduzir a largura */
+  margin-left: auto;
+  margin-right: auto;
+}
+
 
 /* Estilo do menu hambúrguer */
 .menu-icon {
@@ -379,3 +389,4 @@ footer {
     border-radius: 0;
   }
 }
+
