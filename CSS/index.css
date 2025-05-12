@@ -153,12 +153,6 @@ nav ul li a:hover {
   border: 2px solid #d39e00;
 }
 
-.box.green {
-  background-color: #28a745;
-  color: #fff !important;
-  border: 2px solid #1e7e34;
-}
-
 .box:hover {
   transform: scale(1.02);
   box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
@@ -177,11 +171,6 @@ nav ul li a:hover {
 .box.yellow:hover {
   background-color: #d39e00;
   border-color: #a67c00;
-}
-
-.box.green:hover {
-  background-color: #1e7e34;
-  border-color: #145523;
 }
 
 /* Modificar o tamanho do contêiner do gráfico */
