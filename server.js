@@ -1,13 +1,12 @@
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
-
 const app = express();
 const PORT = 3000;
 
-// Habilitar CORS para todas as rotas
+// Middleware
 app.use(cors());
-app.use(express.json()); // Para permitir o envio de JSON no corpo da requisição
+app.use(express.json());
 
 // Configurações do banco de dados
 const db = mysql.createConnection({
@@ -26,47 +25,57 @@ db.connect((err) => {
   console.log('Conectado ao MySQL!');
 });
 
-// Endpoint para buscar dados de produtos
+// Função auxiliar para tratamento de erros
+const handleError = (res, err, message) => {
+  console.error(`${message}:`, err);
+  return res.status(500).json({ 
+    error: message, 
+    details: err.message,
+    code: err.code 
+  });
+};
+
+// ==================== PRODUTOS ====================
+
+// GET - Listar todos os produtos
 app.get('/api/produtos', (req, res) => {
-  db.query('SELECT * FROM produtos', (err, results) => {
+  db.query('SELECT id_produto, ean, produto, categoria, un, data, fornecedor, estoque_minimo FROM produtos', (err, results) => {
     if (err) {
-      console.error('Erro ao buscar dados:', err.message);
-      res.status(500).send('Erro no servidor');
-      return;
+      return handleError(res, err, 'Erro ao buscar produtos');
     }
-    res.json(results); // Retornar os dados como JSON
+    res.json(results);
   });
 });
 
-// Endpoint para buscar dados de um produto específico
+// GET - Buscar um produto específico pelo ID
 app.get('/api/produtos/:id', (req, res) => {
   const id = req.params.id;
-  console.log('ID recebido:', id);
-  db.query('SELECT * FROM produtos WHERE id_produto = ?', [id], (err, results) => {
+  db.query('SELECT id_produto, ean, produto, categoria, un, data, fornecedor, estoque_minimo FROM produtos WHERE id_produto = ?', [id], (err, results) => {
     if (err) {
-      console.error('Erro ao buscar dados:', err.message);
-      res.status(500).send('Erro no servidor');
-      return;
+      return handleError(res, err, 'Erro ao buscar produto');
     }
-    res.json(results); // Retornar os dados como JSON
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'Produto não encontrado' });
+    }
+    res.json(results[0]);
   });
 });
 
-// Endpoint para criar um novo produto
+// POST - Criar um novo produto
 app.post('/api/produtos', (req, res) => {
-  const { nome, descricao, preco, categoria } = req.body;
+  const { ean, produto, categoria, un, data, fornecedor, estoque_minimo } = req.body;
   
   // Validação básica
-  if (!nome || !descricao || !preco || !categoria) {
-    return res.status(400).json({ error: 'Campos obrigatórios: nome, descrição, preço, categoria' });
+  if (!ean || !produto || !categoria || !un || !data || !fornecedor || !estoque_minimo) {
+    return res.status(400).json({ error: 'Campos obrigatórios: ean, produto, categoria, un, data, fornecedor, estoque_minimo' });
   }
   
-  const query = 'INSERT INTO produtos (nome, descricao, preco, categoria) VALUES (?, ?, ?, ?)';
-  db.query(query, [nome, descricao, preco, categoria], (err, results) => {
+  const query = 'INSERT INTO produtos (ean, produto, categoria, un, data, fornecedor, estoque_minimo) VALUES (?, ?, ?, ?, ?, ?, ?)';
+  db.query(query, [ean, produto, categoria, un, data, fornecedor, estoque_minimo], (err, results) => {
     if (err) {
-      console.error('Erro ao cadastrar produto:', err.message);
-      return res.status(500).send('Erro no servidor');
+      return handleError(res, err, 'Erro ao cadastrar produto');
     }
+    
     res.status(201).json({
       id: results.insertId,
       message: 'Produto cadastrado com sucesso'
@@ -74,56 +83,58 @@ app.post('/api/produtos', (req, res) => {
   });
 });
 
-// Endpoint para atualizar um produto existente
+// PUT - Atualizar um produto existente
 app.put('/api/produtos/:id', (req, res) => {
   const id = req.params.id;
-  const { nome, descricao, preco, categoria } = req.body;
+  const { ean, produto, categoria, un, data, fornecedor, estoque_minimo } = req.body;
   
   // Validação básica
-  if (!nome || !descricao || !preco || !categoria) {
-    return res.status(400).json({ error: 'Campos obrigatórios: nome, descrição, preço, categoria' });
+  if (!ean || !produto || !categoria || !un || !data || !fornecedor || !estoque_minimo) {
+    return res.status(400).json({ error: 'Campos obrigatórios: ean, produto, categoria, un, data, fornecedor, estoque_minimo' });
   }
   
-  const query = 'UPDATE produtos SET nome = ?, descricao = ?, preco = ?, categoria = ? WHERE id_produto = ?';
-  db.query(query, [nome, descricao, preco, categoria, id], (err, results) => {
+  const query = 'UPDATE produtos SET ean = ?, produto = ?, categoria = ?, un = ?, data = ?, fornecedor = ?, estoque_minimo = ? WHERE id_produto = ?';
+  db.query(query, [ean, produto, categoria, un, data, fornecedor, estoque_minimo, id], (err, results) => {
     if (err) {
-      console.error('Erro ao atualizar produto:', err.message);
-      return res.status(500).send('Erro no servidor');
+      return handleError(res, err, 'Erro ao atualizar produto');
     }
+    
     if (results.affectedRows === 0) {
       return res.status(404).json({ error: 'Produto não encontrado' });
     }
+    
     res.json({
       message: 'Produto atualizado com sucesso'
     });
   });
 });
 
-// Endpoint para excluir um produto
+// DELETE - Remover um produto
 app.delete('/api/produtos/:id', (req, res) => {
   const id = req.params.id;
+  
   db.query('DELETE FROM produtos WHERE id_produto = ?', [id], (err, results) => {
     if (err) {
-      console.error('Erro ao excluir produto:', err.message);
-      return res.status(500).send('Erro no servidor');
+      return handleError(res, err, 'Erro ao excluir produto');
     }
+    
     if (results.affectedRows === 0) {
       return res.status(404).json({ error: 'Produto não encontrado' });
     }
+    
     res.json({
       message: 'Produto excluído com sucesso'
     });
   });
 });
 
-// CRUD para Fornecedores
+// ==================== FORNECEDORES ====================
+
 // GET - Listar todos os fornecedores
 app.get('/api/fornecedores', (req, res) => {
   db.query('SELECT * FROM fornecedores', (err, results) => {
     if (err) {
-      console.error('Erro ao buscar fornecedores:', err.message);
-      res.status(500).send('Erro no servidor');
-      return;
+      return handleError(res, err, 'Erro ao buscar fornecedores');
     }
     res.json(results);
   });
@@ -134,13 +145,10 @@ app.get('/api/fornecedores/:id', (req, res) => {
   const id = req.params.id;
   db.query('SELECT * FROM fornecedores WHERE id_fornecedor = ?', [id], (err, results) => {
     if (err) {
-      console.error('Erro ao buscar fornecedor:', err.message);
-      res.status(500).send('Erro no servidor');
-      return;
+      return handleError(res, err, 'Erro ao buscar fornecedor');
     }
     if (results.length === 0) {
-      res.status(404).send('Fornecedor não encontrado');
-      return;
+      return res.status(404).json({ error: 'Fornecedor não encontrado' });
     }
     res.json(results[0]);
   });
@@ -148,6 +156,8 @@ app.get('/api/fornecedores/:id', (req, res) => {
 
 // POST - Criar um novo fornecedor
 app.post('/api/fornecedores', (req, res) => {
+  console.log('Requisição recebida para cadastrar fornecedor:', req.body);
+  
   const { nome, cnpj, telefone, email, endereco } = req.body;
   
   // Validação básica
@@ -155,18 +165,60 @@ app.post('/api/fornecedores', (req, res) => {
     return res.status(400).json({ error: 'Campos obrigatórios: nome e cnpj' });
   }
   
-  const query = 'INSERT INTO fornecedores (nome, cnpj, telefone, email, endereco, data_cadastro) VALUES (?, ?, ?, ?, ?, ?)';
-  db.query(query, [nome, cnpj, telefone, email, endereco, new Date()], (err, results) => {
-    if (err) {
-      if (err.code === 'ER_DUP_ENTRY') {
-        return res.status(400).json({ error: 'CNPJ já cadastrado' });
-      }
-      console.error('Erro ao cadastrar fornecedor:', err.message);
-      return res.status(500).send('Erro no servidor');
+  // Verificar a estrutura da tabela fornecedores
+  db.query('DESCRIBE fornecedores', (descErr, descResults) => {
+    if (descErr) {
+      console.error('Erro ao verificar estrutura da tabela:', descErr);
+      return res.status(500).json({ 
+        error: 'Erro ao verificar estrutura da tabela', 
+        details: descErr.message 
+      });
     }
-    res.status(201).json({
-      id: results.insertId,
-      message: 'Fornecedor cadastrado com sucesso'
+    
+    console.log('Estrutura da tabela fornecedores:', descResults);
+    
+    // Verificar se a tabela tem a coluna data_cadastro
+    const hasDataCadastro = descResults.some(column => column.Field === 'data_cadastro');
+    
+    let query, params;
+    
+    if (hasDataCadastro) {
+      query = 'INSERT INTO fornecedores (nome, cnpj, telefone, email, endereco, data_cadastro) VALUES (?, ?, ?, ?, ?, ?)';
+      params = [nome, cnpj, telefone || '', email || '', endereco || '', new Date()];
+    } else {
+      query = 'INSERT INTO fornecedores (nome, cnpj, telefone, email, endereco) VALUES (?, ?, ?, ?, ?)';
+      params = [nome, cnpj, telefone || '', email || '', endereco || ''];
+    }
+    
+    console.log('Executando query:', query);
+    console.log('Parâmetros:', params);
+    
+    db.query(query, params, (err, results) => {
+      if (err) {
+        console.error('Erro detalhado ao cadastrar fornecedor:', {
+          message: err.message,
+          code: err.code,
+          errno: err.errno,
+          sqlState: err.sqlState,
+          sqlMessage: err.sqlMessage
+        });
+        
+        if (err.code === 'ER_DUP_ENTRY') {
+          return res.status(400).json({ error: 'CNPJ já cadastrado' });
+        }
+        
+        return res.status(500).json({ 
+          error: 'Erro ao cadastrar fornecedor', 
+          details: err.message,
+          code: err.code
+        });
+      }
+      
+      console.log('Fornecedor cadastrado com sucesso:', results);
+      res.status(201).json({
+        id: results.insertId,
+        message: 'Fornecedor cadastrado com sucesso'
+      });
     });
   });
 });
@@ -182,17 +234,18 @@ app.put('/api/fornecedores/:id', (req, res) => {
   }
   
   const query = 'UPDATE fornecedores SET nome = ?, cnpj = ?, telefone = ?, email = ?, endereco = ? WHERE id_fornecedor = ?';
-  db.query(query, [nome, cnpj, telefone, email, endereco, id], (err, results) => {
+  db.query(query, [nome, cnpj, telefone || '', email || '', endereco || '', id], (err, results) => {
     if (err) {
       if (err.code === 'ER_DUP_ENTRY') {
         return res.status(400).json({ error: 'CNPJ já cadastrado para outro fornecedor' });
       }
-      console.error('Erro ao atualizar fornecedor:', err.message);
-      return res.status(500).send('Erro no servidor');
+      return handleError(res, err, 'Erro ao atualizar fornecedor');
     }
+    
     if (results.affectedRows === 0) {
       return res.status(404).json({ error: 'Fornecedor não encontrado' });
     }
+    
     res.json({
       message: 'Fornecedor atualizado com sucesso'
     });
@@ -202,45 +255,29 @@ app.put('/api/fornecedores/:id', (req, res) => {
 // DELETE - Remover um fornecedor
 app.delete('/api/fornecedores/:id', (req, res) => {
   const id = req.params.id;
+  
   db.query('DELETE FROM fornecedores WHERE id_fornecedor = ?', [id], (err, results) => {
     if (err) {
-      console.error('Erro ao excluir fornecedor:', err.message);
-      return res.status(500).send('Erro no servidor');
+      return handleError(res, err, 'Erro ao excluir fornecedor');
     }
+    
     if (results.affectedRows === 0) {
       return res.status(404).json({ error: 'Fornecedor não encontrado' });
     }
+    
     res.json({
       message: 'Fornecedor excluído com sucesso'
     });
   });
 });
 
-// CRUD para Movimentações
-// Endpoint para obter o último código de movimentação
-app.get('/api/movimentacoes/ultimo-codigo', (req, res) => {
-  db.query('SELECT MAX(id_movimentacao) as ultimoCodigo FROM movimentacoes', (err, results) => {
-    if (err) {
-      console.error('Erro ao buscar último código:', err.message);
-      return res.status(500).send('Erro no servidor');
-    }
-    res.json({ ultimoCodigo: results[0].ultimoCodigo || 0 });
-  });
-});
+// ==================== MOVIMENTAÇÕES ====================
 
-// GET - Listar todas as movimentações com informações relacionadas
+// GET - Listar todas as movimentações
 app.get('/api/movimentacoes', (req, res) => {
-  const query = `
-    SELECT m.*, p.nome as produto_nome, f.nome as fornecedor_nome
-    FROM movimentacoes m
-    LEFT JOIN produtos p ON m.id_produto = p.id_produto
-    LEFT JOIN fornecedores f ON m.id_fornecedor = f.id_fornecedor
-  `;
-  
-  db.query(query, (err, results) => {
+  db.query('SELECT * FROM movimentacoes', (err, results) => {
     if (err) {
-      console.error('Erro ao buscar movimentações:', err.message);
-      return res.status(500).send('Erro no servidor');
+      return handleError(res, err, 'Erro ao buscar movimentações');
     }
     res.json(results);
   });
@@ -249,18 +286,9 @@ app.get('/api/movimentacoes', (req, res) => {
 // GET - Buscar uma movimentação específica pelo ID
 app.get('/api/movimentacoes/:id', (req, res) => {
   const id = req.params.id;
-  const query = `
-    SELECT m.*, p.nome as produto_nome, f.nome as fornecedor_nome
-    FROM movimentacoes m
-    LEFT JOIN produtos p ON m.id_produto = p.id_produto
-    LEFT JOIN fornecedores f ON m.id_fornecedor = f.id_fornecedor
-    WHERE m.id_movimentacao = ?
-  `;
-  
-  db.query(query, [id], (err, results) => {
+  db.query('SELECT * FROM movimentacoes WHERE id_movimentacao = ?', [id], (err, results) => {
     if (err) {
-      console.error('Erro ao buscar movimentação:', err.message);
-      return res.status(500).send('Erro no servidor');
+      return handleError(res, err, 'Erro ao buscar movimentação');
     }
     if (results.length === 0) {
       return res.status(404).json({ error: 'Movimentação não encontrada' });
@@ -270,222 +298,49 @@ app.get('/api/movimentacoes/:id', (req, res) => {
 });
 
 // POST - Criar uma nova movimentação
-// POST - Criar uma nova movimentação
 app.post('/api/movimentacoes', (req, res) => {
-  const { 
-    produto_id, 
-    tipo, 
-    quantidade, 
-    fornecedor_id, 
-    nota_fiscal, 
-    valor_unitario, 
-    data_movimentacao, 
-    observacao,
-    responsavel 
-  } = req.body;
-
-  // Validação básica - verificar se produto_id é um número válido
-  if (!produto_id || isNaN(parseInt(produto_id))) {
-    return res.status(400).json({ error: 'ID do produto inválido ou não fornecido' });
+  const { id_produto, tipo_movimentacao, quantidade, data_movimentacao } = req.body;
+  
+  // Validação básica
+  if (!id_produto || !tipo_movimentacao || !quantidade) {
+    return res.status(400).json({ error: 'Campos obrigatórios: id_produto, tipo_movimentacao, quantidade' });
   }
-
-  if (!tipo || !quantidade) {
-    return res.status(400).json({ error: 'Campos obrigatórios: tipo, quantidade' });
-  }
-
-  // Converter produto_id para número
-  const produtoIdNumerico = parseInt(produto_id);
-
-  // Verificar se a tabela tem as colunas necessárias
-  db.query('SHOW COLUMNS FROM movimentacoes', (err, columns) => {
+  
+  const query = 'INSERT INTO movimentacoes (id_produto, tipo_movimentacao, quantidade, data_movimentacao) VALUES (?, ?, ?, ?)';
+  db.query(query, [id_produto, tipo_movimentacao, quantidade, data_movimentacao || new Date()], (err, results) => {
     if (err) {
-      console.error('Erro ao verificar estrutura da tabela:', err.message);
-      return res.status(500).send('Erro no servidor');
+      return handleError(res, err, 'Erro ao criar movimentação');
     }
-
-    // Obter nomes das colunas
-    const columnNames = columns.map(col => col.Field);
-    console.log('Colunas disponíveis:', columnNames);
-
-    // Construir query dinamicamente com base nas colunas disponíveis
-    let fields = ['id_produto', 'tipo_movimentacao', 'quantidade'];
-    let values = [produtoIdNumerico, tipo, quantidade];
-    let placeholders = ['?', '?', '?'];
-
-    // Adicionar campos opcionais se as colunas existirem
-    if (columnNames.includes('id_fornecedor') && fornecedor_id) {
-      fields.push('id_fornecedor');
-      values.push(parseInt(fornecedor_id) || null);
-      placeholders.push('?');
-    }
-
-    if (columnNames.includes('nota_fiscal') && nota_fiscal) {
-      fields.push('nota_fiscal');
-      values.push(nota_fiscal);
-      placeholders.push('?');
-    }
-
-    if (columnNames.includes('valor_unitario') && valor_unitario) {
-      fields.push('valor_unitario');
-      values.push(parseFloat(valor_unitario) || 0);
-      placeholders.push('?');
-    }
-
-    if (columnNames.includes('data_movimentacao')) {
-      fields.push('data_movimentacao');
-      values.push(data_movimentacao || new Date());
-      placeholders.push('?');
-    }
-
-    if (columnNames.includes('observacao') && observacao) {
-      fields.push('observacao');
-      values.push(observacao);
-      placeholders.push('?');
-    }
-
-    if (columnNames.includes('responsavel') && responsavel) {
-      fields.push('responsavel');
-      values.push(responsavel);
-      placeholders.push('?');
-    }
-
-    // Construir a query
-    const query = `INSERT INTO movimentacoes (${fields.join(', ')}) VALUES (${placeholders.join(', ')})`;
-    console.log('Query construída:', query);
-    console.log('Valores:', values);
-
-    // Executar a query
-    db.query(query, values, (err, results) => {
-      if (err) {
-        console.error('Erro ao criar movimentação:', err.message);
-        return res.status(500).send('Erro no servidor');
-      }
-      
-      // Atualizar estoque do produto
-      atualizarEstoqueProduto(produtoIdNumerico, quantidade, tipo);
-      
-      res.status(201).json({
-        id: results.insertId,
-        message: 'Movimentação criada com sucesso'
-      });
+    
+    res.status(201).json({
+      id: results.insertId,
+      message: 'Movimentação criada com sucesso'
     });
   });
 });
 
-
 // PUT - Atualizar uma movimentação existente
 app.put('/api/movimentacoes/:id', (req, res) => {
   const id = req.params.id;
-  const { 
-    produto_id, 
-    tipo, 
-    quantidade, 
-    fornecedor_id, 
-    nota_fiscal, 
-    valor_unitario, 
-    data_movimentacao, 
-    observacao,
-    responsavel 
-  } = req.body;
-
+  const { id_produto, tipo_movimentacao, quantidade, data_movimentacao } = req.body;
+  
   // Validação básica
-  if (!produto_id || !tipo || !quantidade) {
-    return res.status(400).json({ error: 'Campos obrigatórios: produto_id, tipo, quantidade' });
+  if (!id_produto || !tipo_movimentacao || !quantidade) {
+    return res.status(400).json({ error: 'Campos obrigatórios: id_produto, tipo_movimentacao, quantidade' });
   }
-
-  // Primeiro, obter a movimentação atual para calcular a diferença de estoque
-  db.query('SELECT * FROM movimentacoes WHERE id_movimentacao = ?', [id], (err, results) => {
+  
+  const query = 'UPDATE movimentacoes SET id_produto = ?, tipo_movimentacao = ?, quantidade = ?, data_movimentacao = ? WHERE id_movimentacao = ?';
+  db.query(query, [id_produto, tipo_movimentacao, quantidade, data_movimentacao || new Date(), id], (err, results) => {
     if (err) {
-      console.error('Erro ao buscar movimentação atual:', err.message);
-      return res.status(500).send('Erro no servidor');
+      return handleError(res, err, 'Erro ao atualizar movimentação');
     }
     
-    if (results.length === 0) {
+    if (results.affectedRows === 0) {
       return res.status(404).json({ error: 'Movimentação não encontrada' });
     }
     
-    const movimentacaoAtual = results[0];
-    
-    // Verificar se a tabela tem as colunas necessárias
-    db.query('SHOW COLUMNS FROM movimentacoes', (err, columns) => {
-      if (err) {
-        console.error('Erro ao verificar estrutura da tabela:', err.message);
-        return res.status(500).send('Erro no servidor');
-      }
-
-      // Obter nomes das colunas
-      const columnNames = columns.map(col => col.Field);
-      
-      // Construir query dinamicamente com base nas colunas disponíveis
-      let updates = ['id_produto = ?', 'tipo_movimentacao = ?', 'quantidade = ?'];
-      let values = [produto_id, tipo, quantidade];
-
-      // Adicionar campos opcionais se as colunas existirem
-      if (columnNames.includes('id_fornecedor')) {
-        updates.push('id_fornecedor = ?');
-        values.push(fornecedor_id || null);
-      }
-
-      if (columnNames.includes('nota_fiscal')) {
-        updates.push('nota_fiscal = ?');
-        values.push(nota_fiscal || null);
-      }
-
-      if (columnNames.includes('valor_unitario')) {
-        updates.push('valor_unitario = ?');
-        values.push(valor_unitario || 0);
-      }
-
-      if (columnNames.includes('data_movimentacao')) {
-        updates.push('data_movimentacao = ?');
-        values.push(data_movimentacao || new Date());
-      }
-
-      if (columnNames.includes('observacao')) {
-        updates.push('observacao = ?');
-        values.push(observacao || null);
-      }
-
-      if (columnNames.includes('responsavel')) {
-        updates.push('responsavel = ?');
-        values.push(responsavel || null);
-      }
-
-      // Adicionar o ID no final dos valores
-      values.push(id);
-
-      // Construir a query
-      const query = `UPDATE movimentacoes SET ${updates.join(', ')} WHERE id_movimentacao = ?`;
-
-      // Executar a query
-      db.query(query, values, (err, results) => {
-        if (err) {
-          console.error('Erro ao atualizar movimentação:', err.message);
-          return res.status(500).send('Erro no servidor');
-        }
-        
-        if (results.affectedRows === 0) {
-          return res.status(404).json({ error: 'Movimentação não encontrada' });
-        }
-        
-        // Atualizar estoque do produto - primeiro reverter a movimentação anterior
-        if (movimentacaoAtual.id_produto === produto_id) {
-          // Se for o mesmo produto, apenas ajustar a diferença
-          const diferencaQuantidade = quantidade - movimentacaoAtual.quantidade;
-          if (diferencaQuantidade !== 0) {
-            atualizarEstoqueProduto(produto_id, diferencaQuantidade, tipo);
-          }
-        } else {
-          // Se mudou o produto, reverter a movimentação anterior e aplicar a nova
-          const tipoInverso = movimentacaoAtual.tipo_movimentacao === 'entrada' ? 'saida' : 'entrada';
-          atualizarEstoqueProduto(movimentacaoAtual.id_produto, movimentacaoAtual.quantidade, tipoInverso);
-          atualizarEstoqueProduto(produto_id, quantidade, tipo);
-        }
-        
-        res.json({
-          message: 'Movimentação atualizada com sucesso'
-        });
-      });
+    res.json({
+      message: 'Movimentação atualizada com sucesso'
     });
   });
 });
@@ -494,92 +349,39 @@ app.put('/api/movimentacoes/:id', (req, res) => {
 app.delete('/api/movimentacoes/:id', (req, res) => {
   const id = req.params.id;
   
-  // Primeiro, obter a movimentação para reverter o estoque
-  db.query('SELECT * FROM movimentacoes WHERE id_movimentacao = ?', [id], (err, results) => {
+  db.query('DELETE FROM movimentacoes WHERE id_movimentacao = ?', [id], (err, results) => {
     if (err) {
-      console.error('Erro ao buscar movimentação:', err.message);
-      return res.status(500).send('Erro no servidor');
+      return handleError(res, err, 'Erro ao excluir movimentação');
     }
     
-    if (results.length === 0) {
+    if (results.affectedRows === 0) {
       return res.status(404).json({ error: 'Movimentação não encontrada' });
     }
     
-    const movimentacao = results[0];
-    
-    // Excluir a movimentação
-    db.query('DELETE FROM movimentacoes WHERE id_movimentacao = ?', [id], (err, deleteResults) => {
-      if (err) {
-        console.error('Erro ao excluir movimentação:', err.message);
-        return res.status(500).send('Erro no servidor');
-      }
-      
-      if (deleteResults.affectedRows === 0) {
-        return res.status(404).json({ error: 'Movimentação não encontrada' });
-      }
-      
-      // Reverter o efeito no estoque
-      const tipoInverso = movimentacao.tipo_movimentacao === 'entrada' ? 'saida' : 'entrada';
-      atualizarEstoqueProduto(movimentacao.id_produto, movimentacao.quantidade, tipoInverso);
-      
-      res.json({
-        message: 'Movimentação excluída com sucesso'
-      });
+    res.json({
+      message: 'Movimentação excluída com sucesso'
     });
   });
 });
 
-// Função para atualizar o estoque do produto
-function atualizarEstoqueProduto(produtoId, quantidade, tipo) {
-  // Verificar se a tabela produtos tem a coluna estoque
-  db.query('SHOW COLUMNS FROM produtos', (err, columns) => {
-    if (err) {
-      console.error('Erro ao verificar estrutura da tabela produtos:', err.message);
-      return;
-    }
-    
-    // Verificar se a coluna estoque existe
-    const temColunaEstoque = columns.some(col => col.Field === 'estoque');
-    
-    if (!temColunaEstoque) {
-      console.log('A tabela produtos não tem coluna estoque. Ignorando atualização de estoque.');
-      return;
-    }
-    
-    // Calcular a alteração no estoque
-    const alteracao = tipo === 'entrada' ? quantidade : -quantidade;
-    
-    // Atualizar o estoque
-    const query = 'UPDATE produtos SET estoque = estoque + ? WHERE id_produto = ?';
-    db.query(query, [alteracao, produtoId], (err, results) => {
-      if (err) {
-        console.error('Erro ao atualizar estoque do produto:', err.message);
-        return;
-      }
-      console.log(`Estoque do produto ${produtoId} atualizado: ${alteracao > 0 ? '+' : ''}${alteracao} unidades`);
-    });
-  });
-}
+// ==================== USUÁRIOS ====================
 
-// CRUD para Usuários
 // GET - Listar todos os usuários
-app.get('/api/usuarios', (req, res) => {
-  db.query('SELECT id_usuario, username FROM usuarios', (err, results) => {
+app.get('/api/usuario', (req, res) => {
+  db.query('SELECT id_usuario, login, senha FROM usuario', (err, results) => {
     if (err) {
-      console.error('Erro ao buscar usuários:', err.message);
-      return res.status(500).send('Erro no servidor');
+      return handleError(res, err, 'Erro ao buscar usuários');
     }
     res.json(results);
   });
 });
 
 // GET - Buscar um usuário específico pelo ID
-app.get('/api/usuarios/:id', (req, res) => {
+app.get('/api/usuario/:id', (req, res) => {
   const id = req.params.id;
-  db.query('SELECT id_usuario, username FROM usuarios WHERE id_usuario = ?', [id], (err, results) => {
+  db.query('SELECT id_usuario, login, senha FROM usuario WHERE id_usuario = ?', [id], (err, results) => {
     if (err) {
-      console.error('Erro ao buscar usuário:', err.message);
-      return res.status(500).send('Erro no servidor');
+      return handleError(res, err, 'Erro ao buscar usuário');
     }
     if (results.length === 0) {
       return res.status(404).json({ error: 'Usuário não encontrado' });
@@ -589,20 +391,20 @@ app.get('/api/usuarios/:id', (req, res) => {
 });
 
 // POST - Criar um novo usuário
-app.post('/api/usuarios', (req, res) => {
-  const { username, senha, nome, email } = req.body;
+app.post('/api/usuario', (req, res) => {
+  const { login, senha } = req.body;
   
   // Validação básica
-  if (!username || !senha || !nome || !email) {
-    return res.status(400).json({ error: 'Campos obrigatórios: username, senha, nome, email' });
+  if (!login || !senha) {
+    return res.status(400).json({ error: 'Campos obrigatórios: login e senha' });
   }
   
-  const query = 'INSERT INTO usuarios (username, senha, nome, email) VALUES (?, ?, ?, ?)';
-  db.query(query, [username, senha, nome, email], (err, results) => {
+  const query = 'INSERT INTO usuario (login, senha) VALUES (?, ?)';
+  db.query(query, [login, senha], (err, results) => {
     if (err) {
-      console.error('Erro ao criar usuário:', err.message);
-      return res.status(500).send('Erro no servidor');
+      return handleError(res, err, 'Erro ao criar usuário');
     }
+    
     res.status(201).json({
       id: results.insertId,
       message: 'Usuário criado com sucesso'
@@ -611,24 +413,25 @@ app.post('/api/usuarios', (req, res) => {
 });
 
 // PUT - Atualizar um usuário existente
-app.put('/api/usuarios/:id', (req, res) => {
+app.put('/api/usuario/:id', (req, res) => {
   const id = req.params.id;
-  const { username, senha, nome, email } = req.body;
+  const { login, senha } = req.body;
   
   // Validação básica
-  if (!username || !senha || !nome || !email) {
-    return res.status(400).json({ error: 'Campos obrigatórios: username, senha, nome, email' });
+  if (!login || !senha) {
+    return res.status(400).json({ error: 'Campos obrigatórios: login e senha' });
   }
   
-  const query = 'UPDATE usuarios SET username = ?, senha = ?, nome = ?, email = ? WHERE id_usuario = ?';
-  db.query(query, [username, senha, nome, email, id], (err, results) => {
+  const query = 'UPDATE usuario SET login = ?, senha = ? WHERE id_usuario = ?';
+  db.query(query, [login, senha, id], (err, results) => {
     if (err) {
-      console.error('Erro ao atualizar usuário:', err.message);
-      return res.status(500).send('Erro no servidor');
+      return handleError(res, err, 'Erro ao atualizar usuário');
     }
+    
     if (results.affectedRows === 0) {
       return res.status(404).json({ error: 'Usuário não encontrado' });
     }
+    
     res.json({
       message: 'Usuário atualizado com sucesso'
     });
@@ -636,20 +439,445 @@ app.put('/api/usuarios/:id', (req, res) => {
 });
 
 // DELETE - Remover um usuário
-app.delete('/api/usuarios/:id', (req, res) => {
+app.delete('/api/usuario/:id', (req, res) => {
   const id = req.params.id;
-  db.query('DELETE FROM usuarios WHERE id_usuario = ?', [id], (err, results) => {
+  
+  db.query('DELETE FROM usuario WHERE id_usuario = ?', [id], (err, results) => {
     if (err) {
-      console.error('Erro ao excluir usuário:', err.message);
-      return res.status(500).send('Erro no servidor');
+      return handleError(res, err, 'Erro ao excluir usuário');
     }
+    
     if (results.affectedRows === 0) {
       return res.status(404).json({ error: 'Usuário não encontrado' });
     }
+    
     res.json({
       message: 'Usuário excluído com sucesso'
     });
   });
+});
+
+// ==================== AUTENTICAÇÃO ====================
+
+// POST - Autenticar usuário
+app.post('/api/login', (req, res) => {
+  const { username, password } = req.body;
+  
+  // Validação básica
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Usuário e senha são obrigatórios' });
+  }
+  
+  // Consultar o banco de dados para verificar as credenciais
+  const query = 'SELECT id_usuario, login FROM usuario WHERE login = ? AND senha = ?';
+  db.query(query, [username, password], (err, results) => {
+    if (err) {
+      return handleError(res, err, 'Erro ao autenticar usuário');
+    }
+    
+    if (results.length === 0) {
+      return res.status(401).json({ error: 'Usuário ou senha inválidos' });
+    }
+    
+    // Retornar sucesso com os dados do usuário
+    res.json({
+      message: 'Login bem-sucedido',
+      user: results[0]
+    });
+  });
+});
+
+// ==================== RELATÓRIOS ====================
+
+// GET - Relatório de estoque atual
+app.get('/api/relatorios/estoque', (req, res) => {
+  const query = `
+    SELECT 
+      p.id_produto,
+      p.ean,
+      p.produto,
+      p.categoria,
+      p.un,
+      p.fornecedor,
+      p.estoque_minimo,
+      COALESCE(SUM(CASE WHEN m.tipo_movimentacao = 'entrada' THEN m.quantidade ELSE 0 END), 0) -
+      COALESCE(SUM(CASE WHEN m.tipo_movimentacao = 'saida' THEN m.quantidade ELSE 0 END), 0) AS quantidade_atual
+    FROM 
+      produtos p
+    LEFT JOIN 
+      movimentacoes m ON p.id_produto = m.id_produto
+    GROUP BY 
+      p.id_produto, p.ean, p.produto, p.categoria, p.un, p.fornecedor, p.estoque_minimo
+  `;
+  
+  db.query(query, (err, results) => {
+    if (err) {
+      return handleError(res, err, 'Erro ao gerar relatório de estoque');
+    }
+    res.json(results);
+  });
+});
+
+// GET - Relatório de movimentações por período
+app.get('/api/relatorios/movimentacoes', (req, res) => {
+  const { dataInicio, dataFim } = req.query;
+  
+  let query = `
+    SELECT 
+      m.id_movimentacao,
+      m.id_produto,
+      p.produto AS nome_produto,
+      m.tipo_movimentacao,
+      m.quantidade,
+      m.data_movimentacao
+    FROM 
+      movimentacoes m
+    JOIN 
+      produtos p ON m.id_produto = p.id_produto
+  `;
+  
+  const params = [];
+  
+  if (dataInicio && dataFim) {
+    query += ` WHERE m.data_movimentacao BETWEEN ? AND ?`;
+    params.push(dataInicio, dataFim);
+  }
+  
+  query += ` ORDER BY m.data_movimentacao DESC`;
+  
+  db.query(query, params, (err, results) => {
+    if (err) {
+      return handleError(res, err, 'Erro ao gerar relatório de movimentações');
+    }
+    res.json(results);
+  });
+});
+
+
+
+// GET - Listar todas as entradas
+app.get('/api/entradas', (req, res) => {
+  db.query(
+    'SELECT ean, produto, quantidade, fornecedor, nota_fiscal, valor_unitario, responsavel, data_saida FROM entradas',
+    (err, results) => {
+      if (err) {
+        return handleError(res, err, 'Erro ao buscar entradas');
+      }
+      res.json(results);
+    }
+  );
+});
+
+// GET - Buscar uma entrada específica por EAN
+app.get('/api/entradas/:ean', (req, res) => {
+  const ean = req.params.ean;
+  db.query(
+    'SELECT ean, produto, quantidade, fornecedor, nota_fiscal, valor_unitario, responsavel, data_saida FROM entradas WHERE ean = ?',
+    [ean],
+    (err, results) => {
+      if (err) {
+        return handleError(res, err, 'Erro ao buscar entrada');
+      }
+      if (results.length === 0) {
+        return res.status(404).json({ error: 'Entrada não encontrada' });
+      }
+      res.json(results[0]);
+    }
+  );
+});
+
+// POST - Criar uma nova entrada
+app.post('/api/entradas', (req, res) => {
+  const { ean, produto, quantidade, fornecedor, nota_fiscal, valor_unitario, responsavel, data_saida } = req.body;
+
+  // Validação básica
+  if (!ean || !produto || !quantidade || !fornecedor || !nota_fiscal || !valor_unitario || !responsavel || !data_saida) {
+    return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
+  }
+
+  const query = 'INSERT INTO entradas (ean, produto, quantidade, fornecedor, nota_fiscal, valor_unitario, responsavel, data_saida) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+  db.query(query, [ean, produto, quantidade, fornecedor, nota_fiscal, valor_unitario, responsavel, data_saida], (err, results) => {
+    if (err) {
+      return handleError(res, err, 'Erro ao cadastrar entrada');
+    }
+
+    res.status(201).json({
+      id: results.insertId,
+      message: 'Entrada cadastrada com sucesso'
+    });
+  });
+});
+
+// PUT - Atualizar uma entrada existente
+app.put('/api/entradas/:ean', (req, res) => {
+  const ean = req.params.ean;
+  const { produto, quantidade, fornecedor, nota_fiscal, valor_unitario, responsavel, data_saida } = req.body;
+
+  // Validação básica
+  if (!produto || !quantidade || !fornecedor || !nota_fiscal || !valor_unitario || !responsavel || !data_saida) {
+    return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
+  }
+
+  const query = 'UPDATE entradas SET produto = ?, quantidade = ?, fornecedor = ?, nota_fiscal = ?, valor_unitario = ?, responsavel = ?, data_saida = ? WHERE ean = ?';
+  db.query(query, [produto, quantidade, fornecedor, nota_fiscal, valor_unitario, responsavel, data_saida, ean], (err, results) => {
+    if (err) {
+      return handleError(res, err, 'Erro ao atualizar entrada');
+    }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: 'Entrada não encontrada' });
+    }
+
+    res.json({
+      message: 'Entrada atualizada com sucesso'
+    });
+  });
+});
+
+// DELETE - Remover uma entrada
+app.delete('/api/entradas/:ean', (req, res) => {
+  const ean = req.params.ean;
+
+  db.query('DELETE FROM entradas WHERE ean = ?', [ean], (err, results) => {
+    if (err) {
+      return handleError(res, err, 'Erro ao excluir entrada');
+    }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: 'Entrada não encontrada' });
+    }
+
+    res.json({
+      message: 'Entrada excluída com sucesso'
+    });
+  });
+});
+
+// GET - Listar todas as saídas
+app.get('/api/saidas', (req, res) => {
+  db.query(
+    'SELECT ean, produto, quantidade, fornecedor, nota_fiscal, valor_unitario, responsavel, data_saida FROM saidas',
+    (err, results) => {
+      if (err) {
+        return handleError(res, err, 'Erro ao buscar saídas');
+      }
+      res.json(results);
+    }
+  );
+});
+
+// GET - Buscar uma saída específica por EAN
+app.get('/api/saidas/:ean', (req, res) => {
+  const ean = req.params.ean;
+  db.query(
+    'SELECT ean, produto, quantidade, fornecedor, nota_fiscal, valor_unitario, responsavel, data_saida FROM saidas WHERE ean = ?',
+    [ean],
+    (err, results) => {
+      if (err) {
+        return handleError(res, err, 'Erro ao buscar saída');
+      }
+      if (results.length === 0) {
+        return res.status(404).json({ error: 'Saída não encontrada' });
+      }
+      res.json(results[0]);
+    }
+  );
+});
+
+// POST - Criar uma nova saída
+app.post('/api/saidas', (req, res) => {
+  const { ean, produto, quantidade, fornecedor, nota_fiscal, valor_unitario, responsavel, data_saida } = req.body;
+
+  // Validação básica
+  if (!ean || !produto || !quantidade || !fornecedor || !nota_fiscal || !valor_unitario || !responsavel || !data_saida) {
+    return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
+  }
+
+  const query = 'INSERT INTO saidas (ean, produto, quantidade, fornecedor, nota_fiscal, valor_unitario, responsavel, data_saida) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+  db.query(query, [ean, produto, quantidade, fornecedor, nota_fiscal, valor_unitario, responsavel, data_saida], (err, results) => {
+    if (err) {
+      return handleError(res, err, 'Erro ao cadastrar saída');
+    }
+
+    res.status(201).json({
+      id: results.insertId,
+      message: 'Saída cadastrada com sucesso'
+    });
+  });
+});
+
+// PUT - Atualizar uma saída existente
+app.put('/api/saidas/:ean', (req, res) => {
+  const ean = req.params.ean;
+  const { produto, quantidade, fornecedor, nota_fiscal, valor_unitario, responsavel, data_saida } = req.body;
+
+  // Validação básica
+  if (!produto || !quantidade || !fornecedor || !nota_fiscal || !valor_unitario || !responsavel || !data_saida) {
+    return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
+  }
+
+  const query = 'UPDATE saidas SET produto = ?, quantidade = ?, fornecedor = ?, nota_fiscal = ?, valor_unitario = ?, responsavel = ?, data_saida = ? WHERE ean = ?';
+  db.query(query, [produto, quantidade, fornecedor, nota_fiscal, valor_unitario, responsavel, data_saida, ean], (err, results) => {
+    if (err) {
+      return handleError(res, err, 'Erro ao atualizar saída');
+    }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: 'Saída não encontrada' });
+    }
+
+    res.json({
+      message: 'Saída atualizada com sucesso'
+    });
+  });
+});
+
+// DELETE - Remover uma saída
+app.delete('/api/saidas/:ean', (req, res) => {
+  const ean = req.params.ean;
+
+  db.query('DELETE FROM saidas WHERE ean = ?', [ean], (err, results) => {
+    if (err) {
+      return handleError(res, err, 'Erro ao excluir saída');
+    }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: 'Saída não encontrada' });
+    }
+
+    res.json({
+      message: 'Saída excluída com sucesso'
+    });
+  });
+});
+
+// PUT - Atualizar uma saída existente usando EAN e nota fiscal
+app.put('/api/saidas/:ean/:notaFiscal', (req, res) => {
+  const ean = req.params.ean;
+  const notaFiscal = req.params.notaFiscal;
+  const { produto, quantidade, fornecedor, nota_fiscal, valor_unitario, responsavel, data_saida } = req.body;
+
+  // Validação básica
+  if (!produto || !quantidade || !fornecedor || !nota_fiscal || !valor_unitario || !responsavel || !data_saida) {
+    return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
+  }
+
+  const query = 'UPDATE saidas SET produto = ?, quantidade = ?, fornecedor = ?, nota_fiscal = ?, valor_unitario = ?, responsavel = ?, data_saida = ? WHERE ean = ? AND nota_fiscal = ?';
+  db.query(query, [produto, quantidade, fornecedor, nota_fiscal, valor_unitario, responsavel, data_saida, ean, notaFiscal], (err, results) => {
+    if (err) {
+      return handleError(res, err, 'Erro ao atualizar saída');
+    }
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: 'Saída não encontrada' });
+    }
+    res.json({
+      message: 'Saída atualizada com sucesso'
+    });
+  });
+});
+
+// DELETE - Remover uma saída usando EAN e nota fiscal
+app.delete('/api/saidas/:ean/:notaFiscal', (req, res) => {
+  const ean = req.params.ean;
+  const notaFiscal = req.params.notaFiscal;
+
+  db.query('DELETE FROM saidas WHERE ean = ? AND nota_fiscal = ?', [ean, notaFiscal], (err, results) => {
+    if (err) {
+      return handleError(res, err, 'Erro ao excluir saída');
+    }
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: 'Saída não encontrada' });
+    }
+    res.json({
+      message: 'Saída excluída com sucesso'
+    });
+  });
+});
+
+// GET - Relatório de entradas por período
+app.get('/api/relatorios/entradas', (req, res) => {
+  // Definir valores padrão para maio de 2025
+  const dataInicioPadrao = '2025-05-01';
+  const dataFimPadrao = '2025-05-31';
+  
+  // Usar os valores da query ou os valores padrão
+  const dataInicio = req.query.dataInicio || dataInicioPadrao;
+  const dataFim = req.query.dataFim || dataFimPadrao;
+  
+  console.log(`Buscando entradas de ${dataInicio} até ${dataFim}`);
+  
+  const query = `
+    SELECT 
+      DATE(data_entrada) as data_entrada,
+      SUM(quantidade) as quantidade_total
+    FROM 
+      entradas
+    WHERE 
+      data_entrada BETWEEN ? AND ?
+    GROUP BY 
+      DATE(data_entrada)
+    ORDER BY 
+      data_entrada
+  `;
+  
+  db.query(query, [dataInicio, dataFim], (err, resultados) => {
+    if (err) {
+      return handleError(res, err, 'Erro ao buscar relatório de entradas');
+    }
+    console.log(`Encontradas ${resultados.length} entradas no período`);
+    res.json(resultados);
+  });
+});
+
+// GET - Relatório de saídas por período
+app.get('/api/relatorios/saidas', (req, res) => {
+  // Definir valores padrão para maio de 2025
+  const dataInicioPadrao = '2025-05-01';
+  const dataFimPadrao = '2025-05-31';
+  
+  // Usar os valores da query ou os valores padrão
+  const dataInicio = req.query.dataInicio || dataInicioPadrao;
+  const dataFim = req.query.dataFim || dataFimPadrao;
+  
+  console.log(`Buscando saídas de ${dataInicio} até ${dataFim}`);
+  
+  const query = `
+    SELECT 
+      DATE(data_saida) as data_saida,
+      SUM(quantidade) as quantidade_total
+    FROM 
+      saidas
+    WHERE 
+      data_saida BETWEEN ? AND ?
+    GROUP BY 
+      DATE(data_saida)
+    ORDER BY 
+      data_saida
+  `;
+  
+  db.query(query, [dataInicio, dataFim], (err, resultados) => {
+    if (err) {
+      return handleError(res, err, 'Erro ao buscar relatório de saídas');
+    }
+    console.log(`Encontradas ${resultados.length} saídas no período`);
+    res.json(resultados);
+  });
+});
+
+
+
+
+
+
+// Tratamento de rotas não encontradas
+app.use((req, res) => {
+  res.status(404).json({ error: 'Rota não encontrada' });
+});
+
+// Tratamento global de erros
+app.use((err, req, res, next) => {
+  console.error('Erro não tratado:', err);
+  res.status(500).json({ error: 'Erro interno no servidor' });
 });
 
 // Iniciar o servidor

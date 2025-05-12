@@ -1,66 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>StoQ - Página Inicial</title>
     <link rel="stylesheet" href="CSS/index.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  </head>
-  <body>
+</head>
+<body>
     <div class="container">
-      <header>
-        <h1>StoQ - Página Inicial</h1>
-        <div class="menu">
-          <div class="menu-icon" id="menuIcon">
-            <div></div>
-            <div></div>
-            <div></div>
-          </div>
-          <div class="menu-content" id="menuContent">
-            <a href="administrador.html">Conta</a>
-            <a id="logoutButton">Sair</a>
-          </div>
-        </div>
-      </header>
-      <nav>
-        <ul>
-          <li><a href="produtos.html">Produtos</a></li>
-          <li><a href="fornecedores.html">Fornecedores</a></li>
-          <li><a href="entradas.html">Entradas</a></li> 
-          <li><a href="saidas.html">Saídas</a></li>
-          <li><a href="relatorios.html">Relatórios</a></li>
-        </ul>
-      </nav>
-      <main>
-        <section class="summary">
-          <div class="box blue">
-            <a id="produtosCadastradosLink" href="produtos.html"
-              >Carregando...</a
-            >
-          </div>
-          <div class="box red">
-            <a id="estoqueZeradoLink" href="produtos.html?filter=estoquezerado"
-              >Carregando...</a
-            >
-          </div>
-          <div class="box yellow">
-            <a id="estoqueMinimoLink" href="produtos.html?filter=estoqueminimo"
-              >Carregando...</a
-            >
-          </div>
-          <div class="box green"></div>
-        </section>
-        <section class="charts">
-          <div class="chart">
-            <canvas id="entradasSaidasChart"></canvas>
-          </div>
-          <div class="chart">
-            <canvas id="atividadesSistemaChart"></canvas>
-          </div>
-        </section>
-      </main>
+        <header>
+            <h1>StoQ - Página Inicial</h1>
+            <div class="menu">
+                <div class="menu-icon" id="menuIcon">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="menu-content" id="menuContent">
+                    <a href="administrador.html">Conta</a>
+                    <a id="logoutButton">Sair</a>
+                </div>
+            </div>
+        </header>
+        <nav>
+            <ul>
+                <li><a href="produtos.html">Produtos</a></li>
+                <li><a href="fornecedores.html">Fornecedores</a></li>
+                <li><a href="entradas.html">Entradas</a></li>
+                <li><a href="saidas.html">Saídas</a></li>
+                <li><a href="relatorios.html">Relatórios</a></li>
+            </ul>
+        </nav>
+        <main>
+            <section class="summary">
+                <div class="box blue">
+                    <a id="produtosCadastradosLink" href="produtos.html">Carregando...</a>
+                </div>
+                <div class="box red">
+                    <a id="estoqueZeradoLink" href="produtos.html?filter=estoquezerado">Carregando...</a>
+                </div>
+                <div class="box yellow">
+                    <a id="estoqueMinimoLink" href="produtos.html?filter=estoqueminimo">Carregando...</a>
+                </div>
+                <div class="box green"></div>
+            </section>
+            <section class="charts">
+                <div class="chart">
+                    <canvas id="entradasSaidasChart"></canvas>
+                </div>
+            </section>
+        </main>
     </div>
     <script src="JS/index.js"></script>
-  </body>
+</body>
 </html>
