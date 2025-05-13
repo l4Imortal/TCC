@@ -4,7 +4,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const popupOverlay = document.getElementById("popupOverlay");
   const popup = document.getElementById("popup");
   const deletePopup = document.getElementById("deletePopup");
-  const fecharPopupButton = document.getElementById("fecharPopup");
   const codigoFornecedorInput = document.getElementById("codigoFornecedor");
   const fornecedorForm = document.getElementById("fornecedorForm");
   const tabelaBody = document.querySelector("table tbody");
@@ -14,6 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const popupTitle = document.getElementById("popupTitle");
   const salvarFornecedorButton = document.getElementById("salvarFornecedor");
   const editModeInput = document.getElementById("editMode");
+  const btnCancelar = document.getElementById("btnCancelar");
   
   let fornecedorParaExcluir = null; // Variável para armazenar o fornecedor a ser excluído
 
@@ -139,14 +139,6 @@ document.addEventListener("DOMContentLoaded", () => {
       popupOverlay.style.display = "block";
       popup.style.display = "block";
       deletePopup.style.display = "none";
-    });
-  }
-
-  // Fechar o pop-up
-  if (fecharPopupButton) {
-    fecharPopupButton.addEventListener("click", () => {
-      popupOverlay.style.display = "none";
-      popup.style.display = "none";
     });
   }
 
@@ -285,8 +277,16 @@ document.addEventListener("DOMContentLoaded", () => {
   if (cancelDeleteButton) {
     cancelDeleteButton.addEventListener("click", () => {
       popupOverlay.style.display = "none";
-      deletePopup.style.display = "none";
+      popup.style.display = "none"; // Fecha o popup principal
+      deletePopup.style.display = "none"; // Fecha o popup de exclusão
       fornecedorParaExcluir = null;
+    });
+  }
+
+  if (btnCancelar) {
+    btnCancelar.addEventListener("click", () => {
+      popupOverlay.style.display = "none"; // Oculta o overlay
+      popup.style.display = "none"; // Oculta o popup principal
     });
   }
 
