@@ -77,49 +77,63 @@ button {
   background-color: #45a049;
 }
 
-.edit-button,
-.delete-button {
+/* Botão de edição */
+.edit-button {
+  background-color: #4caf50; /* Verde padrão */
+  color: #fff; /* Texto branco */
+  border: none;
+  border-radius: 6px;
+  padding: 6px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: 400;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+/* Hover para o botão de edição */
+.edit-button:hover {
+  background-color: #388e3c; /* Verde mais escuro no hover */
+  transform: scale(1.05); /* Efeito de escala no hover */
+}
+
+/* Botão de edição desativado */
+.edit-button:disabled {
+  background-color: #ccc; /* Cinza para botões desativados */
+  color: #fff;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.delete-button,
+.btn-excluir {
   padding: 6px 16px;
   font-size: 14px;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   font-weight: 400;
+  transition: background-color 0.2s, transform 0.2s;
 }
 
-.edit-button {
-  background: #4caf50;
-  color: #fff;
-}
-
-.delete-button {
+.delete-button,
+.btn-excluir {
   background: #e53935;
   color: #fff;
-  margin-left: 4px;
+}
+
+.delete-button:hover,
+.btn-excluir:hover {
+  background: #b71c1c;
+  transform: scale(1.05);
 }
 
 .edit-button:disabled,
-.delete-button:disabled {
+.delete-button:disabled,
+.btn-excluir:disabled {
   background-color: #ccc;
   color: #fff;
   cursor: not-allowed;
   opacity: 0.7;
-}
-
-/* Animação de hover para botões da tabela */
-.edit-button,
-.delete-button {
-  transition: background 0.2s, transform 0.2s;
-}
-
-.edit-button:hover {
-  background: #388e3c;
-  transform: scale(1.05);
-}
-
-.delete-button:hover {
-  background: #b71c1c;
-  transform: scale(1.05);
 }
 
 .user-table {
@@ -135,7 +149,6 @@ button {
 .user-table td {
   border: none;
   padding: 12px 8px;
-  /* Adicione as linhas verticais */
   border-right: 1px solid #888;
 }
 
@@ -146,7 +159,7 @@ button {
 
 .user-table th:last-child,
 .user-table td:last-child {
-  border-right: 1px solid #888; /* Garante a borda na última coluna */
+  border-right: 1px solid #888;
 }
 
 .user-table th {
@@ -154,8 +167,6 @@ button {
   color: #fff;
   font-weight: bold;
   text-align: left;
-  /* Cantos arredondados só nas extremidades */
-  border-radius: 0;
 }
 
 .user-table th:first-child {
@@ -172,6 +183,8 @@ button {
 
 .user-table td {
   color: #222;
+  position: relative;
+  z-index: 1;
 }
 
 .user-table tbody tr:hover {
@@ -188,82 +201,119 @@ footer {
   bottom: 0;
 }
 
-/* Popup Overlay */
+/* Popup de edição */
 .popup-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
 }
 
-/* Popup Box */
 .popup-box {
   background: #fff;
   border-radius: 16px;
-  padding: 32px 24px 24px 24px;
-  min-width: 350px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
+  padding: 32px;
+  width: 600px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+  text-align: left;
+}
+
+.popup-box h2 {
   text-align: center;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.popup-divider {
+  border: 1px solid #4caf50;
+  margin: 10px 0 20px 0;
+}
+
+.form-row {
+  display: flex;
+  gap: 40px; /* Aumenta o espaçamento horizontal entre os campos */
+  margin-bottom: 15px;
+}
+
+.form-group {
+  flex: 1;
+}
+
+.form-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #555;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  box-sizing: border-box; /* Garante que o padding não afete o tamanho total */
+}
+
+.password-container {
   position: relative;
 }
 
-.popup-icon {
-  margin-bottom: 8px;
+.password-container input {
+  width: 100%;
+  padding-right: 40px; /* Espaço para o ícone */
+}
+
+.toggle-password {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #888;
+}
+
+.toggle-password:hover {
+  color: #333;
 }
 
 .popup-actions {
   display: flex;
-  gap: 16px;
-  justify-content: center;
-  margin-top: 12px;
+  justify-content: center; /* Centraliza os botões */
+  gap: 20px; /* Espaçamento entre os botões */
+  margin-top: 20px;
 }
 
-.cancel-button {
-  border: none;
-  border-radius: 8px;
-  padding: 12px 32px;
-  cursor: pointer;
-  font-size: 16px;
-  transition: background 0.2s;
-}
-
-/* Mantenha apenas para o popup */
-.popup-delete-button,
+.popup-save-button,
 .popup-cancel-button {
-  padding: 12px 32px;
-  font-size: 16px;
+  padding: 10px 20px;
+  font-size: 14px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   font-weight: bold;
-}
-
-.popup-delete-button {
-  background: #e53935;
-  color: #fff;
-}
-
-.popup-cancel-button {
-  background: #757575;
-  color: #fff;
-  margin-left: 16px;
-}
-
-/* Animação de hover para botões do popup */
-.popup-delete-button,
-.popup-cancel-button {
   transition: background 0.2s, transform 0.2s;
 }
 
-.popup-delete-button:hover {
+.popup-save-button {
+  background: #e53935; /* Vermelho para o botão de excluir */
+  color: #fff;
+}
+
+.popup-save-button:hover {
   background: #b71c1c;
   transform: scale(1.05);
+}
+
+.popup-cancel-button {
+  background: #757575; /* Cinza para o botão de cancelar */
+  color: #fff;
 }
 
 .popup-cancel-button:hover {
@@ -271,20 +321,37 @@ footer {
   transform: scale(1.05);
 }
 
-/* Ícone de aviso do popup */
 .popup-warning-icon {
   font-size: 48px;
   color: #ffa000;
 }
 
-/* Linha divisória do popup */
-.popup-divider {
-  border: 1px solid #e53935;
-  margin: 10px 0;
-}
-
-/* Mensagem do popup */
 #popupMessage {
   margin-bottom: 24px;
   color: #555;
+}
+
+.popup-delete-box {
+  width: 500px;
+}
+
+.popup-warning-icon {
+  font-size: 48px;
+  color: #ffa000; /* Amarelo para o ícone de atenção */
+  display: block;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.popup-delete-divider {
+  border: 1px solid #e53935; /* Linha vermelha */
+  margin: 10px 0 20px 0;
+}
+
+.popup-delete-actions .popup-save-button {
+  background: #e53935; /* Vermelho para exclusão */
+}
+
+.popup-delete-actions .popup-save-button:hover {
+  background: #b71c1c;
 }

@@ -42,50 +42,84 @@
             <thead>
               <tr>
                 <th>ID</th>
-                <th>Nome</th>
-                <th>Usuário</th>
+                <th>Nome de Usuário</th>
                 <th>Email</th>
                 <th>Ações</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td>admin</td>
-                <td>admin</td>
-                <td>admin@email.com</td>
-                <td>
-                  <button class="edit-button" title="Editar">Editar</button>
-                  <button class="delete-button" title="Excluir">Excluir</button>
-                </td>
-              </tr>
-              <!-- Usuários serão carregados dinamicamente aqui -->
+              <!-- Os usuários serão carregados dinamicamente pelo JavaScript -->
             </tbody>
           </table>
         </section>
       </main>
     </div>
 
-    <!-- Popup de confirmação -->
-    <div id="confirmPopup" class="popup-overlay" style="display: none">
-      <div class="popup-box">
+    <!-- Popup de confirmação de exclusão -->
+    <div id="confirmPopup" class="popup-overlay popup-delete-overlay" style="display: none">
+      <div class="popup-box popup-delete-box">
         <div class="popup-icon">
           <span class="popup-warning-icon">&#x26A0;&#xFE0F;</span>
         </div>
         <h2>Confirmar Exclusão</h2>
-        <hr class="popup-divider" />
+        <hr class="popup-divider popup-delete-divider" />
         <p id="popupMessage">
-          Tem certeza que deseja excluir o usuário "<span
-            id="usuarioNome"
-          ></span
-          >"?
+          Tem certeza que deseja excluir o usuário "<span id="usuarioNome"></span>"?
         </p>
-        <div class="popup-actions">
-          <button id="confirmDeleteBtn" class="popup-delete-button">
-            Excluir
-          </button>
+        <div class="popup-actions popup-delete-actions">
+          <button id="confirmDeleteBtn" class="popup-save-button">Excluir</button>
           <button id="cancelBtn" class="popup-cancel-button">Cancelar</button>
         </div>
+      </div>
+    </div>
+
+    <!-- Popup de edição -->
+    <div id="editPopup" class="popup-overlay popup-edit-overlay" style="display: none">
+      <div class="popup-box popup-edit-box">
+        <h2>Editar Usuário</h2>
+        <hr class="popup-divider" />
+        <form id="editForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="editNome">Nome Completo:</label>
+              <input type="text" id="editNome" name="editNome" required />
+            </div>
+            <div class="form-group">
+              <label for="editEmail">Email:</label>
+              <input type="email" id="editEmail" name="editEmail" required />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="editUsername">Nome de Usuário:</label>
+              <input type="text" id="editUsername" name="editUsername" required />
+            </div>
+            <div class="form-group">
+              <label for="editPassword">Senha:</label>
+              <div class="password-container">
+                <input type="password" id="editPassword" name="editPassword" required />
+                <span class="toggle-password" onclick="togglePasswordVisibility('editPassword')">
+                  <i class="fas fa-eye"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="editConfirmPassword">Confirmar Senha:</label>
+              <div class="password-container">
+                <input type="password" id="editConfirmPassword" name="editConfirmPassword" required />
+                <span class="toggle-password" onclick="togglePasswordVisibility('editConfirmPassword')">
+                  <i class="fas fa-eye"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="popup-actions">
+            <button type="button" id="saveEditBtn" class="popup-save-button">Salvar</button>
+            <button type="button" id="cancelEditBtn" class="popup-cancel-button">Cancelar</button>
+          </div>
+        </form>
       </div>
     </div>
 
