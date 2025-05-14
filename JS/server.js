@@ -12,7 +12,7 @@ app.use(express.json());
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: '26216911a',
+  password: 'cursoads',
   database: 'estoque'
 });
 
@@ -557,15 +557,15 @@ app.get('/api/relatorios/movimentacoes', (req, res) => {
 
 // GET - Listar todas as entradas
 app.get('/api/entradas', (req, res) => {
-  db.query(
-    'SELECT ean, produto, quantidade, fornecedor, nota_fiscal, valor_unitario, responsavel, data_saida FROM entradas',
-    (err, results) => {
-      if (err) {
-        return handleError(res, err, 'Erro ao buscar entradas');
-      }
-      res.json(results);
+  const query = 'SELECT * FROM entradas';
+  
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Erro ao buscar entradas:', err);
+      return res.status(500).json({ error: 'Erro ao buscar entradas' });
     }
-  );
+    res.json(results);
+  });
 });
 
 // GET - Buscar uma entrada específica por EAN
