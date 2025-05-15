@@ -1,56 +1,107 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>StoQ - Página Inicial</title>
-    <link rel="stylesheet" href="CSS/index.css" />
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StoQ - Página Inicial</title>
+  <link rel="stylesheet" href="CSS/index.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>StoQ - Página Inicial</h1>
-            <div class="menu">
-                <div class="menu-icon" id="menuIcon">
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                </div>
-                <div class="menu-content" id="menuContent">
-                    <a href="administrador.html">Conta</a>
-                    <a id="logoutButton">Sair</a>
-                </div>
+  <div class="container">
+    <header>
+      <h1>StoQ - Página Inicial</h1>
+      <div class="menu">
+        <div class="menu-icon" id="menuIcon">
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+        <div class="menu-content" id="menuContent">
+          <a href="administrador.html"><i class="fas fa-user-cog"></i> Conta</a>
+          <a id="logoutButton" href="#"><i class="fas fa-sign-out-alt"></i> Sair</a>
+        </div>
+      </div>
+    </header>
+
+    <nav>
+      <ul>
+        <li><a href="produtos.html"><i class="fas fa-boxes"></i> Produtos</a></li>
+        <li><a href="fornecedores.html"><i class="fas fa-truck"></i> Fornecedores</a></li>
+        <li><a href="entradas.html"><i class="fas fa-arrow-down"></i> Entradas</a></li>
+        <li><a href="saidas.html"><i class="fas fa-arrow-up"></i> Saídas</a></li>
+        <li><a href="relatorios.html"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
+      </ul>
+    </nav>
+
+    <main>
+      <!-- Banner de boas-vindas -->
+      <section class="welcome">
+        <h2>Bem-vindo ao Sistema de Gestão de Estoque</h2>
+        <p>Gerencie seus produtos, fornecedores e movimentações de forma simples e eficiente.</p>
+      </section>
+
+      <!-- Cards de resumo -->
+      <section class="summary">
+        <div class="box blue">
+          <i class="fas fa-boxes icon"></i>
+          <a id="produtosCadastradosLink" href="produtos.html"></a>
+        </div>
+        <div class="box red">
+          <i class="fas fa-exclamation-triangle icon"></i>
+          <a id="estoqueZeradoLink" href="produtos.html?filter=estoquezerado"></a>
+        </div>
+        <div class="box yellow">
+          <i class="fas fa-battery-quarter icon"></i>
+          <a id="estoqueMinimoLink" href="produtos.html?filter=estoqueminimo"></a>
+        </div>
+       
+      </section>
+
+      
+
+      <!-- Atividades recentes -->
+      <section class="recent-activities">
+        <h2><i class="fas fa-history"></i> Atividades Recentes</h2>
+        <div class="activity-list" id="recentActivities">
+          <!-- Atividades serão carregadas via JavaScript -->
+          <div class="activity-item">
+            <div class="activity-icon entry">
+              <i class="fas fa-arrow-down"></i>
             </div>
-        </header>
-        <nav>
-            <ul>
-                <li><a href="produtos.html">Produtos</a></li>
-                <li><a href="fornecedores.html">Fornecedores</a></li>
-                <li><a href="entradas.html">Entradas</a></li>
-                <li><a href="saidas.html">Saídas</a></li>
-                <li><a href="relatorios.html">Relatórios</a></li>
-            </ul>
-        </nav>
-        <main>
-            <section class="summary">
-                <div class="box blue">
-                    <a id="produtosCadastradosLink" href="produtos.html">Carregando...</a>
-                </div>
-                <div class="box red">
-                    <a id="estoqueZeradoLink" href="produtos.html?filter=estoquezerado">Carregando...</a>
-                </div>
-                <div class="box yellow">
-                    <a id="estoqueMinimoLink" href="produtos.html?filter=estoqueminimo">Carregando...</a>
-                </div>
-            </section>
-            <section class="charts">
-                <div class="chart">
-                    <canvas id="entradasSaidasChart"></canvas>
-                </div>
-            </section>
-        </main>
-    </div>
-    <script src="JS/index.js"></script>
+            <div class="activity-details">
+              <p class="activity-title">Entrada de Produtos</p>
+              <p class="activity-description">10 unidades de Teclado USB</p>
+              <p class="activity-time">Hoje, 14:30</p>
+            </div>
+          </div>
+          
+          <div class="activity-item">
+            <div class="activity-icon exit">
+              <i class="fas fa-arrow-up"></i>
+            </div>
+            <div class="activity-details">
+              <p class="activity-title">Saída de Produtos</p>
+              <p class="activity-description">5 unidades de Mouse Wireless</p>
+              <p class="activity-time">Hoje, 11:15</p>
+            </div>
+          </div>
+          
+          <div class="activity-item">
+            <div class="activity-icon product">
+              <i class="fas fa-box"></i>
+            </div>
+            <div class="activity-details">
+              <p class="activity-title">Novo Produto Cadastrado</p>
+              <p class="activity-description">Headset Gamer RGB</p>
+              <p class="activity-time">Ontem, 16:45</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="JS/index.js"></script>
 </body>
 </html>

@@ -1,3 +1,13 @@
+/**
+ * Sistema de Relatórios - Controle de Estoque
+ * Versão aprimorada com melhor tratamento de erros e funcionalidades adicionais
+ */
+
+// Configurações globais
+const API_BASE_URL = 'http://localhost:3000/api';
+let relatorioAtual = null;
+let dadosRelatorioAtual = null;
+
 // Seleciona os elementos do DOM
 const tabEstoque = document.getElementById("estoque");
 const tabMovimentacoes = document.getElementById("movimentacoes");
@@ -8,6 +18,41 @@ const btnGerarRelatorioMovimentacoes = document.getElementById("btnGerarRelatori
 const btnExportarPDF = document.getElementById("btnExportarPDF");
 const btnExportarExcel = document.getElementById("btnExportarExcel");
 const btnImprimir = document.getElementById("btnImprimir");
+
+// Função para exibir mensagens de carregamento ou erro
+function exibirMensagem(containerId, tipo, mensagem) {
+  const container = document.querySelector(`#${containerId} .report-preview`);
+  if (!container) return;
+  
+  let icone = '';
+  let classe = '';
+  
+  switch (tipo) {
+    case 'carregando':
+      icone = '<i class="fas fa-spinner fa-spin"></i>';
+      classe = 'mensagem-carregando';
+      break;
+    case 'erro':
+      icone = '<i class="fas fa-exclamation-triangle"></i>';
+      classe = 'mensagem-erro';
+      break;
+    case 'sucesso':
+      icone = '<i class="fas fa-check-circle"></i>';
+      classe = 'mensagem-sucesso';
+      break;
+    case 'info':
+      icone = '<i class="fas fa-info-circle"></i>';
+      classe = 'mensagem-info';
+      break;
+  }
+  
+  container.innerHTML = `
+    <div class="mensagem ${classe}">
+      ${icone}
+      <p>${mensagem}</p>
+    </div>
+  `;
+}
 
 // Função para mudar entre as abas de relatórios
 function mudarTab(tabId) {
@@ -30,12 +75,18 @@ function mudarTab(tabId) {
   if (selectedTabContent) {
     console.log(`Ativando conteúdo da aba: ${tabId}-tab`);
     selectedTabContent.classList.add('active');
+    
+    // Atualizar a variável global de relatório atual
+    relatorioAtual = tabId;
+    
+    // Habilitar/desabilitar botões de exportação com base na disponibilidade de dados
+    atualizarBotoesExportacao(tabId);
   } else {
     console.error(`Elemento não encontrado: ${tabId}-tab`);
   }
   
   // Ativar o botão da aba selecionada
-  const activeTab = document.querySelector(`.tab[onclick="mudarTab('${tabId}')"]`);
+  const activeTab = document.getElementById(tabId);
   if (activeTab) {
     console.log(`Ativando botão da aba: ${tabId}`);
     activeTab.classList.add('active');
@@ -44,138 +95,248 @@ function mudarTab(tabId) {
   }
 }
 
-// Função para determinar o status do estoque com base na quantidade
-function determinarStatusEstoque(quantidade) {
+// Função para determinar o status do estoque com base na quantidade e estoque mínimo
+function determinarStatusEstoque(quantidade, estoqueMinimo = 5) {
   if (quantidade <= 0) return { texto: 'Sem Estoque', classe: 'status-sem-estoque' };
-  if (quantidade <= 5) return { texto: 'Crítico', classe: 'status-critico' };
-  if (quantidade <= 10) return { texto: 'Baixo', classe: 'status-baixo' };
+  if (quantidade <= estoqueMinimo * 0.5) return { texto: 'Crítico', classe: 'status-critico' };
+  if (quantidade <= estoqueMinimo) return { texto: 'Baixo', classe: 'status-baixo' };
   return { texto: 'Normal', classe: 'status-normal' };
 }
 
-// Funções para gerar relatórios
-function gerarRelatorioEstoque() {
+// Função para formatar valores monetários
+function formatarMoeda(valor) {
+  return `R$ ${parseFloat(valor).toFixed(2).replace('.', ',')}`;
+}
+
+// Função para formatar datas
+function formatarData(dataString) {
+  if (!dataString) return 'N/A';
+  
+  try {
+    const data = new Date(dataString);
+    if (isNaN(data.getTime())) return 'Data inválida';
+    
+    return data.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+  } catch (error) {
+    console.error('Erro ao formatar data:', error);
+    return 'Erro na data';
+  }
+}
+
+// Função para buscar dados da API com tratamento de erros aprimorado
+async function fetchAPI(endpoint, params = {}) {
+  try {
+    // Construir URL com parâmetros
+    const queryParams = new URLSearchParams(params);
+    const url = `${API_BASE_URL}/${endpoint}${params ? '?' + queryParams.toString() : ''}`;
+    
+    console.log(`Buscando dados de: ${url}`);
+    
+    const response = await fetch(url);
+    
+    // Verificar se a resposta é JSON válido
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const text = await response.text();
+      throw new Error(`Resposta não é JSON válido: ${text}`);
+    }
+    
+    // Verificar status HTTP
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || `Erro ${response.status}: ${response.statusText}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error(`Erro ao buscar ${endpoint}:`, error);
+    throw error;
+  }
+}
+
+// Função para gerar relatório de estoque
+async function gerarRelatorioEstoque() {
   console.log('Iniciando geração de relatório de estoque...');
   
   // Referência ao container da tabela
-  const tabelaContainer = document.querySelector('#estoque-tab .report-preview');
+  const containerId = 'estoque-tab';
   
   // Mostrar indicador de carregamento
-  if (tabelaContainer) {
-    tabelaContainer.innerHTML = '<p>Carregando dados do estoque...</p>';
-  }
+  exibirMensagem(containerId, 'carregando', 'Carregando dados do estoque...');
   
-  // Buscar dados do servidor
-  fetch('http://localhost:3000/api/produtos')
-    .then(response => {
-      console.log('Status da resposta:', response.status);
-      if (!response.ok) {
-        return response.text().then(text => {
-          console.error('Texto da resposta:', text);
-          throw new Error(`Erro ao buscar produtos: ${response.status} ${response.statusText}`);
-        });
-      }
-      return response.json();
-    })
-    .then(produtos => {
-      console.log('Produtos recebidos:', produtos);
-      
-      // Verificar se temos produtos e o container da tabela
-      if (!produtos || !Array.isArray(produtos)) {
-        throw new Error('Dados de produtos inválidos recebidos do servidor');
-      }
-      
-      if (!tabelaContainer) {
-        throw new Error('Container da tabela não encontrado no DOM');
-      }
-      
-      // Calcular valores totais para exibição
-      let valorTotalEstoque = 0;
-      produtos.forEach(produto => {
-        const preco = parseFloat(produto.preco || 0);
-        const quantidade = parseInt(produto.quantidade || 0);
-        produto.valorTotal = preco * quantidade;
-        valorTotalEstoque += produto.valorTotal;
+  try {
+    // Buscar dados diretamente da tabela de produtos
+    const produtos = await fetch('http://localhost:3000/api/produtos')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Erro HTTP: ${response.status} ${response.statusText}`);
+        }
+        return response.json();
       });
+    
+    console.log('Dados de produtos recebidos:', produtos);
+    
+    // Verificar se temos produtos
+    if (!produtos || !Array.isArray(produtos) || produtos.length === 0) {
+      exibirMensagem(containerId, 'info', 'Nenhum produto encontrado no estoque.');
+      atualizarBotoesExportacao('estoque', false);
+      return;
+    }
+    
+    // Buscar dados do relatório de estoque para obter as quantidades atuais
+    const estoqueAtual = await fetch('http://localhost:3000/api/relatorios/estoque')
+      .then(response => {
+        if (!response.ok) {
+          // Se o endpoint não existir, vamos continuar apenas com os dados dos produtos
+          console.warn('Endpoint de relatório de estoque não disponível, usando apenas dados de produtos');
+          return [];
+        }
+        return response.json();
+      })
+      .catch(error => {
+        console.warn('Erro ao buscar relatório de estoque:', error);
+        return [];
+      });
+    
+    // Mesclar os dados de produtos com as quantidades do estoque
+    const produtosCompletos = produtos.map(produto => {
+      // Procurar o produto correspondente no relatório de estoque
+      const estoqueItem = Array.isArray(estoqueAtual) ? 
+        estoqueAtual.find(item => item.id_produto === produto.id_produto) : null;
       
-      // Criar a tabela HTML
-      let tabelaHTML = `
-        <div class="relatorio-info">
-          <h3>Relatório de Estoque</h3>
-          <p>Data de geração: ${new Date().toLocaleString()}</p>
-          <p>Total de produtos: ${produtos.length}</p>
-          <p>Valor total em estoque: R$ ${valorTotalEstoque.toFixed(2).replace('.', ',')}</p>
+      return {
+        ...produto,
+        quantidade_atual: estoqueItem ? estoqueItem.quantidade_atual : 0
+      };
+    });
+    
+    // IMPORTANTE: Armazenar dados para exportação
+    dadosRelatorioAtual = produtosCompletos;
+    relatorioAtual = 'estoque';
+    
+    console.log('Dados armazenados para exportação:', dadosRelatorioAtual);
+    
+    // Calcular valores totais para exibição
+    let totalItens = 0;
+    let produtosComEstoqueBaixo = 0;
+    let produtosSemEstoque = 0;
+    
+    produtosCompletos.forEach(produto => {
+      const quantidade = parseInt(produto.quantidade_atual || 0);
+      const estoqueMinimo = parseInt(produto.estoque_minimo || 5);
+      
+      totalItens += quantidade > 0 ? quantidade : 0;
+      
+      if (quantidade <= 0) {
+        produtosSemEstoque++;
+      } else if (quantidade <= estoqueMinimo) {
+        produtosComEstoqueBaixo++;
+      }
+    });
+    
+    // Criar a tabela HTML
+    let tabelaHTML = `
+      <div class="relatorio-info">
+        <h3>Relatório de Estoque</h3>
+        <p>Data de geração: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}</p>
+        <div class="relatorio-resumo">
+          <div class="resumo-item">
+            <span class="resumo-valor">${produtosCompletos.length}</span>
+            <span class="resumo-label">Produtos</span>
+          </div>
+          <div class="resumo-item">
+            <span class="resumo-valor">${totalItens}</span>
+            <span class="resumo-label">Itens</span>
+          </div>
+          <div class="resumo-item">
+            <span class="resumo-valor">${produtosSemEstoque}</span>
+            <span class="resumo-label">Sem Estoque</span>
+          </div>
+          <div class="resumo-item">
+            <span class="resumo-valor">${produtosComEstoqueBaixo}</span>
+            <span class="resumo-label">Estoque Baixo</span>
+          </div>
         </div>
+      </div>
+      
+      <div class="table-container">
         <table>
           <thead>
             <tr>
               <th>ID</th>
+              <th>EAN</th>
               <th>Produto</th>
               <th>Categoria</th>
               <th>Fornecedor</th>
-              <th>Quantidade</th>
-              <th>Valor Unitário</th>
-              <th>Valor Total</th>
+              <th>Estoque Atual</th>
+              <th>Estoque Mínimo</th>
               <th>Status</th>
             </tr>
           </thead>
           <tbody>
-      `;
+    `;
+    
+    // Adicionar linhas para cada produto
+    produtosCompletos.forEach(produto => {
+      const quantidade = parseInt(produto.quantidade_atual || 0);
+      const estoqueMinimo = parseInt(produto.estoque_minimo || 5);
       
-      // Adicionar linhas para cada produto
-      produtos.forEach(produto => {
-        const quantidade = parseInt(produto.quantidade || 0);
-        const preco = parseFloat(produto.preco || 0);
-        const valorTotal = preco * quantidade;
-        
-        // Determinar o status do estoque
-        const status = determinarStatusEstoque(quantidade);
-        
-        tabelaHTML += `
-          <tr>
-            <td>${produto.id || 'N/A'}</td>
-            <td>${produto.nome || 'N/A'}</td>
-            <td>${produto.categoria || 'N/A'}</td>
-            <td>${produto.fornecedor || 'N/A'}</td>
-            <td>${quantidade}</td>
-            <td>R$ ${preco.toFixed(2).replace('.', ',')}</td>
-            <td>R$ ${valorTotal.toFixed(2).replace('.', ',')}</td>
-            <td class="${status.classe}">${status.texto}</td>
-          </tr>
-        `;
-      });
+      // Determinar o status do estoque
+      const status = determinarStatusEstoque(quantidade, estoqueMinimo);
       
-      // Fechar a tabela
       tabelaHTML += `
+        <tr>
+          <td>${produto.id_produto || 'N/A'}</td>
+          <td>${produto.ean || 'N/A'}</td>
+          <td>${produto.produto || 'N/A'}</td>
+          <td>${produto.categoria || 'N/A'}</td>
+          <td>${produto.fornecedor || 'N/A'}</td>
+          <td>${quantidade}</td>
+          <td>${estoqueMinimo}</td>
+          <td class="${status.classe}">${status.texto}</td>
+        </tr>
+      `;
+    });
+    
+    // Fechar a tabela
+    tabelaHTML += `
           </tbody>
         </table>
-      `;
-      
-      // Inserir a tabela no container
+      </div>
+    `;
+    
+    // Inserir a tabela no container
+    const tabelaContainer = document.querySelector(`#${containerId} .report-preview`);
+    if (tabelaContainer) {
       tabelaContainer.innerHTML = tabelaHTML;
-      
-      console.log('Tabela de relatório de estoque gerada com sucesso');
-    })
-    .catch(error => {
-      console.error('Erro ao gerar relatório de estoque:', error);
-      
-      // Mostrar mensagem de erro no container da tabela
-      if (tabelaContainer) {
-        tabelaContainer.innerHTML = `
-          <div class="erro-relatorio">
-            <p>Erro ao gerar relatório de estoque: ${error.message}</p>
-          </div>
-        `;
-      }
-      
-      alert('Erro ao gerar relatório de estoque: ' + error.message);
-    });
+    }
+    
+    console.log('Tabela de relatório de estoque gerada com sucesso');
+    
+    // Habilitar botões de exportação
+    atualizarBotoesExportacao('estoque', true);
+    
+  } catch (error) {
+    console.error('Erro detalhado ao gerar relatório de estoque:', error);
+    exibirMensagem(containerId, 'erro', `Erro ao gerar relatório de estoque: ${error.message}`);
+    
+    // Desabilitar botões de exportação
+    atualizarBotoesExportacao('estoque', false);
+  }
 }
 
-function gerarRelatorioMovimentacoes() {
+
+
+// Função para gerar relatório de movimentações
+async function gerarRelatorioMovimentacoes() {
   console.log('Iniciando geração de relatório de movimentações...');
   
   // Referência ao container da tabela
-  const tabelaContainer = document.querySelector('#movimentacoes-tab .report-preview');
+  const containerId = 'movimentacoes-tab';
   
   // Obter valores dos filtros
   const dataInicio = document.getElementById('mov-data-inicio').value;
@@ -183,65 +344,70 @@ function gerarRelatorioMovimentacoes() {
   const tipoMovimentacao = document.getElementById('mov-tipo').value;
   
   // Construir parâmetros de consulta
-  let queryParams = new URLSearchParams();
-  if (dataInicio) queryParams.append('dataInicio', dataInicio);
-  if (dataFim) queryParams.append('dataFim', dataFim);
-  if (tipoMovimentacao) queryParams.append('tipo', tipoMovimentacao);
+  const params = {};
+  if (dataInicio) params.dataInicio = dataInicio;
+  if (dataFim) params.dataFim = dataFim;
+  if (tipoMovimentacao && tipoMovimentacao !== 'todos') params.tipo = tipoMovimentacao;
   
   // Mostrar indicador de carregamento
-  if (tabelaContainer) {
-    tabelaContainer.innerHTML = '<p>Carregando dados de movimentações...</p>';
-  }
+  exibirMensagem(containerId, 'carregando', 'Carregando dados de movimentações...');
   
-  // URL com parâmetros de consulta
-  const url = `http://localhost:3000/api/movimentacoes?${queryParams.toString()}`;
-  
-  // Buscar dados do servidor
-  fetch(url)
-    .then(response => {
-      console.log('Status da resposta:', response.status);
-      if (!response.ok) {
-        return response.text().then(text => {
-          console.error('Texto da resposta:', text);
-          throw new Error(`Erro ao buscar movimentações: ${response.status} ${response.statusText}`);
-        });
+  try {
+    // Buscar dados do servidor
+    const movimentacoes = await fetchAPI('relatorios/movimentacoes', params);
+    
+    // Armazenar dados para exportação
+    dadosRelatorioAtual = movimentacoes;
+    
+    // Verificar se temos movimentações
+    if (!movimentacoes || !Array.isArray(movimentacoes) || movimentacoes.length === 0) {
+      exibirMensagem(containerId, 'info', 'Nenhuma movimentação encontrada para o período selecionado.');
+      return;
+    }
+    
+    // Calcular valores totais para exibição
+    let valorTotalEntradas = 0;
+    let valorTotalSaidas = 0;
+    let quantidadeEntradas = 0;
+    let quantidadeSaidas = 0;
+    
+    movimentacoes.forEach(mov => {
+      const quantidade = parseInt(mov.quantidade || 0);
+      const valorUnitario = parseFloat(mov.valor_unitario || 0);
+      const valorTotal = valorUnitario * quantidade;
+      
+      if (mov.tipo_movimentacao === 'entrada') {
+        valorTotalEntradas += valorTotal;
+        quantidadeEntradas += quantidade;
+      } else if (mov.tipo_movimentacao === 'saida') {
+        valorTotalSaidas += valorTotal;
+        quantidadeSaidas += quantidade;
       }
-      return response.json();
-    })
-    .then(movimentacoes => {
-      console.log('Movimentações recebidas:', movimentacoes);
-      
-      // Verificar se temos movimentações e o container da tabela
-      if (!movimentacoes || !Array.isArray(movimentacoes)) {
-        throw new Error('Dados de movimentações inválidos recebidos do servidor');
-      }
-      
-      if (!tabelaContainer) {
-        throw new Error('Container da tabela não encontrado no DOM');
-      }
-      
-      // Calcular valores totais para exibição
-      let valorTotalEntradas = 0;
-      let valorTotalSaidas = 0;
-      
-      movimentacoes.forEach(mov => {
-        const valor = parseFloat(mov.valor_unitario || 0) * parseInt(mov.quantidade || 0);
-        if (mov.tipo === 'entrada') {
-          valorTotalEntradas += valor;
-        } else if (mov.tipo === 'saida') {
-          valorTotalSaidas += valor;
-        }
-      });
-      
-      // Criar a tabela HTML
-      let tabelaHTML = `
-        <div class="relatorio-info">
-          <h3>Relatório de Movimentações</h3>
-          <p>Data de geração: ${new Date().toLocaleString()}</p>
-          <p>Total de movimentações: ${movimentacoes.length}</p>
-          <p>Valor total de entradas: R$ ${valorTotalEntradas.toFixed(2).replace('.', ',')}</p>
-          <p>Valor total de saídas: R$ ${valorTotalSaidas.toFixed(2).replace('.', ',')}</p>
+    });
+    
+    // Criar a tabela HTML
+    let tabelaHTML = `
+      <div class="relatorio-info">
+        <h3>Relatório de Movimentações</h3>
+        <p>Data de geração: ${formatarData(new Date())}</p>
+        <p>Período: ${dataInicio ? formatarData(dataInicio) : 'Início'} a ${dataFim ? formatarData(dataFim) : 'Hoje'}</p>
+        <div class="relatorio-resumo">
+          <div class="resumo-item">
+            <span class="resumo-valor">${movimentacoes.length}</span>
+            <span class="resumo-label">Movimentações</span>
+          </div>
+          <div class="resumo-item">
+            <span class="resumo-valor">${quantidadeEntradas}</span>
+            <span class="resumo-label">Itens Entrada</span>
+          </div>
+          <div class="resumo-item">
+            <span class="resumo-valor">${quantidadeSaidas}</span>
+            <span class="resumo-label">Itens Saída</span>
+          </div>
         </div>
+      </div>
+      
+      <div class="table-container">
         <table>
           <thead>
             <tr>
@@ -250,90 +416,597 @@ function gerarRelatorioMovimentacoes() {
               <th>Tipo</th>
               <th>Produto</th>
               <th>Quantidade</th>
-              <th>Valor Unitário</th>
-              <th>Valor Total</th>
               <th>Responsável</th>
             </tr>
           </thead>
           <tbody>
-      `;
+    `;
+    
+    // Adicionar linhas para cada movimentação
+    movimentacoes.forEach(mov => {
+      const quantidade = parseInt(mov.quantidade || 0);
       
-      // Adicionar linhas para cada movimentação
-      movimentacoes.forEach(mov => {
-        const quantidade = parseInt(mov.quantidade || 0);
-        const valorUnitario = parseFloat(mov.valor_unitario || 0);
-        const valorTotal = valorUnitario * quantidade;
-        
-        // Formatar a data
-        const data = mov.data ? new Date(mov.data).toLocaleDateString() : 'N/A';
-        
-        // Determinar o tipo de movimentação
-        const tipoClasse = mov.tipo === 'entrada' ? 'tipo-entrada' : 'tipo-saida';
-        const tipoTexto = mov.tipo === 'entrada' ? 'Entrada' : 'Saída';
-        
-        tabelaHTML += `
-          <tr>
-            <td>${mov.id || 'N/A'}</td>
-            <td>${data}</td>
-            <td class="${tipoClasse}">${tipoTexto}</td>
-            <td>${mov.produto_nome || mov.produto_id || 'N/A'}</td>
-            <td>${quantidade}</td>
-            <td>R$ ${valorUnitario.toFixed(2).replace('.', ',')}</td>
-            <td>R$ ${valorTotal.toFixed(2).replace('.', ',')}</td>
-            <td>${mov.responsavel || 'N/A'}</td>
-          </tr>
-        `;
-      });
+      // Formatar a data
+      const data = formatarData(mov.data_movimentacao);
       
-      // Fechar a tabela
+      // Determinar o tipo de movimentação
+      const tipoClasse = mov.tipo_movimentacao === 'entrada' ? 'tipo-entrada' : 'tipo-saida';
+      const tipoTexto = mov.tipo_movimentacao === 'entrada' ? 'Entrada' : 'Saída';
+      
       tabelaHTML += `
+        <tr>
+          <td>${mov.id_movimentacao || 'N/A'}</td>
+          <td>${data}</td>
+          <td class="${tipoClasse}">${tipoTexto}</td>
+          <td>${mov.nome_produto || 'N/A'}</td>
+          <td>${quantidade}</td>
+          <td>${mov.responsavel || 'Sistema'}</td>
+        </tr>
+      `;
+    });
+    
+    // Fechar a tabela
+    tabelaHTML += `
           </tbody>
         </table>
-      `;
-      
-      // Inserir a tabela no container
+      </div>
+    `;
+    
+    // Inserir a tabela no container
+    const tabelaContainer = document.querySelector(`#${containerId} .report-preview`);
+    if (tabelaContainer) {
       tabelaContainer.innerHTML = tabelaHTML;
-      
-      console.log('Tabela de relatório de movimentações gerada com sucesso');
-    })
-    .catch(error => {
-      console.error('Erro ao gerar relatório de movimentações:', error);
-      
-      // Mostrar mensagem de erro no container da tabela
-      if (tabelaContainer) {
-        tabelaContainer.innerHTML = `
-          <div class="erro-relatorio">
-            <p>Erro ao gerar relatório de movimentações: ${error.message}</p>
-          </div>
-        `;
-      }
-      
-      alert('Erro ao gerar relatório de movimentações: ' + error.message);
-    });
+    }
+    
+    console.log('Tabela de relatório de movimentações gerada com sucesso');
+    
+    // Habilitar botões de exportação
+    atualizarBotoesExportacao('movimentacoes', true);
+    
+  } catch (error) {
+    console.error('Erro ao gerar relatório de movimentações:', error);
+    exibirMensagem(containerId, 'erro', `Erro ao gerar relatório de movimentações: ${error.message}`);
+    
+    // Desabilitar botões de exportação
+    atualizarBotoesExportacao('movimentacoes', false);
+  }
 }
 
 // Funções de exportação
 function exportarPDF() {
-  console.log('Iniciando exportação para PDF...');
+  console.log('Iniciando impressão do documento...');
   
-  // Aqui você implementaria a lógica para exportar para PDF
-  // Pode usar bibliotecas como jsPDF ou html2pdf
+  if (!dadosRelatorioAtual || !Array.isArray(dadosRelatorioAtual) || dadosRelatorioAtual.length === 0) {
+    alert('Não há dados para exportar. Por favor, gere um relatório primeiro.');
+    return;
+  }
   
-  alert('Exportando para PDF... Esta funcionalidade será implementada em breve.');
+  try {
+    // Criar um elemento de estilo para impressão
+    const estiloImpressao = document.createElement('style');
+    estiloImpressao.id = 'estilo-impressao-temporario';
+    estiloImpressao.innerHTML = `
+      @media print {
+        /* Ocultar elementos que não devem ser impressos */
+        header, nav, footer, .sidebar, .tab-buttons, .actions-container, 
+        .filter-container, button, .no-print, input, select {
+          display: none !important;
+        }
+        
+        /* Configurações gerais da página */
+        @page {
+          size: A4;
+          margin: 2cm 1.5cm;
+        }
+        
+        /* Garantir que o fundo seja branco */
+        body, html {
+          background-color: white !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          font-family: 'Arial', sans-serif !important;
+          color: #000000 !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+        
+        /* Estilizar o conteúdo do relatório */
+        .report-preview {
+          padding: 0 !important;
+          width: 100% !important;
+          box-shadow: none !important;
+        }
+        
+        /* Tabela em estilo formal */
+        table {
+          width: 100% !important;
+          border-collapse: collapse !important;
+          margin-top: 20px !important;
+          border: 1px solid #000 !important;
+        }
+        
+        th {
+          background-color: #f2f2f2 !important;
+          color: #000 !important;
+          font-weight: bold !important;
+          padding: 10px 8px !important;
+          text-align: left !important;
+          border: 1px solid #000 !important;
+          font-size: 10pt !important;
+          text-transform: uppercase !important;
+        }
+        
+        td {
+          padding: 8px !important;
+          border: 1px solid #000 !important;
+          font-size: 10pt !important;
+          vertical-align: top !important;
+        }
+        
+        tr:nth-child(even) {
+          background-color: #f9f9f9 !important;
+        }
+        
+        /* Status com cores mais discretas */
+        .status-sem-estoque {
+          color: #8b0000 !important;
+          font-weight: bold !important;
+        }
+        
+        .status-critico {
+          color: #8b4513 !important;
+          font-weight: bold !important;
+        }
+        
+        .status-baixo {
+          color: #b8860b !important;
+          font-weight: bold !important;
+        }
+        
+        .status-normal {
+          color: #006400 !important;
+        }
+        
+        .tipo-entrada {
+          color: #006400 !important;
+          font-weight: bold !important;
+        }
+        
+        .tipo-saida {
+          color: #8b0000 !important;
+          font-weight: bold !important;
+        }
+        
+        /* Mostrar apenas a aba ativa */
+        .tab-content {
+          display: block !important;
+        }
+        
+        .tab-pane {
+          display: none !important;
+        }
+        
+        .tab-pane.active {
+          display: block !important;
+        }
+      }
+    `;
+    
+    // Adicionar o estilo ao documento
+    document.head.appendChild(estiloImpressao);
+    
+    // Adicionar um cabeçalho corporativo temporário
+    const cabecalhoImpressao = document.createElement('div');
+    cabecalhoImpressao.id = 'cabecalho-impressao-temporario';
+    cabecalhoImpressao.className = 'print-only';
+    cabecalhoImpressao.style.display = 'none';
+    
+    // Determinar o título do relatório
+    const tituloRelatorio = relatorioAtual === 'estoque' ? 'RELATÓRIO DE ESTOQUE' : 'RELATÓRIO DE MOVIMENTAÇÕES';
+    const dataAtual = formatarData(new Date());
+    
+    cabecalhoImpressao.innerHTML = `
+      <div style="text-align: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #000;">
+        <h2 style="margin: 0; font-size: 16pt; text-transform: uppercase; font-weight: bold;">SISTEMA DE GESTÃO DE ESTOQUE</h2>
+        <h3 style="margin: 10px 0; font-size: 14pt; text-transform: uppercase; font-weight: bold;">${tituloRelatorio}</h3>
+        <p style="margin: 5px 0; font-size: 10pt;">CNPJ: 00.000.000/0001-00</p>
+        <p style="margin: 5px 0; font-size: 10pt;">Endereço: Av. Principal, 1000 - Centro - CEP 00000-000</p>
+        <p style="margin: 5px 0; font-size: 10pt;">Data de emissão: ${dataAtual}</p>
+      </div>
+    `;
+    
+    // Adicionar um rodapé formal temporário
+    const rodapeImpressao = document.createElement('div');
+    rodapeImpressao.id = 'rodape-impressao-temporario';
+    rodapeImpressao.className = 'print-only';
+    rodapeImpressao.style.display = 'none';
+    rodapeImpressao.innerHTML = `
+      <div style="margin-top: 30px; border-top: 1px solid #000; padding-top: 10px;">
+        <table style="width: 100%; border: none !important;">
+          <tr style="background: none !important;">
+            <td style="border: none !important; text-align: left; font-size: 9pt; padding: 0 !important;">
+              Documento gerado em: ${dataAtual}
+            </td>
+            <td style="border: none !important; text-align: right; font-size: 9pt; padding: 0 !important;">
+              Página 1 de 1
+            </td>
+          </tr>
+        </table>
+        <p style="text-align: center; font-size: 9pt; margin-top: 10px;">
+          Este documento é válido apenas com assinatura e carimbo.
+        </p>
+        <div style="margin-top: 30px; display: flex; justify-content: space-between;">
+          <div style="width: 45%; border-top: 1px solid #000; text-align: center; padding-top: 5px; font-size: 9pt;">
+            Responsável pela emissão
+          </div>
+          <div style="width: 45%; border-top: 1px solid #000; text-align: center; padding-top: 5px; font-size: 9pt;">
+            Conferência
+          </div>
+        </div>
+      </div>
+    `;
+    
+    // Adicionar resumo para relatório de estoque
+    let resumoHTML = '';
+    if (relatorioAtual === 'estoque') {
+      const totalProdutos = dadosRelatorioAtual.length;
+      let totalItens = 0;
+      let produtosComEstoqueBaixo = 0;
+      let produtosSemEstoque = 0;
+      
+      dadosRelatorioAtual.forEach(produto => {
+        const quantidade = parseInt(produto.quantidade_atual || 0);
+        const estoqueMinimo = parseInt(produto.estoque_minimo || 5);
+        
+        totalItens += quantidade > 0 ? quantidade : 0;
+        
+        if (quantidade <= 0) {
+          produtosSemEstoque++;
+        } else if (quantidade <= estoqueMinimo) {
+          produtosComEstoqueBaixo++;
+        }
+      });
+      
+      resumoHTML = `
+        <div style="margin-bottom: 25px; border: 1px solid #000; padding: 15px; background-color: #f9f9f9;">
+          <div style="display: flex; justify-content: space-between; text-align: center;">
+            <div style="flex: 1; padding: 10px 5px; border-right: 1px solid #ccc;">
+              <span style="font-size: 14pt; font-weight: bold; display: block; margin-bottom: 5px;">${totalProdutos}</span>
+              <span style="font-size: 9pt; text-transform: uppercase;">Produtos</span>
+            </div>
+            <div style="flex: 1; padding: 10px 5px; border-right: 1px solid #ccc;">
+              <span style="font-size: 14pt; font-weight: bold; display: block; margin-bottom: 5px;">${totalItens}</span>
+              <span style="font-size: 9pt; text-transform: uppercase;">Itens em Estoque</span>
+            </div>
+            <div style="flex: 1; padding: 10px 5px; border-right: 1px solid #ccc;">
+              <span style="font-size: 14pt; font-weight: bold; display: block; margin-bottom: 5px;">${produtosSemEstoque}</span>
+              <span style="font-size: 9pt; text-transform: uppercase;">Sem Estoque</span>
+            </div>
+            <div style="flex: 1; padding: 10px 5px;">
+              <span style="font-size: 14pt; font-weight: bold; display: block; margin-bottom: 5px;">${produtosComEstoqueBaixo}</span>
+              <span style="font-size: 9pt; text-transform: uppercase;">Estoque Baixo</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    
+    const resumoContainer = document.createElement('div');
+    resumoContainer.id = 'resumo-impressao-temporario';
+    resumoContainer.className = 'print-only';
+    resumoContainer.style.display = 'none';
+    resumoContainer.innerHTML = resumoHTML;
+    
+    // Obter o container do relatório
+    const containerRelatorio = document.querySelector(`#${relatorioAtual}-tab .report-preview`);
+    
+    // Inserir o cabeçalho no início do container
+    containerRelatorio.insertBefore(cabecalhoImpressao, containerRelatorio.firstChild);
+    
+    // Inserir o resumo após o cabeçalho (se for relatório de estoque)
+    if (relatorioAtual === 'estoque') {
+      containerRelatorio.insertBefore(resumoContainer, cabecalhoImpressao.nextSibling);
+    }
+    
+    // Adicionar o rodapé ao final do container
+    containerRelatorio.appendChild(rodapeImpressao);
+    
+    // Mostrar elementos para impressão
+    cabecalhoImpressao.style.display = 'block';
+    rodapeImpressao.style.display = 'block';
+    if (relatorioAtual === 'estoque') {
+      resumoContainer.style.display = 'block';
+    }
+    
+    // Imprimir a página
+    window.print();
+    
+    // Remover os elementos temporários após a impressão
+    setTimeout(() => {
+      const estiloTemp = document.getElementById('estilo-impressao-temporario');
+      if (estiloTemp) estiloTemp.remove();
+      
+      const cabecalhoTemp = document.getElementById('cabecalho-impressao-temporario');
+      if (cabecalhoTemp) cabecalhoTemp.remove();
+      
+      const resumoTemp = document.getElementById('resumo-impressao-temporario');
+      if (resumoTemp) resumoTemp.remove();
+      
+      const rodapeTemp = document.getElementById('rodape-impressao-temporario');
+      if (rodapeTemp) rodapeTemp.remove();
+      
+      console.log('Elementos temporários de impressão removidos');
+    }, 1000);
+    
+    console.log('Impressão iniciada com sucesso');
+    
+  } catch (error) {
+    console.error('Erro ao preparar documento para impressão:', error);
+    alert(`Erro ao preparar documento para impressão: ${error.message}`);
+  }
 }
 
-function exportarExcel() {
+
+
+
+
+
+
+// Função para reinicializar os event listeners após restaurar o conteúdo original
+function inicializarEventListeners() {
+  // Botões de relatório
+  const btnGerarRelatorioEstoque = document.getElementById('btnGerarRelatorioEstoque');
+  const btnGerarRelatorioMovimentacoes = document.getElementById('btnGerarRelatorioMovimentacoes');
+  const btnExportarPDF = document.getElementById('btnExportarPDF');
+  const btnExportarExcel = document.getElementById('btnExportarExcel');
+  const btnImprimir = document.getElementById('btnImprimir');
+  
+  // Tabs
+  const tabEstoque = document.getElementById('estoque-tab');
+  const tabMovimentacoes = document.getElementById('movimentacoes-tab');
+  
+  // Adicionar event listeners
+  if (btnGerarRelatorioEstoque) {
+    btnGerarRelatorioEstoque.addEventListener('click', gerarRelatorioEstoque);
+  }
+  
+  if (btnGerarRelatorioMovimentacoes) {
+    btnGerarRelatorioMovimentacoes.addEventListener('click', gerarRelatorioMovimentacoes);
+  }
+  
+  if (btnExportarPDF) {
+    btnExportarPDF.addEventListener('click', exportarPDF);
+  }
+  
+  if (btnExportarExcel) {
+    btnExportarExcel.addEventListener('click', exportarExcel);
+  }
+  
+  if (btnImprimir) {
+    btnImprimir.addEventListener('click', imprimirRelatorio);
+  }
+  
+  // Adicionar listeners para as tabs
+  if (tabEstoque) {
+    tabEstoque.addEventListener('click', () => mudarTab('estoque'));
+  }
+  
+  if (tabMovimentacoes) {
+    tabMovimentacoes.addEventListener('click', () => mudarTab('movimentacoes'));
+  }
+  
+  // Adicionar listener para limpar filtros
+  const btnLimparFiltros = document.getElementById('mov-limpar-filtros');
+  if (btnLimparFiltros) {
+    btnLimparFiltros.addEventListener('click', () => {
+      const hoje = new Date();
+      const primeiroDiaMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+      
+      const inputDataInicio = document.getElementById('mov-data-inicio');
+      const inputDataFim = document.getElementById('mov-data-fim');
+      const selectTipo = document.getElementById('mov-tipo');
+      
+      if (inputDataInicio) inputDataInicio.valueAsDate = primeiroDiaMes;
+      if (inputDataFim) inputDataFim.valueAsDate = hoje;
+      if (selectTipo) selectTipo.value = 'todos';
+      
+      gerarRelatorioMovimentacoes();
+    });
+  }
+}
+
+
+
+async function exportarExcel() {
   console.log('Iniciando exportação para Excel...');
   
-  // Aqui você implementaria a lógica para exportar para Excel
-  // Pode usar bibliotecas como SheetJS (xlsx)
+  if (!dadosRelatorioAtual || !relatorioAtual) {
+    alert('Não há dados para exportar. Por favor, gere um relatório primeiro.');
+    return;
+  }
   
-  alert('Exportando para Excel... Esta funcionalidade será implementada em breve.');
+  try {
+    // Importar a biblioteca SheetJS (xlsx) dinamicamente
+    const XLSX = await import('https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm');
+    
+    // Preparar os dados para o Excel
+    let dados;
+    
+    if (relatorioAtual === 'estoque') {
+      dados = dadosRelatorioAtual.map(p => ({
+        'ID': p.id_produto || '',
+        'EAN': p.ean || '',
+        'Produto': p.produto || '',
+        'Categoria': p.categoria || '',
+        'Fornecedor': p.fornecedor || '',
+        'Estoque Atual': p.quantidade_atual || '0',
+        'Estoque Mínimo': p.estoque_minimo || '0',
+        'Status': parseInt(p.quantidade_atual || 0) <= 0 ? 'Sem Estoque' : 
+                 parseInt(p.quantidade_atual || 0) <= parseInt(p.estoque_minimo || 5) ? 'Baixo' : 'Normal'
+      }));
+    } else {
+      dados = dadosRelatorioAtual.map(m => ({
+        'ID': m.id_movimentacao || '',
+        'Data': formatarData(m.data_movimentacao),
+        'Tipo': m.tipo_movimentacao === 'entrada' ? 'Entrada' : 'Saída',
+        'Produto': m.nome_produto || '',
+        'Quantidade': m.quantidade || '0',
+        'Responsável': m.responsavel || 'Sistema'
+      }));
+    }
+    
+    // Criar uma nova planilha
+    const ws = XLSX.utils.json_to_sheet(dados);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, relatorioAtual === 'estoque' ? 'Estoque' : 'Movimentações');
+    
+    // Salvar o arquivo Excel
+    const nomeArquivo = `${relatorioAtual}_${new Date().toISOString().split('T')[0]}.xlsx`;
+    XLSX.writeFile(wb, nomeArquivo);
+    
+    console.log(`Excel exportado com sucesso: ${nomeArquivo}`);
+    
+  } catch (error) {
+    console.error('Erro ao exportar para Excel:', error);
+    alert(`Erro ao exportar para Excel: ${error.message}`);
+  }
 }
 
 function imprimirRelatorio() {
   console.log('Iniciando impressão do relatório...');
-  window.print();
+  
+  if (!dadosRelatorioAtual || !relatorioAtual) {
+    alert('Não há dados para imprimir. Por favor, gere um relatório primeiro.');
+    return;
+  }
+  
+  try {
+    // Criar uma nova janela para impressão
+    const janelaImpressao = window.open('', '_blank');
+    
+    if (!janelaImpressao) {
+      throw new Error('Não foi possível abrir a janela de impressão. Verifique se o bloqueador de pop-ups está desativado.');
+    }
+    
+    // Obter o conteúdo atual do relatório
+    const conteudoRelatorio = document.querySelector(`#${relatorioAtual}-tab .report-preview`).innerHTML;
+    
+    // Estilos para a impressão
+    const estilos = `
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          margin: 20px;
+        }
+        .relatorio-info {
+          margin-bottom: 20px;
+        }
+        .relatorio-resumo {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 15px;
+          margin-bottom: 20px;
+        }
+        .resumo-item {
+          background-color: #f5f5f5;
+          padding: 10px;
+          border-radius: 5px;
+          text-align: center;
+          min-width: 120px;
+        }
+        .resumo-valor {
+          font-size: 18px;
+          font-weight: bold;
+          display: block;
+        }
+        .resumo-label {
+          font-size: 12px;
+          color: #666;
+        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+        }
+        th, td {
+          border: 1px solid #ddd;
+          padding: 8px;
+          text-align: left;
+        }
+        th {
+          background-color: #f2f2f2;
+          font-weight: bold;
+        }
+        tr:nth-child(even) {
+          background-color: #f9f9f9;
+        }
+        .status-sem-estoque {
+          color: #e74c3c;
+          font-weight: bold;
+        }
+        .status-critico {
+          color: #e67e22;
+          font-weight: bold;
+        }
+        .status-baixo {
+          color: #f39c12;
+          font-weight: bold;
+        }
+        .status-normal {
+          color: #27ae60;
+        }
+        .tipo-entrada {
+          color: #27ae60;
+          font-weight: bold;
+        }
+        .tipo-saida {
+          color: #e74c3c;
+          font-weight: bold;
+        }
+        @media print {
+          .no-print {
+            display: none;
+          }
+        }
+      </style>
+    `;
+    
+    // Título da página
+    const titulo = relatorioAtual === 'estoque' ? 'Relatório de Estoque' : 'Relatório de Movimentações';
+    
+    // Escrever o conteúdo na nova janela
+    janelaImpressao.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>${titulo}</title>
+        ${estilos}
+      </head>
+      <body>
+        <div class="no-print" style="margin-bottom: 20px; text-align: right;">
+          <button onclick="window.print()">Imprimir</button>
+          <button onclick="window.close()">Fechar</button>
+        </div>
+        ${conteudoRelatorio}
+      </body>
+      </html>
+    `);
+    
+    janelaImpressao.document.close();
+    
+    // Iniciar a impressão após o carregamento da página
+    janelaImpressao.onload = function() {
+      setTimeout(() => {
+        janelaImpressao.focus();
+        janelaImpressao.print();
+      }, 500);
+    };
+    
+    console.log('Janela de impressão aberta com sucesso');
+    
+  } catch (error) {
+    console.error('Erro ao imprimir relatório:', error);
+    alert(`Erro ao imprimir relatório: ${error.message}`);
+  }
 }
 
 // Adicionar event listeners aos botões
@@ -371,7 +1044,70 @@ if (btnImprimir) {
 document.addEventListener('DOMContentLoaded', () => {
   // Verificar se estamos na página de relatórios
   if (tabEstoque && tabMovimentacoes) {
+    console.log('Inicializando página de relatórios');
+    
+    // Definir valores padrão para os campos de data
+    const hoje = new Date();
+    const primeiroDiaMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+    
+    const inputDataInicio = document.getElementById('mov-data-inicio');
+    const inputDataFim = document.getElementById('mov-data-fim');
+    
+    if (inputDataInicio) {
+      inputDataInicio.valueAsDate = primeiroDiaMes;
+    }
+    
+    if (inputDataFim) {
+      inputDataFim.valueAsDate = hoje;
+    }
+    
     // Ativar a aba de estoque por padrão
     mudarTab('estoque');
+    
+    // Gerar relatório de estoque automaticamente
+    setTimeout(() => {
+      gerarRelatorioEstoque();
+    }, 500);
+  } else {
+    console.log('Não estamos na página de relatórios ou elementos não encontrados');
   }
 });
+
+// Adicionar listener para limpar filtros de movimentações
+const btnLimparFiltros = document.getElementById('mov-limpar-filtros');
+if (btnLimparFiltros) {
+  btnLimparFiltros.addEventListener('click', () => {
+    const hoje = new Date();
+    const primeiroDiaMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+    
+    const inputDataInicio = document.getElementById('mov-data-inicio');
+    const inputDataFim = document.getElementById('mov-data-fim');
+    const selectTipo = document.getElementById('mov-tipo');
+    
+    if (inputDataInicio) inputDataInicio.valueAsDate = primeiroDiaMes;
+    if (inputDataFim) inputDataFim.valueAsDate = hoje;
+    if (selectTipo) selectTipo.value = 'todos';
+    
+    // Gerar relatório com os filtros limpos
+    gerarRelatorioMovimentacoes();
+  });
+}
+// Função para atualizar o estado dos botões de exportação
+function atualizarBotoesExportacao(tabId, temDados = false) {
+  console.log(`Atualizando botões de exportação para aba ${tabId}, temDados: ${temDados}`);
+  
+  // Selecionar os botões de exportação
+  const btnExportarPDF = document.getElementById("btnExportarPDF");
+  const btnExportarExcel = document.getElementById("btnExportarExcel");
+  const btnImprimir = document.getElementById("btnImprimir");
+  
+  const botoes = [btnExportarPDF, btnExportarExcel, btnImprimir];
+  
+  botoes.forEach(botao => {
+    if (botao) {
+      botao.disabled = !temDados;
+      botao.classList.toggle('disabled', !temDados);
+    }
+  });
+}
+

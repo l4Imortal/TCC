@@ -1,298 +1,277 @@
 document.addEventListener("DOMContentLoaded", () => {
+  console.log("DOM carregado");
+  
   // Hamburger menu functionality
   const menuIcon = document.getElementById("menuIcon");
   const menuContent = document.getElementById("menuContent");
   
-  menuIcon.addEventListener("click", function () {
-    this.classList.toggle("open");
-    if (menuContent.style.display === "block") {
-      menuContent.style.display = "none";
-    } else {
-      menuContent.style.display = "block";
-    }
-  });
-
-  // Close menu when clicking outside
-  document.addEventListener("click", function (event) {
-    if (!menuIcon.contains(event.target) && !menuContent.contains(event.target)) {
-      menuIcon.classList.remove("open");
-      menuContent.style.display = "none";
-    }
-  });
-
+  if (menuIcon && menuContent) {
+    menuIcon.addEventListener("click", () => {
+      menuIcon.classList.toggle("open");
+      menuContent.style.display = menuContent.style.display === "block" ? "none" : "block";
+    });
+    
+    // Close menu when clicking outside
+    document.addEventListener("click", (event) => {
+      if (!menuIcon.contains(event.target) && !menuContent.contains(event.target)) {
+        menuIcon.classList.remove("open");
+        menuContent.style.display = "none";
+      }
+    });
+  }
+  
   // Logout button functionality
-  document.getElementById("logoutButton").addEventListener("click", function () {
-    // Clear user session data
-    localStorage.removeItem("usuarioLogado");
-    // Redirect to login page
-    window.location.href = "login.html";
-  });
-
-  // Função para extrair número de um valor (string ou número)
+  const logoutButton = document.getElementById("logoutButton");
+  if (logoutButton) {
+    logoutButton.addEventListener("click", () => {
+      localStorage.removeItem("usuarioLogado");
+      window.location.href = "login.html";
+    });
+  }
+  
   function extrairNumero(valor) {
-    if (valor === undefined || valor === null) return 0;
+    if (valor == null) return 0;
     if (typeof valor === "number") return valor;
     if (typeof valor === "string") {
-      // Remove R$, espaços e substitui vírgula por ponto
       return parseFloat(valor.replace(/[R$\s]/g, "").replace(",", ".")) || 0;
     }
     return 0;
   }
-
-  // Função para formatar valores monetários
+  
   function formatarMoeda(valor) {
-    return `R$ ${parseFloat(valor).toFixed(2)}`;
+    return `R$ ${Number(valor).toFixed(2)}`;
   }
-
-  // Função para atualizar os contadores
-  function atualizarContadores() {
+  
+  async function fetchJson(url) {
+    try {
+      console.log(`Buscando dados de: ${url}`);
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`Erro ao buscar dados: ${response.statusText}`);
+      const data = await response.json();
+      console.log(`Dados recebidos de ${url}:`, data.length);
+      return data;
+    } catch (error) {
+      console.error(`Erro ao buscar ${url}:`, error);
+      return [];
+    }
+  }
+  
+  // Funções para buscar dados da API
+  const buscarProdutos = () => fetchJson('http://localhost:3000/api/produtos');
+  const buscarEntradas = () => fetchJson('http://localhost:3000/api/entradas');
+  const buscarSaidas = () => fetchJson('http://localhost:3000/api/saidas');
+  const buscarEstoqueAtual = () => fetchJson('http://localhost:3000/api/relatorios/estoque');
+  
+  async function atualizarContadores() {
     console.log("Iniciando atualização dos contadores...");
     
-    // Obter produtos do localStorage
-    let produtos = [];
     try {
-      const produtosString = localStorage.getItem("produtos");
-      console.log("Dados brutos do localStorage:", produtosString);
-      if (produtosString && produtosString !== "null") {
-        produtos = JSON.parse(produtosString);
-        console.log("Produtos carregados:", produtos.length);
-      } else {
-        console.warn("Nenhum produto encontrado no localStorage");
-        // Não criar produtos de teste, usar array vazio
-        produtos = [];
-      }
-    } catch (e) {
-      console.error("Erro ao carregar produtos:", e);
-      produtos = [];
-    }
-
-    // Contar produtos cadastrados
-    const produtosCadastrados = produtos.length;
-    
-    // Calcular total de itens em estoque
-    let totalItensEstoque = 0;
-    produtos.forEach((produto) => {
-      const quantidade = extrairNumero(produto.estoque);
-      totalItensEstoque += quantidade;
-    });
-
-    // Calcular investimento total (preço de compra * quantidade em estoque)
-    let investimentoTotal = 0;
-    // Calcular retorno previsto (preço de venda * quantidade em estoque)
-    let retornoPrevisto = 0;
-    
-    produtos.forEach((produto) => {
-      const quantidade = extrairNumero(produto.estoque);
-      const precoCompra = extrairNumero(produto.precoCompra);
-      const precoVenda = extrairNumero(produto.precoVenda);
+      // Buscar dados diretamente da API em vez de calcular localmente
+      const produtos = await buscarProdutos();
+      const estoqueAtual = await buscarEstoqueAtual();
+      const entradas = await buscarEntradas();
+      const saidas = await buscarSaidas();
       
-      const investimentoProduto = quantidade * precoCompra;
-      const retornoProduto = quantidade * precoVenda;
-      
-      console.log(`Produto: ${produto.nome}, Quantidade: ${quantidade}, Preço Compra: ${precoCompra}, Preço Venda: ${precoVenda}`);
-      console.log(`Investimento: ${investimentoProduto}, Retorno: ${retornoProduto}`);
-      
-      investimentoTotal += investimentoProduto;
-      retornoPrevisto += retornoProduto;
-    });
-
-    // Calcular margem de lucro
-    let lucro = retornoPrevisto - investimentoTotal;
-    let margemLucro = 0;
-    if (retornoPrevisto > 0) {
-      margemLucro = (lucro / retornoPrevisto) * 100;
-    }
-    
-    console.log("Investimento total calculado:", investimentoTotal);
-    console.log("Retorno previsto calculado:", retornoPrevisto);
-    console.log("Margem de lucro calculada:", margemLucro);
-
-    // Atualizar o texto do botão azul
-    document.getElementById("produtosCadastradosLink").textContent = `${produtosCadastrados} Produtos Cadastrados, ${totalItensEstoque} Itens no Estoque`;
-
-    // Contar produtos com estoque zerado
-    const zeradoCount = produtos.filter((p) => extrairNumero(p.estoque) === 0).length;
-    document.getElementById("estoqueZeradoLink").textContent = `${zeradoCount} Produtos Com Estoque Zerado`;
-
-    // Contar produtos que atingiram o estoque mínimo
-    const minimoCount = produtos.filter((p) => {
-      const qtd = extrairNumero(p.estoque);
-      const min = extrairNumero(p.estoqueMinimo);
-      return qtd > 0 && qtd <= min;
-    }).length;
-    
-    document.getElementById("estoqueMinimoLink").textContent = `${minimoCount} Produtos Atingiram o Estoque Mínimo`;
-
-    // Atualizar o texto do botão verde com todas as informações solicitadas
-    const boxGreen = document.querySelector(".box.green");
-    if (boxGreen) {
-      boxGreen.innerHTML = `<a href="produtos.html?filter=investimentos">Investimento: ${formatarMoeda(investimentoTotal)}<br>Retorno Previsto: ${formatarMoeda(retornoPrevisto)}<br>Margem de Lucro: ${margemLucro.toFixed(2)}%</a>`;
-      console.log("Botão verde atualizado com todos os valores");
-    } else {
-      console.error("Elemento .box.green não encontrado!");
-    }
-
-    // Salvar valores no localStorage para uso em outras páginas
-    localStorage.setItem("produtosCadastrados", produtosCadastrados);
-    localStorage.setItem("totalItensEstoque", totalItensEstoque);
-    localStorage.setItem("produtosEstoqueZerado", zeradoCount);
-    localStorage.setItem("produtosEstoqueMinimo", minimoCount);
-    localStorage.setItem("investimentoTotal", investimentoTotal.toFixed(2));
-    localStorage.setItem("retornoPrevisto", retornoPrevisto.toFixed(2));
-    localStorage.setItem("margemLucro", margemLucro.toFixed(2));
-  }
-
-  // Chamar a função ao carregar a página
-  atualizarContadores();
-
-  // Função para carregar dados do gráfico de entradas e saídas do banco de dados
-  function carregarDadosGrafico() {
-    // Obter os últimos 10 dias para o gráfico
-    const hoje = new Date();
-    const dataFim = hoje.toISOString().split('T')[0]; // Formato YYYY-MM-DD
-    
-    const dataInicio = new Date();
-    dataInicio.setDate(dataInicio.getDate() - 30); // Últimos 30 dias
-    const dataInicioFormatada = dataInicio.toISOString().split('T')[0];
-    
-    // Buscar dados de entradas
-    fetch(`http://localhost:3000/api/relatorios/entradas?dataInicio=${dataInicioFormatada}&dataFim=${dataFim}`)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Erro ao buscar dados de entradas');
-        }
-        return response.json();
-      })
-      .then(dadosEntradas => {
-        // Buscar dados de saídas
-        return fetch(`http://localhost:3000/api/relatorios/saidas?dataInicio=${dataInicioFormatada}&dataFim=${dataFim}`)
-          .then(response => {
-            if (!response.ok) {
-              throw new Error('Erro ao buscar dados de saídas');
-            }
-            return response.json();
-          })
-          .then(dadosSaidas => {
-            // Processar os dados para o gráfico
-            const datas = [];
-            const quantidadesEntradas = [];
-            const quantidadesSaidas = [];
-            
-            // Criar um mapa de datas para os últimos 10 dias
-            for (let i = 9; i >= 0; i--) {
-              const data = new Date();
-              data.setDate(data.getDate() - i);
-              const dataFormatada = data.toISOString().split('T')[0];
-              const dataObj = new Date(dataFormatada);
-              const dataExibicao = `${dataObj.getDate()}/${dataObj.getMonth()+1}`;              
-              datas.push(dataExibicao);
-              
-              // Encontrar entradas para esta data
-              const entradaDia = dadosEntradas.find(e => e.data_entrada === dataFormatada);
-              quantidadesEntradas.push(entradaDia ? entradaDia.quantidade_total : 0);
-              
-              // Encontrar saídas para esta data
-              const saidaDia = dadosSaidas.find(s => s.data_saida === dataFormatada);
-              quantidadesSaidas.push(saidaDia ? saidaDia.quantidade_total : 0);
-            }
-            
-            // Criar o gráfico com os dados obtidos
-            criarGraficoEntradasSaidas(datas, quantidadesEntradas, quantidadesSaidas);
-          });
-      })
-      .catch(error => {
-        console.error('Erro ao carregar dados para o gráfico:', error);
-        
-        // Em caso de erro, criar gráfico com dados vazios
-        const datas = ["Dia 1", "Dia 2", "Dia 3", "Dia 4", "Dia 5", "Dia 6", "Dia 7", "Dia 8", "Dia 9", "Dia 10"];
-        criarGraficoEntradasSaidas(datas, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+      console.log("Dados recebidos:", {
+        produtos: produtos.length,
+        estoqueAtual: estoqueAtual.length,
+        entradas: entradas.length,
+        saidas: saidas.length
       });
-  }
-
-  // Função para criar o gráfico de entradas e saídas
-  function criarGraficoEntradasSaidas(datas, dadosEntradas, dadosSaidas) {
-    const ctx1 = document.getElementById("entradasSaidasChart").getContext("2d");
-    
-    new Chart(ctx1, {
-      type: "bar",
-      data: {
-        labels: datas,
-        datasets: [
-          {
-            label: "Entradas",
-            data: dadosEntradas,
-            backgroundColor: "rgba(75, 192, 192, 0.2)",
-            borderColor: "rgba(75, 192, 192, 1)",
-            borderWidth: 1,
-          },
-          {
-            label: "Saídas",
-            data: dadosSaidas,
-            backgroundColor: "rgba(255, 99, 132, 0.2)",
-            borderColor: "rgba(255, 99, 132, 1)",
-            borderWidth: 1,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          y: { 
-            beginAtZero: true,
-            title: {
-              display: true,
-              text: 'Quantidade'
-            }
-          },
-          x: {
-            title: {
-              display: true,
-              text: 'Período'
-            }
-          }
-        },
-        plugins: {
-          title: {
-            display: true,
-            text: 'Entradas e Saídas (Últimos 10 dias)',
-            font: {
-              size: 16
-            }
-          },
-          legend: {
-            position: 'bottom'
-          }
+      
+      // Calcular valores
+      const produtosCadastrados = produtos.length;
+      const totalItensEstoque = estoqueAtual.reduce((acc, p) => acc + extrairNumero(p.quantidade_atual), 0);
+      
+      let investimentoTotal = 0;
+      let retornoPrevisto = 0;
+      
+      // Calcular valores financeiros
+      estoqueAtual.forEach(produto => {
+        const qtdEstoque = extrairNumero(produto.quantidade_atual);
+        if (qtdEstoque <= 0) return;
+        
+        // Buscar o preço médio de compra nas entradas
+        const entradasDoProduto = entradas.filter(e => e.ean === produto.ean);
+        const precoMedioCompra = entradasDoProduto.length > 0
+          ? entradasDoProduto.reduce((acc, e) => acc + extrairNumero(e.valor_unitario), 0) / entradasDoProduto.length
+          : 0;
+          
+        // Calcular preço de venda (30% acima do preço de compra)
+        const precoVenda = precoMedioCompra * 1.3;
+        
+        investimentoTotal += qtdEstoque * precoMedioCompra;
+        retornoPrevisto += qtdEstoque * precoVenda;
+      });
+      
+      const lucro = retornoPrevisto - investimentoTotal;
+      const margemLucro = retornoPrevisto > 0 ? (lucro / retornoPrevisto) * 100 : 0;
+      
+      console.log("Valores calculados:", {
+        produtosCadastrados,
+        totalItensEstoque,
+        investimentoTotal,
+        retornoPrevisto,
+        margemLucro
+      });
+      
+      // Atualizar apenas o texto dos cards, sem substituir os ícones
+      const produtosCadastradosLink = document.getElementById("produtosCadastradosLink");
+      if (produtosCadastradosLink) {
+        // Encontrar ou criar o elemento div para o conteúdo
+        let contentDiv = produtosCadastradosLink.querySelector('.card-content');
+        if (!contentDiv) {
+          contentDiv = document.createElement('div');
+          contentDiv.className = 'card-content';
+          produtosCadastradosLink.appendChild(contentDiv);
         }
-      },
-    });
+        contentDiv.innerHTML = `
+          <strong>${produtosCadastrados}</strong> produtos<br>
+          <strong>${totalItensEstoque}</strong> itens no estoque
+        `;
+      }
+      
+      // Produtos com estoque zerado
+      const estoqueZeradoCount = estoqueAtual.filter(p => extrairNumero(p.quantidade_atual) <= 0).length;
+      const estoqueZeradoLink = document.getElementById("estoqueZeradoLink");
+      if (estoqueZeradoLink) {
+        let contentDiv = estoqueZeradoLink.querySelector('.card-content');
+        if (!contentDiv) {
+          contentDiv = document.createElement('div');
+          contentDiv.className = 'card-content';
+          estoqueZeradoLink.appendChild(contentDiv);
+        }
+        contentDiv.innerHTML = `
+          <strong>${estoqueZeradoCount}</strong> produtos<br>
+          com estoque zerado
+        `;
+      }
+      
+      // Produtos no estoque mínimo
+      const estoqueMinimoCount = estoqueAtual.filter(p => {
+        const qtd = extrairNumero(p.quantidade_atual);
+        const min = extrairNumero(p.estoque_minimo);
+        return qtd > 0 && qtd <= min;
+      }).length;
+      
+      const estoqueMinimoLink = document.getElementById("estoqueMinimoLink");
+      if (estoqueMinimoLink) {
+        let contentDiv = estoqueMinimoLink.querySelector('.card-content');
+        if (!contentDiv) {
+          contentDiv = document.createElement('div');
+          contentDiv.className = 'card-content';
+          estoqueMinimoLink.appendChild(contentDiv);
+        }
+        contentDiv.innerHTML = `
+          <strong>${estoqueMinimoCount}</strong> produtos<br>
+          no estoque mínimo
+        `;
+      }
+      
+      // Adicionar card financeiro
+      const financeiroLink = document.getElementById("financeiroLink");
+      if (financeiroLink) {
+        let contentDiv = financeiroLink.querySelector('.card-content');
+        if (!contentDiv) {
+          contentDiv = document.createElement('div');
+          contentDiv.className = 'card-content';
+          financeiroLink.appendChild(contentDiv);
+        }
+        contentDiv.innerHTML = `
+          Investimento: <strong>${formatarMoeda(investimentoTotal)}</strong><br>
+          Retorno: <strong>${formatarMoeda(retornoPrevisto)}</strong>
+        `;
+      }
+      
+      // Carregar atividades recentes
+      carregarAtividadesRecentes(entradas, saidas);
+      
+    } catch (error) {
+      console.error("Erro ao atualizar contadores:", error);
+    }
   }
-
-  // Carregar dados para o gráfico
-  carregarDadosGrafico();
-
-  // Gráfico de Atividades do Sistema (mantido como estava)
-  const ctx2 = document.getElementById("atividadesSistemaChart");
-  if (ctx2) { // Verificar se o elemento existe antes de tentar criar o gráfico
-    const ctx2Context = ctx2.getContext("2d");
-    new Chart(ctx2Context, {
-      type: "line",
-      data: {
-        labels: ["Dia 1", "Dia 2", "Dia 3", "Dia 4", "Dia 5", "Dia 6", "Dia 7", "Dia 8", "Dia 9", "Dia 10"],
-        datasets: [{
-          label: "Atividades",
-          data: [3, 2, 2, 6, 4, 3, 5, 6, 3, 4],
-          backgroundColor: "rgba(54, 162, 235, 0.2)",
-          borderColor: "rgba(54, 162, 235, 1)",
-          borderWidth: 1,
-          fill: true,
-        }],
-      },
-      options: {
-        scales: {
-          y: { beginAtZero: true },
-        },
-      },
-    });
+  
+  function formatarDataAtividade(data) {
+    const agora = new Date();
+    const diff = agora - data;
+    const umDia = 24 * 60 * 60 * 1000;
+    
+    if (diff < umDia && agora.getDate() === data.getDate()) {
+      return `Hoje, ${data.getHours().toString().padStart(2, '0')}:${data.getMinutes().toString().padStart(2, '0')}`;
+    } else if (diff < 2 * umDia) {
+      return `Ontem, ${data.getHours().toString().padStart(2, '0')}:${data.getMinutes().toString().padStart(2, '0')}`;
+    } else {
+      return `${data.getDate().toString().padStart(2, '0')}/${(data.getMonth() + 1).toString().padStart(2, '0')}/${data.getFullYear()}, ${data.getHours().toString().padStart(2, '0')}:${data.getMinutes().toString().padStart(2, '0')}`;
+    }
   }
+  
+  async function carregarAtividadesRecentes(entradas = null, saidas = null) {
+    try {
+      console.log("Carregando atividades recentes...");
+      
+      // Se não foram passados como parâmetros, buscar da API
+      if (!entradas) entradas = await buscarEntradas();
+      if (!saidas) saidas = await buscarSaidas();
+      
+      // Combinar e ordenar por data (mais recentes primeiro)
+      const atividades = [
+        ...entradas.map(e => ({
+          tipo: 'entry',
+          titulo: 'Entrada de Produtos',
+          descricao: `${e.quantidade} unidades de ${e.produto}`,
+          data: new Date(e.data_entrada || e.data_saida),
+          icone: 'arrow-down'
+        })),
+        ...saidas.map(s => ({
+          tipo: 'exit',
+          titulo: 'Saída de Produtos',
+          descricao: `${s.quantidade} unidades de ${s.produto}`,
+          data: new Date(s.data_saida),
+          icone: 'arrow-up'
+        }))
+      ];
+      
+      // Ordenar por data (mais recentes primeiro)
+      atividades.sort((a, b) => b.data - a.data);
+      
+      // Pegar apenas as 5 atividades mais recentes
+      const atividadesRecentes = atividades.slice(0, 5);
+      
+      // Se não houver atividades, usar dados de exemplo
+      if (atividadesRecentes.length === 0) {
+        console.log("Nenhuma atividade encontrada, mantendo dados de exemplo");
+        return; // Manter os dados de exemplo do HTML
+      }
+      
+      console.log(`Exibindo ${atividadesRecentes.length} atividades recentes`);
+      
+      // Atualizar a lista de atividades
+      const listaAtividades = document.getElementById('recentActivities');
+      if (listaAtividades) {
+        listaAtividades.innerHTML = atividadesRecentes.map(atividade => {
+          const dataFormatada = formatarDataAtividade(atividade.data);
+          return `
+            <div class="activity-item">
+              <div class="activity-icon ${atividade.tipo}">
+                <i class="fas fa-${atividade.icone}"></i>
+              </div>
+              <div class="activity-details">
+                <p class="activity-title">${atividade.titulo}</p>
+                <p class="activity-description">${atividade.descricao}</p>
+                <p class="activity-time">${dataFormatada}</p>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    } catch (error) {
+      console.error("Erro ao carregar atividades recentes:", error);
+      // Manter os dados de exemplo do HTML em caso de erro
+    }
+  }
+  
+  // Inicializar a página
+  atualizarContadores();
+  
+  console.log("Inicialização da página concluída");
 });

@@ -1,12 +1,10 @@
-html,
-body {
+html, body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
   background-color: #1c1429;
   font-size: 16px;
   height: 100%;
-  
 }
 
 .container {
@@ -16,6 +14,9 @@ body {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  min-height: calc(100vh - 40px);
+  display: flex;
+  flex-direction: column;
 }
 
 header {
@@ -90,10 +91,31 @@ nav ul li a:hover {
 }
 
 /* Conteúdo principal */
-.main-content {
+main {
   flex: 1;
   display: flex;
   flex-direction: column;
+}
+
+/* Seção de boas-vindas */
+.welcome {
+  background-color: #333;
+  color: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.welcome h2 {
+  margin-bottom: 0.5rem;
+  font-size: 1.5rem;
+}
+
+.welcome p {
+  opacity: 0.9;
+  margin: 0;
 }
 
 /* Resumo */
@@ -135,6 +157,11 @@ nav ul li a:hover {
   justify-content: center;
 }
 
+.box .icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
 .box.blue {
   background-color: #007bff;
   color: #fff !important;
@@ -151,6 +178,12 @@ nav ul li a:hover {
   background-color: #ffc107;
   color: #000 !important;
   border: 2px solid #d39e00;
+}
+
+.box.green {
+  background-color: #28a745;
+  color: #fff !important;
+  border: 2px solid #1e7e34;
 }
 
 .box:hover {
@@ -173,46 +206,216 @@ nav ul li a:hover {
   border-color: #a67c00;
 }
 
+.box.green:hover {
+  background-color: #1e7e34;
+  border-color: #145523;
+}
+
+/* Ações rápidas */
+.quick-actions {
+  background-color: white;
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.quick-actions h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.quick-actions h2 i {
+  color: #007bff;
+}
+
+.action-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background-color: #f5f5f5;
+  border-radius: 6px;
+  text-decoration: none;
+  color: #333;
+  transition: all 0.3s ease;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+.action-btn i {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #007bff;
+}
+
+.action-btn span {
+  font-weight: 500;
+}
+
+.action-btn:hover {
+  background-color: #007bff;
+  color: white;
+  transform: translateY(-3px);
+  border-color: #0056b3;
+}
+
+.action-btn:hover i {
+  color: white;
+}
+
+/* Atividades recentes */
+.recent-activities {
+  background-color: white;
+  border-radius: 8px;
+  padding: 1.25rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+}
+
+.recent-activities h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.recent-activities h2 i {
+  color: #007bff;
+}
+
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.activity-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 0.75rem;
+  border-radius: 6px;
+  background-color: #f5f5f5;
+  transition: all 0.3s ease;
+  border: 1px solid #ddd;
+}
+
+.activity-item:hover {
+  transform: translateX(3px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.activity-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+}
+
+.activity-icon i {
+  font-size: 1rem;
+  color: white;
+}
+
+.activity-icon.entry {
+  background-color: #28a745;
+}
+
+.activity-icon.exit {
+  background-color: #dc3545;
+}
+
+.activity-icon.product {
+  background-color: #007bff;
+}
+
+.activity-details {
+  flex: 1;
+}
+
+.activity-title {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: #333;
+}
+
+.activity-description {
+  color: #555;
+  margin-bottom: 0.25rem;
+}
+
+.activity-time {
+  font-size: 0.85rem;
+  color: #777;
+}
+
 /* Modificar o tamanho do contêiner do gráfico */
 .chart {
   flex: 1;
   min-width: 300px;
- 
   background-color: #fff;
   padding: 1.25rem;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  margin-bottom: 1.25rem;
+  margin: 0.625rem;
+  height: 400px; /* Altura fixa para o container */
   display: flex;
   flex-direction: column;
-  margin: 0 auto; /* Centralizar o gráfico */
-  height: 400px; /* Definir uma altura específica */
+  position: relative; /* Importante para posicionamento do canvas */
+}
+
+.chart h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  color: #333;
+  text-align: center;
 }
 
 /* Ajustar o tamanho do canvas */
 canvas {
-  max-width: 100%;
-  max-height: 350px; /* Limitar a altura do canvas */
-  flex: 1;
+  width: 100% !important; /* Forçar largura total */
+  height: 300px !important; /* Altura fixa para o canvas */
+  display: block; /* Importante para renderização */
 }
 
 /* Ajustar o contêiner dos gráficos */
 .charts {
   display: flex;
-  justify-content: center; /* Centralizar o gráfico */
-  gap: 1.25rem;
+  justify-content: center;
+  gap: 1rem;
   flex-wrap: wrap;
   margin-top: 1.25rem;
   flex: 1;
-  width: 80%; /* Reduzir a largura */
-  margin-left: auto;
-  margin-right: auto;
+  width: 100%;
 }
 
-
 /* Estilo do menu hambúrguer */
+.menu {
+  position: relative;
+}
+
 .menu-icon {
-  display: flex; /* Mantém visível por padrão */
+  display: flex;
   flex-direction: column;
   justify-content: space-between;
   width: 24px;
@@ -250,10 +453,6 @@ canvas {
 
 .menu-icon.open div:nth-child(3) {
   transform: rotate(-45deg);
-}
-
-.menu {
-  position: relative;
 }
 
 .menu-content {
@@ -320,9 +519,11 @@ footer {
     min-width: 160px;
     height: 80px;
   }
-
   .chart {
     min-width: 100%;
+  }
+  .action-buttons {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -331,33 +532,39 @@ footer {
   .user-info {
     display: none;
   }
-
   nav ul {
     flex-direction: column;
   }
-
   nav ul li {
     width: 100%;
     text-align: left;
   }
-
   nav ul li a {
     padding: 0.75rem 1rem;
   }
-
   .box {
     min-width: 100%;
     margin-bottom: 0.75rem;
     height: 70px;
   }
-
   .container {
     padding: 1rem;
     width: 98%;
   }
-
-  header h1 {
+    header h1 {
     font-size: 1.5rem;
+  }
+  .charts {
+    width: 100%;
+  }
+  canvas {
+    height: 250px !important; /* Menor altura em telas pequenas */
+  }
+  .action-buttons {
+    grid-template-columns: 1fr;
+  }
+  .activity-item {
+    padding: 0.5rem;
   }
 }
 
@@ -366,16 +573,28 @@ footer {
   body {
     font-size: 14px;
   }
-
   .box {
     height: 60px;
     padding: 1rem 0.75rem;
   }
-
   .container {
     padding: 0.75rem;
     width: 100%;
     border-radius: 0;
   }
+  canvas {
+    height: 200px !important; /* Ainda menor em telas muito pequenas */
+  }
+  .welcome {
+    padding: 1rem;
+  }
+  .welcome h2 {
+    font-size: 1.3rem;
+  }
+  .quick-actions, .recent-activities {
+    padding: 1rem;
+  }
+  .action-btn {
+    padding: 0.75rem;
+  }
 }
-
