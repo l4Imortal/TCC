@@ -1,125 +1,194 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gerenciar Usuários - Controle de Estoque</title>
-    <link rel="stylesheet" href="CSS/gerenciar_usuarios.css" />
-    <link
-       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+document.addEventListener("DOMContentLoaded", function () {
+  const tabelaBody = document.querySelector("table tbody");
+  let usuarios = []; // Variável global para armazenar os usuários
 
-  </head>
-  <body>
-    <div class="container">
-      <div class="dashboard">
-        <h1>Gerenciar Usuários - Controle de Estoque</h1>
-      </div>
-      <nav>
-        <ul>
-           <li><a href="index.html"><i class="fas fa-house"></i> Página Inicial</a></li>
-           <li><a href="produtos.html"><i class="fas fa-boxes"></i> Produtos</a></li>
-           <li><a href="fornecedores.html"><i class="fas fa-truck"></i> Fornecedores</a></li>
-           <li><a href="entradas.html"><i class="fas fa-arrow-down"></i> Entradas</a></li>
-           <li><a href="saidas.html"><i class="fas fa-arrow-up"></i> Saídas</a></li>
-           <li><a href="relatorios.html"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
-           <li><a href="administrador.html"><i class="fas fa-user-shield"></i> Administrador</a></li>
-        </ul>
-      </nav>
-      <main>
-        <section class="user-management">
-          <h2>Usuários Cadastrados</h2>
-          <button
-            class="create-button"
-            onclick="window.location.href='criar_usuario.html'"
-          >
-            Criar Novo Usuário
-          </button>
-          <table class="user-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Login</th>
-                <th>Email</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Os usuários serão carregados dinamicamente pelo JavaScript -->
-            </tbody>
-          </table>
-        </section>
-      </main>
-    </div>
+  // Função para atualizar a contagem de usuários
+  function atualizarContagemUsuarios() {
+    const contadorElement = document.getElementById("contador-usuarios");
+    if (contadorElement) {
+      contadorElement.textContent = usuarios.length;
+    }
+  }
 
-    <!-- Popup de confirmação de exclusão -->
-    <div id="confirmPopup" class="popup-overlay popup-delete-overlay" style="display: none">
-      <div class="popup-box popup-delete-box">
-        <div class="popup-icon">
-          <span class="popup-warning-icon">&#x26A0;&#xFE0F;</span>
-        </div>
-        <h2>Confirmar Exclusão</h2>
-        <hr class="popup-divider popup-delete-divider" />
-        <p id="popupMessage">
-          Tem certeza que deseja excluir o usuário "<span id="usuarioNome"></span>"?
-        </p>
-        <div class="popup-actions popup-delete-actions">
-          <button id="confirmDeleteBtn" class="popup-save-button">Excluir</button>
-          <button id="cancelBtn" class="popup-cancel-button">Cancelar</button>
-        </div>
-      </div>
-    </div>
+  // Função para carregar e exibir os usuários
+  function carregarUsuarios() {
+    // Limpar tabela antes de carregar novos dados
+    tabelaBody.innerHTML = '<tr><td colspan="4">Carregando usuários...</td></tr>';
 
-    <!-- Popup de edição -->
-    <div id="editPopup" class="popup-overlay popup-edit-overlay" style="display: none">
-      <div class="popup-box popup-edit-box">
-        <h2>Editar Usuário</h2>
-        <hr class="popup-divider" />
-        <form id="editForm">
-          <div class="form-row">
-            <div class="form-group">
-              <label for="editNome">Nome Completo:</label>
-              <input type="text" id="editNome" name="editNome" required />
-            </div>
-            <div class="form-group">
-              <label for="editEmail">Email:</label>
-              <input type="email" id="editEmail" name="editEmail" required />
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="editUsername">Nome de Usuário:</label>
-              <input type="text" id="editUsername" name="editUsername" required />
-            </div>
-            <div class="form-group">
-              <label for="editPassword">Senha:</label>
-              <div class="password-container">
-                <input type="password" id="editPassword" name="editPassword" required />
-                <span class="toggle-password" onclick="togglePasswordVisibility('editPassword')">
-                  <i class="fas fa-eye"></i>
-                </span>
-              </div>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="editConfirmPassword">Confirmar Senha:</label>
-              <div class="password-container">
-                <input type="password" id="editConfirmPassword" name="editConfirmPassword" required />
-                <span class="toggle-password" onclick="togglePasswordVisibility('editConfirmPassword')">
-                  <i class="fas fa-eye"></i>
-                </span>
-              </div>
-            </div>
-          </div>
-          <div class="popup-actions">
-            <button type="button" id="saveEditBtn" class="popup-save-button">Salvar</button>
-            <button type="button" id="cancelEditBtn" class="popup-cancel-button">Cancelar</button>
-          </div>
-        </form>
-      </div>
-    </div>
+    // Buscar usuários do backend
+    fetch("http://localhost:3000/api/usuarios")
+      .then((response) => response.json())
+      .then((data) => {
+        usuarios = data; // Armazena os usuários na variável global
+        tabelaBody.innerHTML = ''; // Limpa a mensagem de carregamento
 
-   
-    <script src="JS/gerenciar_usuarios.js"></script>
-  </body>
-</html>
+        if (usuarios.length === 0) {
+          tabelaBody.innerHTML = '<tr><td colspan="4">Nenhum usuário cadastrado</td></tr>';
+          return;
+        }
+
+        usuarios.forEach((usuario, index) => {
+          const row = tabelaBody.insertRow();
+          row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${usuario.username}</td>
+            <td>${usuario.email}</td>
+            <td>
+              <button class="edit-button" data-id="${usuario.id_usuario}">Editar</button>
+              <button class="btn-excluir" data-id="${usuario.id_usuario}">Excluir</button>
+            </td>
+          `;
+        });
+
+        // Atualiza a contagem de usuários
+        atualizarContagemUsuarios();
+      })
+      .catch(() => {
+        tabelaBody.innerHTML = '<tr><td colspan="4">Erro ao carregar usuários</td></tr>';
+      });
+  }
+
+  // Carrega os usuários quando a página é carregada
+  carregarUsuarios();
+
+  // Função para alternar a visibilidade da senha
+  function togglePasswordVisibility(inputId) {
+    const input = document.getElementById(inputId);
+    const icon = input.nextElementSibling.querySelector("i");
+    if (input.type === "password") {
+      input.type = "text";
+      icon.classList.remove("fa-eye");
+      icon.classList.add("fa-eye-slash");
+    } else {
+      input.type = "password";
+      icon.classList.remove("fa-eye-slash");
+      icon.classList.add("fa-eye");
+    }
+  }
+
+  // Event listeners para os ícones de mostrar/ocultar senha
+  document.querySelectorAll(".toggle-password").forEach(icon => {
+    icon.addEventListener("click", function() {
+      const inputId = this.closest(".input-group").querySelector("input").id;
+      togglePasswordVisibility(inputId);
+    });
+  });
+
+  // Abrir popup de edição
+  tabelaBody.addEventListener("click", function (e) {
+    if (e.target.classList.contains("edit-button")) {
+      const userId = e.target.getAttribute("data-id");
+      const usuario = usuarios.find(u => u.id_usuario == userId);
+
+      if (!usuario) return;
+
+      // Preencher o popup com os dados do usuário
+      document.getElementById("editNome").value = usuario.nome || "";
+      document.getElementById("editEmail").value = usuario.email;
+      document.getElementById("editUsername").value = usuario.username;
+      document.getElementById("editPassword").value = "";
+      document.getElementById("editConfirmPassword").value = "";
+
+      // Exibir o popup
+      document.getElementById("editPopup").style.display = "flex";
+
+      // Salvar alterações
+      document.getElementById("saveEditBtn").onclick = function () {
+        const updatedNome = document.getElementById("editNome").value;
+        const updatedEmail = document.getElementById("editEmail").value;
+        const updatedUsername = document.getElementById("editUsername").value;
+        const updatedPassword = document.getElementById("editPassword").value;
+        const confirmPassword = document.getElementById("editConfirmPassword").value;
+
+        if (updatedPassword && updatedPassword !== confirmPassword) {
+          alert("As senhas não coincidem!");
+          return;
+        }
+
+        // Preparar os dados para atualização
+        const updateData = {
+          nome: updatedNome,
+          email: updatedEmail,
+          username: updatedUsername
+        };
+
+        // Incluir a senha apenas se foi alterada
+        if (updatedPassword) {
+          updateData.password = updatedPassword;
+        }
+
+        // Envie para o backend
+        fetch(`http://localhost:3000/api/usuarios/${usuario.id_usuario}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updateData)
+        })
+          .then((res) => res.json())
+          .then((result) => {
+            if (result.error) {
+              alert(result.error);
+            } else {
+              // Atualiza a lista de usuários e a tabela
+              carregarUsuarios();
+              document.getElementById("editPopup").style.display = "none";
+            }
+          })
+          .catch(error => {
+            console.error("Erro ao atualizar usuário:", error);
+            alert("Erro ao atualizar usuário");
+          });
+      };
+
+      // Cancelar edição
+      document.getElementById("cancelEditBtn").onclick = function () {
+        document.getElementById("editPopup").style.display = "none";
+      };
+    }
+  });
+
+  // Delegação de eventos para botões de exclusão
+  tabelaBody.addEventListener("click", function (e) {
+    if (e.target.classList.contains("btn-excluir")) {
+      e.preventDefault();
+      const userId = e.target.getAttribute("data-id");
+      const usuario = usuarios.find(u => u.id_usuario == userId);
+      
+      if (!usuario) return;
+
+      document.getElementById("usuarioNome").textContent = usuario.username;
+      document.getElementById("confirmPopup").style.display = "flex";
+
+      // Configurar o botão de confirmação
+      const confirmBtn = document.getElementById("confirmDeleteBtn");
+      confirmBtn.disabled = false;
+      
+      // Remover event listeners anteriores para evitar múltiplas chamadas
+      confirmBtn.replaceWith(confirmBtn.cloneNode(true));
+      const newConfirmBtn = document.getElementById("confirmDeleteBtn");
+      
+      newConfirmBtn.onclick = function () {
+        fetch(`http://localhost:3000/api/usuarios/${usuario.id_usuario}`, {
+          method: "DELETE"
+        })
+          .then((res) => {
+            if (!res.ok) throw new Error("Erro ao excluir usuário");
+            return res.json();
+          })
+          .then(() => {
+            // Recarrega a lista de usuários
+            carregarUsuarios();
+            document.getElementById("confirmPopup").style.display = "none";
+          })
+          .catch(error => {
+            console.error("Erro ao excluir usuário:", error);
+            alert("Erro ao excluir usuário");
+          });
+      };
+    }
+  });
+
+  // Botão cancelar fecha o popup
+  document.getElementById("cancelBtn").onclick = function () {
+    document.getElementById("confirmPopup").style.display = "none";
+  };
+});
