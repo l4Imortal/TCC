@@ -384,17 +384,6 @@ document.addEventListener("DOMContentLoaded", () => {
           body: JSON.stringify(entradaData),
         });
            
-        // Capturar o corpo da resposta mesmo em caso de erro
-        const responseText = await response.text();
-        console.log(`Resposta do servidor (status ${response.status}):`, responseText);
-           
-        if (!response.ok) {
-          throw new Error(`Erro ao ${isEditMode ? 'atualizar' : 'cadastrar'} entrada: ${response.status} - ${responseText}`);
-        }
-           
-        const data = responseText ? JSON.parse(responseText) : {};
-        console.log(`Entrada ${isEditMode ? 'atualizada' : 'cadastrada'} com sucesso:`, data);
-           
         // Formatar a Nota Fiscal com zeros à esquerda e pontos para exibição
         const notaFiscalFormatada = `N° ${formatarNotaFiscalComZeros(notaFiscal)}`;
            
