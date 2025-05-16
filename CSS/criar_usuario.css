@@ -73,6 +73,7 @@ button {
   font-size: 16px;
   transition: background-color 0.3s ease;
   color: white;
+  background-color: red;
 }
 
 button[type="submit"] {
@@ -101,4 +102,24 @@ button[type="submit"]:hover {
   border-radius: 5px;
   margin-bottom: 20px;
   border-left: 4px solid #2196f3;
+}
+
+#password-mismatch {
+  display: block;
+  margin-top: 5px;
+  font-size: 0.8em;
+}
+
+.spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
