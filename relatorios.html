@@ -31,7 +31,6 @@
             <h3>Selecione o Tipo de Relatório</h3>
             <div class="tabs">
               <div class="tab active" onclick="mudarTab('estoque')">Estoque Atual</div>
-              <div class="tab" onclick="mudarTab('movimentacoes')">Movimentações</div>
             </div>
             
             <!-- Relatório de Estoque Atual -->
@@ -59,29 +58,7 @@
               </div>
             </div>
             
-            <!-- Relatório de Movimentações -->
-            <div id="movimentacoes-tab" class="tab-content">
-              <div class="filter-section">
-                <h4>Filtros</h4>
-                <div class="filter-row">
-                  <div class="filter-item">
-                    <label for="mov-data-inicio">Data Início:</label>
-                    <input type="date" id="mov-data-inicio">
-                  </div>
-                  <div class="filter-item">
-                    <label for="mov-data-fim">Data Fim:</label>
-                    <input type="date" id="mov-data-fim">
-                  </div>
-                </div>
-              </div>
-              <div class="report-actions">
-                <button id="btnGerarRelatorioMovimentacoes" class="btn btn-primary">Gerar Relatório</button>
-                <button id="btnExportarPDF" class="btn btn-secondary">Exportar PDF</button>
-              </div>
-              <div id="tabela-movimentacoes-container" class="report-preview">
-                <p>Clique em "Gerar Relatório" para visualizar as movimentações.</p>
-              </div>
-            </div>
+            
           </div>
         </div>
       </section>
