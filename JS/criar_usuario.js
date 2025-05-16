@@ -1,9 +1,31 @@
 async function salvarUsuario() {
-  const nome = document.getElementById("nome").value;
-  const email = document.getElementById("email").value;
-  const username = document.getElementById("username").value;
+  // Obter elementos
+  const nome = document.getElementById("nome").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const username = document.getElementById("username").value.trim();
   const password = document.getElementById("password").value;
   const confirmPassword = document.getElementById("confirmPassword").value;
+
+  // Validações
+  if (nome.length < 3) {
+    alert("O nome deve ter pelo menos 3 caracteres!");
+    return false;
+  }
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    alert("Por favor, insira um email válido!");
+    return false;
+  }
+
+  if (!/^\S{4,}$/.test(username)) {
+    alert("O nome de usuário deve ter pelo menos 4 caracteres e não pode conter espaços!");
+    return false;
+  }
+
+  if (password.length < 6) {
+    alert("A senha deve ter pelo menos 6 caracteres!");
+    return false;
+  }
 
   if (password !== confirmPassword) {
     alert("As senhas não coincidem!");
@@ -17,16 +39,36 @@ async function salvarUsuario() {
       body: JSON.stringify({ nome, email, username, password }),
     });
 
-    const result = await response.json();
-    if (response.ok) {
-      alert("Usuário criado com sucesso!");
-      window.location.href = "gerenciar_usuarios.html";
-    } else {
-      alert(result.error || "Erro ao criar usuário");
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Erro ao criar usuário");
     }
+
+    // Redirecionar imediatamente após sucesso
+    window.location.href = "gerenciar_usuarios.html";
+    
   } catch (error) {
-    alert("Erro ao conectar ao servidor");
+    alert(error.message);
+    console.error("Erro:", error);
   }
 
-  return false; // Impede o submit padrão do formulário
+  return false;
 }
+
+// Validação em tempo real da senha (opcional)
+document.getElementById("confirmPassword")?.addEventListener("input", function() {
+  const password = document.getElementById("password").value;
+  const confirmPassword = this.value;
+  const mismatchElement = document.getElementById("password-mismatch") || 
+                         document.createElement("small");
+  
+  if (!mismatchElement.id) {
+    mismatchElement.id = "password-mismatch";
+    mismatchElement.style.color = "red";
+    this.parentNode.appendChild(mismatchElement);
+  }
+  
+  mismatchElement.textContent = (password && confirmPassword && password !== confirmPassword) 
+    ? "As senhas não coincidem!" 
+    : "";
+});
