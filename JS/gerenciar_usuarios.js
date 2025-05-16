@@ -1,22 +1,27 @@
 document.addEventListener("DOMContentLoaded", function () {
   const tabelaBody = document.querySelector("table tbody");
 
-  // Carregar usuários do Local Storage
-  const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
-
-  // Preencher a tabela com os usuários
-  usuarios.forEach((usuario, index) => {
-    const row = tabelaBody.insertRow();
-    row.innerHTML = `
-      <td>${index + 1}</td>
-      <td>${usuario.username}</td>
-      <td>${usuario.email}</td>
-      <td>
-        <button class="edit-button">Editar</button>
-        <button class="btn-excluir">Excluir</button>
-      </td>
-    `;
-  });
+  // Buscar usuários do backend
+  fetch("http://localhost:3000/api/usuarios")
+    .then((response) => response.json())
+    .then((usuarios) => {
+      usuarios.forEach((usuario, index) => {
+        const row = tabelaBody.insertRow(); // <-- Cria a linha corretamente
+        row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${usuario.username}</td>
+          <td>${usuario.email}</td>
+          <td>
+            <button class="edit-button">Editar</button>
+            <button class="btn-excluir">Excluir</button>
+          </td>
+        `;
+      });
+    })
+    .catch(() => {
+      tabelaBody.innerHTML =
+        '<tr><td colspan="4">Erro ao carregar usuários</td></tr>';
+    });
 
   // Função para alternar a visibilidade da senha
   function togglePasswordVisibility(inputId) {
@@ -43,8 +48,10 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("editNome").value = usuarios[index].nome || "";
       document.getElementById("editEmail").value = usuarios[index].email;
       document.getElementById("editUsername").value = usuarios[index].username;
-      document.getElementById("editPassword").value = usuarios[index].password || "";
-      document.getElementById("editConfirmPassword").value = usuarios[index].password || "";
+      document.getElementById("editPassword").value =
+        usuarios[index].password || "";
+      document.getElementById("editConfirmPassword").value =
+        usuarios[index].password || "";
 
       // Exibir o popup
       document.getElementById("editPopup").style.display = "flex";
@@ -55,27 +62,40 @@ document.addEventListener("DOMContentLoaded", function () {
         const updatedEmail = document.getElementById("editEmail").value;
         const updatedUsername = document.getElementById("editUsername").value;
         const updatedPassword = document.getElementById("editPassword").value;
-        const confirmPassword = document.getElementById("editConfirmPassword").value;
+        const confirmPassword = document.getElementById(
+          "editConfirmPassword"
+        ).value;
 
-        // Validar senhas
         if (updatedPassword !== confirmPassword) {
           alert("As senhas não coincidem!");
           return;
         }
 
-        // Atualizar os dados no array e no Local Storage
-        usuarios[index].nome = updatedNome;
-        usuarios[index].email = updatedEmail;
-        usuarios[index].username = updatedUsername;
-        usuarios[index].password = updatedPassword;
-        localStorage.setItem("usuarios", JSON.stringify(usuarios));
-
-        // Atualizar a tabela
-        row.children[1].textContent = updatedUsername;
-        row.children[2].textContent = updatedEmail;
-
-        // Fechar o popup
-        document.getElementById("editPopup").style.display = "none";
+        // Envie para o backend
+        fetch(
+          `http://localhost:3000/api/usuarios/${usuarios[index].id_usuario}`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              nome: updatedNome,
+              email: updatedEmail,
+              username: updatedUsername,
+              password: updatedPassword,
+            }),
+          }
+        )
+          .then((res) => res.json())
+          .then((result) => {
+            if (result.error) {
+              alert(result.error);
+            } else {
+              // Atualize a tabela na tela
+              row.children[1].textContent = updatedUsername;
+              row.children[2].textContent = updatedEmail;
+              document.getElementById("editPopup").style.display = "none";
+            }
+          });
       };
 
       // Cancelar edição
@@ -97,11 +117,21 @@ document.addEventListener("DOMContentLoaded", function () {
       // Excluir usuário ao confirmar
       document.getElementById("confirmDeleteBtn").disabled = false; // Certifique-se de que o botão está habilitado
       document.getElementById("confirmDeleteBtn").onclick = function () {
-        const index = Array.from(row.parentNode.children).indexOf(row);
-        usuarios.splice(index, 1); // Remove do array
-        localStorage.setItem("usuarios", JSON.stringify(usuarios)); // Atualiza o Local Storage
-        row.remove();
-        document.getElementById("confirmPopup").style.display = "none";
+        fetch(
+          `http://localhost:3000/api/usuarios/${usuarios[index].id_usuario}`,
+          {
+            method: "DELETE",
+          }
+        )
+          .then((res) => res.json())
+          .then((result) => {
+            if (result.error) {
+              alert(result.error);
+            } else {
+              row.remove();
+              document.getElementById("confirmPopup").style.display = "none";
+            }
+          });
       };
     }
   });

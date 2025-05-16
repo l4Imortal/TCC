@@ -1,26 +1,25 @@
-document.getElementById("loginButton").addEventListener("click", async () => {
+document.getElementById("loginButton").addEventListener("click", async (e) => {
+  e.preventDefault();
+
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
+  const errorMessage = document.getElementById("errorMessage");
 
   try {
-    const response = await fetch('http://localhost:3000/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
+    const response = await fetch("http://localhost:3000/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password }),
     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      document.getElementById("errorMessage").textContent = errorData.error || 'Erro ao fazer login';
-      return;
+    const result = await response.json();
+    if (response.ok && result.user) {
+      // Login bem-sucedido
+      window.location.href = "index.html";
+    } else {
+      errorMessage.textContent = result.error || "Usuário ou senha inválidos!";
     }
-
-    const data = await response.json();
-    localStorage.setItem("loggedIn", "true"); // Salva o estado de login
-    localStorage.setItem("user", JSON.stringify(data.user)); // Salva os dados do usuário
-    window.location.href = "index.html"; // Redireciona para a página inicial
   } catch (error) {
-    console.error('Erro ao fazer login:', error);
-    document.getElementById("errorMessage").textContent = 'Erro no servidor. Tente novamente mais tarde.';
+    errorMessage.textContent = "Erro ao conectar ao servidor!";
   }
 });
