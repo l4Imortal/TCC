@@ -17,12 +17,16 @@ function formatarData(dataString) {
 }
 
 function formatarValor(valor) {
-    return valor ? `R$ ${parseFloat(valor).toFixed(2)}` : 'R$ 0.00';
+    if (!valor) return 'R$ 0.00';
+    const num = typeof valor === 'string' 
+        ? parseFloat(valor.replace(/[^\d,]/g, '').replace(',', '.')) 
+        : parseFloat(valor);
+    return `R$ ${num.toFixed(2).replace('.', ',')}`;
 }
 
 // Função para encontrar nome pelo ID
 function encontrarNomePorId(lista, id) {
-    if (!id) return '';
+    if (!id || !Array.isArray(lista)) return '';
     const item = lista.find(item => item.id == id);
     return item ? item.nome : '';
 }
@@ -48,14 +52,15 @@ function adicionarEntradaNaTabela(entrada) {
         <td>${formatarValor(entrada.valor_unitario)}</td>
         <td>${entrada.responsavel || ''}</td>
         <td>${entrada.data_entrada ? formatarData(entrada.data_entrada) : ''}</td>
-        <td>
-            <button class="btn-editar"><i class="fas fa-edit"></i> Editar</button>
-            <button class="btn-excluir"><i class="fas fa-trash"></i> Excluir</button>
+        <td class="actions">
+            <button class="btn-editar">Editar</button>
+            <button class="btn-excluir">Excluir</button>
         </td>
     `;
 
     tabela.appendChild(novaLinha);
 
+    // Adiciona eventos aos botões
     novaLinha.querySelector('.btn-editar').addEventListener('click', () => abrirPopupEdicao(entrada));
     novaLinha.querySelector('.btn-excluir').addEventListener('click', () => confirmarExclusao(entrada));
 }
@@ -64,68 +69,114 @@ function adicionarEntradaNaTabela(entrada) {
 async function carregarEntradas() {
     try {
         const response = await fetch('http://localhost:3000/api/entradas');
-        if (!response.ok) throw new Error('Erro ao carregar entradas');
+        if (!response.ok) throw new Error(`Erro ${response.status}: ${response.statusText}`);
         
         const entradas = await response.json();
         const tabela = document.querySelector("table tbody");
+        if (!tabela) throw new Error('Tabela não encontrada');
+        
         tabela.innerHTML = '';
+        
+        if (entradas.length === 0) {
+            tabela.innerHTML = '<tr><td colspan="9" class="no-data">Nenhuma entrada registrada</td></tr>';
+            return;
+        }
         
         entradas.forEach(entrada => adicionarEntradaNaTabela(entrada));
     } catch (error) {
         console.error('Erro ao carregar entradas:', error);
-        alert('Erro ao carregar entradas: ' + error.message);
+        showError('Erro ao carregar entradas: ' + error.message);
     }
 }
 
 // Função para carregar produtos
 async function carregarProdutos() {
+    const select = document.getElementById('produtoEntrada');
+    if (!select) {
+        console.error('Elemento select de produtos não encontrado');
+        return;
+    }
+
     try {
+        select.disabled = true;
+        select.innerHTML = '<option value="">Carregando produtos...</option>';
+
         const response = await fetch('http://localhost:3000/api/produtos');
-        if (!response.ok) throw new Error('Erro ao carregar produtos');
         
-        produtosLista = await response.json();
-        const select = document.getElementById('produtoEntrada');
+        if (!response.ok) {
+            throw new Error(`Erro ${response.status}: ${response.statusText}`);
+        }
+
+        const dados = await response.json();
         
+        produtosLista = dados.map(item => ({
+            id: item.id_produto,
+            nome: item.produto
+        })).filter(item => item.id && item.nome);
+
         select.innerHTML = '<option value="">Selecione um produto</option>';
         
-        produtosLista.forEach(produto => {
-            const option = document.createElement('option');
-            option.value = produto.id;
-            option.textContent = produto.nome;
-            select.appendChild(option);
-        });
+        if (produtosLista.length === 0) {
+            select.innerHTML += '<option value="" disabled>Nenhum produto encontrado</option>';
+        } else {
+            produtosLista.sort((a, b) => a.nome.localeCompare(b.nome))
+                       .forEach(produto => {
+                const option = new Option(produto.nome, produto.id);
+                select.add(option);
+            });
+        }
     } catch (error) {
         console.error('Erro ao carregar produtos:', error);
-        alert('Erro ao carregar lista de produtos');
+        select.innerHTML = `
+            <option value="">Erro ao carregar produtos</option>
+            <option value="" disabled>${error.message}</option>
+        `;
+    } finally {
+        select.disabled = false;
     }
 }
 
 // Função para carregar fornecedores
 async function carregarFornecedores() {
+    const select = document.getElementById('fornecedorEntrada');
+    if (!select) {
+        console.error('Elemento select de fornecedores não encontrado');
+        return;
+    }
+
     try {
+        select.disabled = true;
+        select.innerHTML = '<option value="">Carregando fornecedores...</option>';
+
         const response = await fetch('http://localhost:3000/api/fornecedores');
-        if (!response.ok) throw new Error('Erro ao carregar fornecedores');
-        
-        fornecedoresLista = await response.json();
-        const select = document.getElementById('fornecedorEntrada');
+        if (!response.ok) throw new Error(`Erro ${response.status}: ${response.statusText}`);
+
+        const dados = await response.json();
+        fornecedoresLista = Array.isArray(dados) ? dados : [];
         
         select.innerHTML = '<option value="">Selecione um fornecedor</option>';
         
-        fornecedoresLista.forEach(fornecedor => {
-            const option = document.createElement('option');
-            option.value = fornecedor.id;
-            option.textContent = fornecedor.nome;
-            select.appendChild(option);
-        });
+        if (fornecedoresLista.length === 0) {
+            select.innerHTML += '<option value="" disabled>Nenhum fornecedor cadastrado</option>';
+        } else {
+            fornecedoresLista.forEach(fornecedor => {
+                const option = new Option(fornecedor.nome, fornecedor.id);
+                select.add(option);
+            });
+        }
     } catch (error) {
         console.error('Erro ao carregar fornecedores:', error);
-        alert('Erro ao carregar lista de fornecedores');
+        select.innerHTML = `
+            <option value="">Erro ao carregar fornecedores</option>
+            <option value="" disabled>${error.message}</option>
+        `;
+    } finally {
+        select.disabled = false;
     }
 }
 
 // Função para abrir popup de edição
 function abrirPopupEdicao(entrada) {
-    // Configura os valores do formulário
     document.getElementById('editMode').value = 'true';
     document.getElementById('entradaId').value = entrada.id;
     document.getElementById('eanEntrada').value = entrada.ean || '';
@@ -135,29 +186,26 @@ function abrirPopupEdicao(entrada) {
     document.getElementById('responsavelEntrada').value = entrada.responsavel || '';
     document.getElementById('dataEntrada').value = entrada.data_entrada ? entrada.data_entrada.split('T')[0] : '';
 
-    // Configura produto selecionado
     const produtoSelect = document.getElementById('produtoEntrada');
     if (produtoSelect) {
         produtoSelect.value = entrada.produto_id || '';
     }
 
-    // Configura fornecedor selecionado
     const fornecedorSelect = document.getElementById('fornecedorEntrada');
     if (fornecedorSelect) {
         fornecedorSelect.value = entrada.fornecedor_id || '';
     }
 
     document.getElementById('popupTitle').textContent = 'Editar Entrada';
-    document.getElementById('popupOverlay').style.display = 'block';
-    document.getElementById('entradaPopup').style.display = 'block';
+    abrirPopup('entradaPopup');
 }
 
 // Função para confirmar exclusão
 function confirmarExclusao(entrada) {
     currentRowToDelete = entrada;
-    document.getElementById('deleteMessage').textContent = `Tem certeza que deseja excluir a entrada do produto "${entrada.produto || encontrarNomePorId(produtosLista, entrada.produto_id)}"?`;
-    document.getElementById('popupOverlay').style.display = 'block';
-    document.getElementById('deletePopup').style.display = 'block';
+    document.getElementById('deleteMessage').textContent = 
+        `Tem certeza que deseja excluir a entrada do produto "${entrada.produto || encontrarNomePorId(produtosLista, entrada.produto_id)}"?`;
+    abrirPopup('deletePopup');
 }
 
 // Função para salvar entrada (criar ou atualizar)
@@ -167,46 +215,22 @@ async function salvarEntrada(event) {
     const form = event.target;
     const isEditMode = document.getElementById('editMode').value === 'true';
     const entradaId = document.getElementById('entradaId')?.value || '';
+    const submitBtn = form.querySelector('button[type="submit"]');
     
-    // Coleta os dados do formulário
-    const entradaData = {
-        ean: form.eanEntrada.value.padStart(13, '0'),
-        produto_id: form.produtoEntrada.value,
-        quantidade: parseInt(form.quantidadeEntrada.value),
-        fornecedor_id: form.fornecedorEntrada.value,
-        nota_fiscal: form.notaFiscalEntrada.value.replace(/\D/g, ''),
-        valor_unitario: parseFloat(form.valorEntrada.value.replace(',', '.')),
-        responsavel: form.responsavelEntrada.value,
-        data_entrada: form.dataEntrada.value
-    };
-
-    // Validações
-    if (!/^\d{13}$/.test(entradaData.ean)) {
-        alert('O EAN deve conter exatamente 13 dígitos');
-        return;
-    }
-
-    if (!entradaData.produto_id) {
-        alert('Selecione um produto');
-        return;
-    }
-
-    if (!entradaData.fornecedor_id) {
-        alert('Selecione um fornecedor');
-        return;
-    }
-
-    if (entradaData.quantidade <= 0 || isNaN(entradaData.quantidade)) {
-        alert('A quantidade deve ser maior que zero');
-        return;
-    }
-
-    if (!entradaData.nota_fiscal) {
-        alert('Informe o número da nota fiscal');
-        return;
-    }
-
     try {
+        submitBtn.disabled = true;
+
+        const entradaData = {
+            ean: form.eanEntrada.value.padStart(13, '0'),
+            produto_id: form.produtoEntrada.value,
+            quantidade: parseInt(form.quantidadeEntrada.value),
+            fornecedor_id: form.fornecedorEntrada.value,
+            nota_fiscal: form.notaFiscalEntrada.value.replace(/\D/g, ''),
+            valor_unitario: parseFloat(form.valorEntrada.value) || 0,
+            responsavel: form.responsavelEntrada.value,
+            data_entrada: form.dataEntrada.value
+        };
+
         const url = isEditMode 
             ? `http://localhost:3000/api/entradas/${entradaId}`
             : 'http://localhost:3000/api/entradas';
@@ -226,10 +250,14 @@ async function salvarEntrada(event) {
 
         fecharPopup();
         await carregarEntradas();
-        alert(`Entrada ${isEditMode ? 'atualizada' : 'criada'} com sucesso!`);
+        showSuccess(`Entrada ${isEditMode ? 'atualizada' : 'criada'} com sucesso!`);
     } catch (error) {
         console.error('Erro ao salvar entrada:', error);
-        alert('Erro: ' + error.message);
+        showError('Erro: ' + error.message);
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+        }
     }
 }
 
@@ -237,7 +265,11 @@ async function salvarEntrada(event) {
 async function excluirEntrada() {
     if (!currentRowToDelete) return;
 
+    const deleteBtn = document.getElementById('confirmDelete');
+    
     try {
+        deleteBtn.disabled = true;
+
         const response = await fetch(`http://localhost:3000/api/entradas/${currentRowToDelete.id}`, {
             method: 'DELETE'
         });
@@ -249,59 +281,113 @@ async function excluirEntrada() {
 
         fecharPopup();
         await carregarEntradas();
-        alert('Entrada excluída com sucesso!');
+        showSuccess('Entrada excluída com sucesso!');
     } catch (error) {
         console.error('Erro ao excluir entrada:', error);
-        alert('Erro: ' + error.message);
+        showError('Erro: ' + error.message);
+    } finally {
+        if (deleteBtn) {
+            deleteBtn.disabled = false;
+        }
     }
 }
 
-// Função para fechar popups
+// Funções auxiliares para UI
+function abrirPopup(popupId) {
+    document.getElementById('popupOverlay').style.display = 'block';
+    document.getElementById(popupId).style.display = 'block';
+}
+
 function fecharPopup() {
     document.getElementById('popupOverlay').style.display = 'none';
     document.getElementById('entradaPopup').style.display = 'none';
     document.getElementById('deletePopup').style.display = 'none';
+    document.getElementById('entradaForm').reset();
     currentRowToDelete = null;
+}
+
+function showError(message) {
+    const errorElement = document.getElementById('errorMessage') || createMessageElement('error');
+    errorElement.textContent = message;
+    errorElement.style.display = 'block';
+    setTimeout(() => errorElement.style.display = 'none', 5000);
+}
+
+function showSuccess(message) {
+    const successElement = document.getElementById('successMessage') || createMessageElement('success');
+    successElement.textContent = message;
+    successElement.style.display = 'block';
+    setTimeout(() => successElement.style.display = 'none', 3000);
+}
+
+function createMessageElement(type) {
+    const element = document.createElement('div');
+    element.id = `${type}Message`;
+    element.className = `message ${type}`;
+    document.body.appendChild(element);
+    return element;
 }
 
 // Inicialização da página
 document.addEventListener('DOMContentLoaded', async () => {
-    // Adiciona um campo hidden para o ID da entrada
-    const form = document.getElementById('entradaForm');
-    if (form && !document.getElementById('entradaId')) {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.id = 'entradaId';
-        input.name = 'entradaId';
-        form.prepend(input);
-    }
-
-    // Carrega os dados iniciais (produtos e fornecedores primeiro)
-    await Promise.all([carregarProdutos(), carregarFornecedores()]);
-    await carregarEntradas();
-
     // Configura a data atual como padrão
-    document.getElementById('dataEntrada').value = new Date().toISOString().split('T')[0];
+    const dataInput = document.getElementById('dataEntrada');
+    if (dataInput) {
+        dataInput.value = new Date().toISOString().split('T')[0];
+    }   
 
-    // Configura eventos
-    document.getElementById('novaEntradaBtn').addEventListener('click', (e) => {
+    // Configura eventos dos botões
+    document.getElementById('novaEntradaBtn')?.addEventListener('click', (e) => {
         e.preventDefault();
         document.getElementById('entradaForm').reset();
         document.getElementById('editMode').value = 'false';
         document.getElementById('popupTitle').textContent = 'Nova Entrada';
-        document.getElementById('popupOverlay').style.display = 'block';
-        document.getElementById('entradaPopup').style.display = 'block';
+        abrirPopup('entradaPopup');
     });
 
-    document.getElementById('entradaForm').addEventListener('submit', salvarEntrada);
-    document.getElementById('confirmDelete').addEventListener('click', excluirEntrada);
-    document.getElementById('cancelDelete').addEventListener('click', fecharPopup);
-    document.getElementById('cancelarEntrada').addEventListener('click', fecharPopup);
+    // Formulário de entrada
+    document.getElementById('entradaForm')?.addEventListener('submit', salvarEntrada);
+
+    // Botões do popup de exclusão
+    document.getElementById('confirmDelete')?.addEventListener('click', excluirEntrada);
+    document.getElementById('cancelDelete')?.addEventListener('click', fecharPopup);
+
+    // Botões do popup de edição/cadastro
+    document.getElementById('cancelarEntrada')?.addEventListener('click', fecharPopup);
+    document.getElementById('btnFecharPopup')?.addEventListener('click', fecharPopup);
+    document.getElementById('btnFecharDeletePopup')?.addEventListener('click', fecharPopup);
 
     // Fechar popup ao clicar no overlay
-    document.getElementById('popupOverlay').addEventListener('click', (e) => {
+    document.getElementById('popupOverlay')?.addEventListener('click', (e) => {
         if (e.target === document.getElementById('popupOverlay')) {
             fecharPopup();
         }
     });
+
+    // Carrega os dados iniciais
+    try {
+        await Promise.all([carregarProdutos(), carregarFornecedores()]);
+        await carregarEntradas();
+    } catch (error) {
+        console.error('Erro ao carregar dados iniciais:', error);
+        showError('Erro ao carregar dados iniciais: ' + error.message);
+    }
 });
+
+async function testarConexaoAPI() {
+    try {
+        const response = await fetch('http://localhost:3000/api/entradas', {
+            method: 'HEAD',
+            cache: 'no-store'
+        });
+        
+        if (!response.ok) {
+            throw new Error(`API retornou status ${response.status}`);
+        }
+        return true;
+    } catch (error) {
+        console.error('Falha na conexão com a API:', error);
+        showError('Não foi possível conectar ao servidor. Verifique sua conexão.');
+        return false;
+    }
+}
