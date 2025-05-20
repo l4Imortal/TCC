@@ -292,6 +292,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Função para editar fornecedor
   function editarFornecedor(id) {
+    // Ocultar o popup de exclusão, caso esteja visível
+    deletePopup.style.display = "none";
+
     // Buscar dados do fornecedor no servidor
     fetch(`http://localhost:3000/api/fornecedores/${id}`)
       .then(response => {
@@ -305,15 +308,15 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("editMode").value = "true";
         document.getElementById("popupTitle").textContent = "Editar Fornecedor";
         document.getElementById("salvarFornecedor").textContent = "Atualizar";
-        
+
         document.getElementById("codigoFornecedor").value = fornecedor.id_fornecedor;
         document.getElementById("nomeFornecedor").value = fornecedor.nome;
         document.getElementById("cnpjFornecedor").value = fornecedor.cnpj;
         document.getElementById("telefoneFornecedor").value = fornecedor.telefone || "";
         document.getElementById("emailFornecedor").value = fornecedor.email || "";
         document.getElementById("enderecoFornecedor").value = fornecedor.endereco || "";
-        
-        // Mostrar o popup
+
+        // Mostrar o popup de edição
         popupOverlay.style.display = "block";
         popup.style.display = "block";
       })
@@ -325,13 +328,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Função para excluir fornecedor
   function excluirFornecedor(id, nome) {
+    // Ocultar o popup de edição, caso esteja visível
+    popup.style.display = "none";
+
     fornecedorParaExcluir = id;
-    
+
     // Configurar mensagem de confirmação
     if (deleteMessage) {
       deleteMessage.textContent = `Tem certeza que deseja excluir "${nome}"?`;
     }
-    
+
     // Mostrar popup de confirmação
     popupOverlay.style.display = "block";
     deletePopup.style.display = "block";
