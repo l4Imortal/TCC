@@ -88,7 +88,7 @@ tbody tr:hover {
 /* Estilo dos botões */
 .button-container {
   display: flex;
-  justify-content: space-between; /* Mantém o título à esquerda e o botão à direita */
+  justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
 }
@@ -96,7 +96,7 @@ tbody tr:hover {
 .button-container h2 {
   margin: 0;
   font-size: 1.5rem;
-  text-align: left; /* Alinha o título à esquerda */
+  text-align: left;
 }
 
 #novoFornecedorBtn {
@@ -108,7 +108,7 @@ tbody tr:hover {
   font-weight: bold;
   transition: background-color 0.3s ease;
   display: inline-block;
-  border: none; /* Remove a borda */
+  border: none;
 }
 
 #novoFornecedorBtn:hover {
@@ -121,7 +121,7 @@ tbody tr:hover {
   border-radius: 8px;
   padding: 20px;
   background-color: #f9f9f9;
-  overflow-x: auto; /* Para tabelas responsivas */
+  overflow-x: auto;
 }
 
 /* Estilo dos ícones de ação */
@@ -273,6 +273,51 @@ td a img:hover {
   background-color: #e53935;
 }
 
+/* Ajuste para os botões de editar e excluir */
+.btn-editar,
+.btn-excluir {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 8px; /* Bordas arredondadas */
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Botão de editar (verde) */
+.btn-editar {
+  background-color: #4caf50; /* Verde */
+  color: white;
+}
+
+.btn-editar:hover {
+  background-color: #45a049; /* Verde mais escuro */
+  transform: scale(1.1); /* Efeito de zoom */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra ao passar o mouse */
+}
+
+/* Botão de excluir (vermelho) */
+.btn-excluir {
+  background-color: #dc3545; /* Vermelho */
+  color: white;
+}
+
+.btn-excluir:hover {
+  background-color: #c82333; /* Vermelho mais escuro */
+  transform: scale(1.1); /* Efeito de zoom */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra ao passar o mouse */
+}
+
+/* Ícones dentro dos botões */
+.btn-editar i,
+.btn-excluir i {
+  font-size: 1.2rem;
+  pointer-events: none; /* Evita cliques no ícone */
+}
+
 /* Estilo para o popup de confirmação */
 .popup-confirmacao .popup-header {
   border-bottom-color: #f44336;
@@ -323,6 +368,35 @@ td a img:hover {
   color: #c82333;
 }
 
+/* Ajuste para os ícones de editar e excluir */
+.btn-editar i,
+.btn-excluir i {
+  font-size: 1.2rem;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+/* Cor padrão para o ícone de editar (verde) */
+.btn-editar i {
+  color: #4caf50;
+}
+
+/* Cor padrão para o ícone de excluir (vermelho) */
+.btn-excluir i {
+  color: #dc3545;
+}
+
+/* Cor ao passar o mouse no ícone de editar */
+.btn-editar i:hover {
+  color: #45a049;
+  transform: scale(1.2);
+}
+
+/* Cor ao passar o mouse no ícone de excluir */
+.btn-excluir i:hover {
+  color: #c82333;
+  transform: scale(1.2);
+}
+
 /* Formulário em duas colunas */
 .form-row {
   display: flex;
@@ -346,4 +420,21 @@ td a img:hover {
   .btn-excluir {
     margin-bottom: 10px;
   }
+}
+
+/* Estilo para o botão de confirmar exclusão */
+#confirmDelete {
+  background-color: #dc3545; /* Vermelho */
+  color: white; /* Texto branco */
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#confirmDelete:hover {
+  background-color: #c82333; /* Vermelho mais escuro no hover */
 }
