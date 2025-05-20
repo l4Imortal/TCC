@@ -385,127 +385,47 @@ a {
   }
 }
 
-/* Estilo para o botão de excluir com ícone de lixeira */
+/* Estilo para os botões de editar e excluir */
+.btn-editar,
 .btn-excluir {
-  background: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
   border: none;
-  color: #e74c3c; /* Cor vermelha */
-  font-size: 1.2rem; /* Tamanho do ícone */
+  border-radius: 6px; /* Bordas levemente arredondadas para um estilo mais quadrado */
   cursor: pointer;
-  transition: transform 0.2s, color 0.3s;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.btn-excluir:hover {
-  color: #c0392b; /* Vermelho mais escuro no hover */
-  transform: scale(1.1); /* Efeito de zoom no hover */
-}
-
-.btn-excluir i {
-  pointer-events: none; /* Evita que o clique seja registrado no ícone */
-}
-
+/* Botão de editar (verde) */
 .btn-editar {
-  background: none;
-  border: none;
-  color: #4caf50; /* Cor azul */
-  font-size: 1.2rem; /* Tamanho do ícone */
-  cursor: pointer;
-  transition: transform 0.2s, color 0.3s;
-  margin-right: 0 5px; /* Espaçamento entre os botões */
+  background-color: #4caf50; /* Verde */
+  color: white;
 }
 
 .btn-editar:hover {
-  color: #4caf; /* Azul mais escuro no hover */
-  transform: scale(1.1); /* Efeito de zoom no hover */
+  background-color: #45a049; /* Verde mais escuro */
+  transform: scale(1.05); /* Efeito de zoom */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra ao passar o mouse */
 }
 
-.btn-editar i {
-  pointer-events: none; /* Evita que o clique seja registrado no ícone */
-}
-
-/* Estilo dos botões de ação */
-.edit-button i,
-.delete-button i {
-  font-size: 1.2rem;
-  cursor: pointer;
-  transition: transform 0.2s ease, color 0.2s ease;
-}
-
-.edit-button i {
-  color: #4caf50; /* Verde para editar */
-}
-
-.delete-button i {
-  color: #dc3545; /* Vermelho para excluir */
-}
-
-.edit-button i:hover {
-  transform: scale(1.2);
-  color: #45a049; /* Tom mais claro de verde no hover */
-}
-
-.delete-button i:hover {
-  transform: scale(1.2);
-  color: #c82333; /* Tom mais claro de vermelho no hover */
-}
-
-/* Popup de edição */
-#popupEditarProduto {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-#popupEditarProduto .popup {
-  background-color: #ffffff;
-  padding: 20px;
-  border-radius: 8px;
-  width: 400px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-  text-align: center;
-}
-
-#popupEditarProduto .popup h3 {
-  margin-bottom: 20px;
-}
-
-#popupEditarProduto .popup button {
-  margin: 10px 5px;
-}
-
-/* Estilo para o container de botões */
-.button-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.button-container h2 {
-  margin: 0;
-  font-size: 1.5rem;
-  text-align: left; /* Alinha o título à esquerda */
-}
-
-.button-container .btn-novo-produto {
-  text-decoration: none;
-  padding: 10px 20px;
-  background-color: #4caf50;
+/* Botão de excluir (vermelho) */
+.btn-excluir {
+  background-color: #dc3545; /* Vermelho */
   color: white;
-  border-radius: 5px;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
-  margin-top: 0; /* Remove qualquer ajuste vertical */
 }
 
-.button-container .btn-novo-produto:hover {
-  background-color: #45a049;
+.btn-excluir:hover {
+  background-color: #c82333; /* Vermelho mais escuro */
+  transform: scale(1.05); /* Efeito de zoom */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra ao passar o mouse */
+}
+
+/* Ícones dentro dos botões */
+.btn-editar i,
+.btn-excluir i {
+  font-size: 1.2rem;
+  pointer-events: none; /* Evita cliques no ícone */
 }
