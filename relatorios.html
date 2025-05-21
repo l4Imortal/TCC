@@ -1,89 +1,89 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Relatórios - StoQ</title>
-  <link rel="stylesheet" href="CSS/relatorios.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-</head>
-<body>
-  <div class="container">
-    <header>
-      <h1>Relatórios - StoQ</h1>
-    </header>
-    <nav>
-      <ul>
-        <li><a href="index.html"><i class="fas fa-house"></i> Página Inicial</a></li>
-        <li><a href="produtos.html"><i class="fas fa-boxes"></i> Produtos</a></li>
-  <li><a href="fornecedores.html"><i class="fas fa-truck"></i> Fornecedores</a></li>
-  <li><a href="entradas.html"><i class="fas fa-arrow-down"></i> Entradas</a></li>
-  <li><a href="saidas.html"><i class="fas fa-arrow-up"></i> Saídas</a></li>
-</ul>
+  <!DOCTYPE html>
+  <html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Relatórios - StoQ</title>
+    <link rel="stylesheet" href="CSS/relatorios.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Relatórios - StoQ</h1>
+      </header>
+      <nav>
+        <ul>
+          <li><a href="index.html"><i class="fas fa-house"></i> Página Inicial</a></li>
+          <li><a href="produtos.html"><i class="fas fa-boxes"></i> Produtos</a></li>
+    <li><a href="fornecedores.html"><i class="fas fa-truck"></i> Fornecedores</a></li>
+    <li><a href="entradas.html"><i class="fas fa-arrow-down"></i> Entradas</a></li>
+    <li><a href="saidas.html"><i class="fas fa-arrow-up"></i> Saídas</a></li>
+  </ul>
 
-    </nav>
-    <main>
-      <section class="reports">
-        <h2>Relatórios do Sistema</h2>
-        <div class="reports-container">
-          <!-- Tipos de Relatórios -->
-          <div class="report-card">
-            <h3>Selecione o Tipo de Relatório</h3>
-            <div class="tabs">
-              <div class="tab active" onclick="mudarTab('estoque')">Estoque Atual</div>
-            </div>
-            
-            <!-- Relatório de Estoque Atual -->
-            <div id="estoque-tab" class="tab-content active">
-              <div class="filter-section">
-                <h4>Filtros</h4>
-                <div class="filter-row">
-                  <div class="filter-item">
-                    <label for="estoque-categoria">Categoria:</label>
-                    <select id="estoque-categoria">
-                      <option value="">Todas as Categorias</option>
-                      <option value="Camiseta">Camiseta</option>
-                      <option value="Blusa">Blusa</option>
-                      <option value="Calça">Calça</option>
-                    </select>
+      </nav>
+      <main>
+        <section class="reports">
+          <h2>Relatórios do Sistema</h2>
+          <div class="reports-container">
+            <!-- Tipos de Relatórios -->
+            <div class="report-card">
+              <h3>Selecione o Tipo de Relatório</h3>
+              <div class="tabs">
+                <div class="tab active" onclick="mudarTab('estoque')">Estoque Atual</div>
+              </div>
+              
+              <!-- Relatório de Estoque Atual -->
+              <div id="estoque-tab" class="tab-content active">
+                <div class="filter-section">
+                  <h4>Filtros</h4>
+                  <div class="filter-row">
+                    <div class="filter-item">
+                      <label for="estoque-categoria">Categoria:</label>
+                      <select id="estoque-categoria">
+                        <option value="">Todas as Categorias</option>
+                        <option value="Camiseta">Camiseta</option>
+                        <option value="Blusa">Blusa</option>
+                        <option value="Calça">Calça</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
+                <div class="report-actions">
+                  <button id="btnGerarRelatorioEstoque" class="btn btn-primary">Gerar Relatório</button>
+                  <button id="btnExportarPDF" class="btn btn-secondary">Exportar PDF</button>
+                </div>
+                <div id="tabela-estoque-container" class="report-preview">
+                  <p>Clique em "Gerar Relatório" para visualizar os dados do estoque.</p>
+                </div>
               </div>
-              <div class="report-actions">
-                <button id="btnGerarRelatorioEstoque" class="btn btn-primary">Gerar Relatório</button>
-                <button id="btnExportarPDF" class="btn btn-secondary">Exportar PDF</button>
-              </div>
-              <div id="tabela-estoque-container" class="report-preview">
-                <p>Clique em "Gerar Relatório" para visualizar os dados do estoque.</p>
-              </div>
+              
+              
             </div>
-            
-            
           </div>
-        </div>
-      </section>
-    </main>
-  </div>
-  
-  <script src="JS/relatorios.js"></script>
-  <script>
-    function mudarTab(tabId) {
-      // Esconde todas as tabs
-      document.querySelectorAll('.tab-content').forEach(tab => {
-        tab.classList.remove('active');
-      });
-      
-      // Remove a classe active de todas as abas
-      document.querySelectorAll('.tab').forEach(tab => {
-        tab.classList.remove('active');
-      });
-      
-      // Ativa a tab selecionada
-      document.getElementById(tabId + '-tab').classList.add('active');
-      
-      // Ativa o botão da tab
-      document.querySelector(`.tab[onclick="mudarTab('${tabId}')"]`).classList.add('active');
-    }
-  </script>
-</body>
-</html>
+        </section>
+      </main>
+    </div>
+    
+    <script src="JS/relatorios.js"></script>
+    <script>
+      function mudarTab(tabId) {
+        // Esconde todas as tabs
+        document.querySelectorAll('.tab-content').forEach(tab => {
+          tab.classList.remove('active');
+        });
+        
+        // Remove a classe active de todas as abas
+        document.querySelectorAll('.tab').forEach(tab => {
+          tab.classList.remove('active');
+        });
+        
+        // Ativa a tab selecionada
+        document.getElementById(tabId + '-tab').classList.add('active');
+        
+        // Ativa o botão da tab
+        document.querySelector(`.tab[onclick="mudarTab('${tabId}')"]`).classList.add('active');
+      }
+    </script>
+  </body>
+  </html>
