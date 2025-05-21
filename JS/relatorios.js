@@ -161,174 +161,193 @@ async function fetchAPI(endpoint, params = {}) {
 // Função para gerar relatório de estoque
 async function gerarRelatorioEstoque() {
   console.log('Iniciando geração de relatório de estoque...');
-  
-  // Referência ao container da tabela
   const containerId = 'estoque-tab';
-  
-  // Mostrar indicador de carregamento
   exibirMensagem(containerId, 'carregando', 'Carregando dados do estoque...');
-  
+
   try {
-    // Buscar dados diretamente da tabela de produtos
-    const produtos = await fetch('http://localhost:3000/api/produtos')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`Erro HTTP: ${response.status} ${response.statusText}`);
-        }
-        return response.json();
-      });
+    // 1. Buscar produtos
+    const produtosResponse = await fetch('http://localhost:3000/api/produtos');
+    if (!produtosResponse.ok) {
+      throw new Error(`Erro HTTP: ${produtosResponse.status} ${produtosResponse.statusText}`);
+    }
     
+    const produtos = await produtosResponse.json();
     console.log('Dados de produtos recebidos:', produtos);
+
+    // 2. Buscar entradas
+    const entradasResponse = await fetch('http://localhost:3000/api/entradas');
+    if (!entradasResponse.ok) {
+      throw new Error(`Erro HTTP: ${entradasResponse.status} ${entradasResponse.statusText}`);
+    }
     
-    // Verificar se temos produtos
-    if (!produtos || !Array.isArray(produtos) || produtos.length === 0) {
+    const entradas = await entradasResponse.json();
+    console.log('Dados de entradas recebidos:', entradas);
+
+    // 3. Buscar saídas
+    const saidasResponse = await fetch('http://localhost:3000/api/saidas');
+    if (!saidasResponse.ok) {
+      throw new Error(`Erro HTTP: ${saidasResponse.status} ${saidasResponse.statusText}`);
+    }
+    
+    const saidas = await saidasResponse.json();
+    console.log('Dados de saídas recebidos:', saidas);
+
+    // 4. Calcular o estoque atual para cada produto
+    const produtosComEstoque = produtos.map(produto => {
+      // Filtrar entradas e saídas para este produto usando o EAN
+      const entradasDoProduto = entradas.filter(
+        entrada => entrada.ean === produto.ean
+      );
+      
+      const saidasDoProduto = saidas.filter(
+        saida => saida.ean === produto.ean
+      );
+      
+      // Calcular estoque atual
+      let totalEntradas = 0;
+      entradasDoProduto.forEach(entrada => {
+        totalEntradas += parseInt(entrada.quantidade || 0);
+      });
+      
+      let totalSaidas = 0;
+      saidasDoProduto.forEach(saida => {
+        totalSaidas += parseInt(saida.quantidade || 0);
+      });
+      
+      const estoqueAtual = totalEntradas - totalSaidas;
+      
+      // Adicionar estoque atual ao produto
+      return {
+        ...produto,
+        estoque_atual: estoqueAtual
+      };
+    });
+
+    // 5. Verificar se temos produtos
+    if (!produtosComEstoque || produtosComEstoque.length === 0) {
       exibirMensagem(containerId, 'info', 'Nenhum produto encontrado no estoque.');
       atualizarBotoesExportacao('estoque', false);
       return;
     }
-    
-    // Buscar dados do relatório de estoque para obter as quantidades atuais
-    const estoqueAtual = await fetch('http://localhost:3000/api/relatorios/estoque')
-      .then(response => {
-        if (!response.ok) {
-          // Se o endpoint não existir, vamos continuar apenas com os dados dos produtos
-          console.warn('Endpoint de relatório de estoque não disponível, usando apenas dados de produtos');
-          return [];
-        }
-        return response.json();
-      })
-      .catch(error => {
-        console.warn('Erro ao buscar relatório de estoque:', error);
-        return [];
-      });
-    
-    // Mesclar os dados de produtos com as quantidades do estoque
-    const produtosCompletos = produtos.map(produto => {
-      // Procurar o produto correspondente no relatório de estoque
-      const estoqueItem = Array.isArray(estoqueAtual) ? 
-        estoqueAtual.find(item => item.id_produto === produto.id_produto) : null;
-      
-      return {
-        ...produto,
-        quantidade_atual: estoqueItem ? estoqueItem.quantidade_atual : 0
-      };
-    });
-    
-    // IMPORTANTE: Armazenar dados para exportação
-    dadosRelatorioAtual = produtosCompletos;
-    relatorioAtual = 'estoque';
-    
-    console.log('Dados armazenados para exportação:', dadosRelatorioAtual);
-    
-    // Calcular valores totais para exibição
+
+    // 6. Calcular totais
     let totalItens = 0;
     let produtosComEstoqueBaixo = 0;
     let produtosSemEstoque = 0;
-    
-    produtosCompletos.forEach(produto => {
-      const quantidade = parseInt(produto.quantidade_atual || 0);
+
+    const produtosProcessados = produtosComEstoque.map(produto => {
+      const quantidade = parseInt(produto.estoque_atual || 0);
       const estoqueMinimo = parseInt(produto.estoque_minimo || 5);
       
-      totalItens += quantidade > 0 ? quantidade : 0;
-      
-      if (quantidade <= 0) {
-        produtosSemEstoque++;
-      } else if (quantidade <= estoqueMinimo) {
-        produtosComEstoqueBaixo++;
-      }
+      totalItens += Math.max(0, quantidade);
+      if (quantidade <= 0) produtosSemEstoque++;
+      else if (quantidade <= estoqueMinimo) produtosComEstoqueBaixo++;
+
+      return {
+        ...produto,
+        quantidade_atual: quantidade,
+        status: determinarStatusEstoque(quantidade, estoqueMinimo)
+      };
     });
-    
-    // Criar a tabela HTML
-    let tabelaHTML = `
+
+    // 7. Armazenar dados para exportação
+    dadosRelatorioAtual = produtosProcessados;
+    relatorioAtual = 'estoque';
+
+    // 8. Gerar HTML do relatório
+    const tabelaHTML = `
       <div class="relatorio-info">
         <h3>Relatório de Estoque</h3>
-        <p>Data de geração: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}</p>
+        <p>Data de geração: ${new Date().toLocaleString()}</p>
         <div class="relatorio-resumo">
-          <div class="resumo-item">
-            <span class="resumo-valor">${produtosCompletos.length}</span>
-            <span class="resumo-label">Produtos</span>
-          </div>
-          <div class="resumo-item">
-            <span class="resumo-valor">${totalItens}</span>
-            <span class="resumo-label">Itens</span>
-          </div>
-          <div class="resumo-item">
-            <span class="resumo-valor">${produtosSemEstoque}</span>
-            <span class="resumo-label">Sem Estoque</span>
-          </div>
-          <div class="resumo-item">
-            <span class="resumo-valor">${produtosComEstoqueBaixo}</span>
-            <span class="resumo-label">Estoque Baixo</span>
-          </div>
+          ${gerarResumoEstoque(produtosProcessados.length, totalItens, produtosSemEstoque, produtosComEstoqueBaixo)}
         </div>
       </div>
-      
       <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>EAN</th>
-              <th>Produto</th>
-              <th>Categoria</th>
-              <th>Fornecedor</th>
-              <th>Estoque Atual</th>
-              <th>Estoque Mínimo</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-    `;
-    
-    // Adicionar linhas para cada produto
-    produtosCompletos.forEach(produto => {
-      const quantidade = parseInt(produto.quantidade_atual || 0);
-      const estoqueMinimo = parseInt(produto.estoque_minimo || 5);
-      
-      // Determinar o status do estoque
-      const status = determinarStatusEstoque(quantidade, estoqueMinimo);
-      
-      tabelaHTML += `
-        <tr>
-          <td>${produto.id_produto || 'N/A'}</td>
-          <td>${produto.ean || 'N/A'}</td>
-          <td>${produto.produto || 'N/A'}</td>
-          <td>${produto.categoria || 'N/A'}</td>
-          <td>${produto.fornecedor || 'N/A'}</td>
-          <td>${quantidade}</td>
-          <td>${estoqueMinimo}</td>
-          <td class="${status.classe}">${status.texto}</td>
-        </tr>
-      `;
-    });
-    
-    // Fechar a tabela
-    tabelaHTML += `
-          </tbody>
-        </table>
+        ${gerarTabelaEstoque(produtosProcessados)}
       </div>
     `;
-    
-    // Inserir a tabela no container
+
+    // 9. Inserir no DOM
     const tabelaContainer = document.querySelector(`#${containerId} .report-preview`);
     if (tabelaContainer) {
       tabelaContainer.innerHTML = tabelaHTML;
     }
-    
-    console.log('Tabela de relatório de estoque gerada com sucesso');
-    
-    // Habilitar botões de exportação
+
+    // 10. Habilitar exportação
     atualizarBotoesExportacao('estoque', true);
-    
+
   } catch (error) {
-    console.error('Erro detalhado ao gerar relatório de estoque:', error);
-    exibirMensagem(containerId, 'erro', `Erro ao gerar relatório de estoque: ${error.message}`);
-    
-    // Desabilitar botões de exportação
+    console.error('Erro ao gerar relatório:', error);
+    exibirMensagem(containerId, 'erro', `Erro: ${error.message}`);
     atualizarBotoesExportacao('estoque', false);
   }
 }
 
+
+
+// Funções auxiliares
+function gerarResumoEstoque(totalProdutos, totalItens, semEstoque, estoqueBaixo) {
+  return `
+    <div class="resumo-item">
+      <span class="resumo-valor">${totalProdutos}</span>
+      <span class="resumo-label">Produtos</span>
+    </div>
+    <div class="resumo-item">
+      <span class="resumo-valor">${totalItens}</span>
+      <span class="resumo-label">Itens</span>
+    </div>
+    <div class="resumo-item">
+      <span class="resumo-valor">${semEstoque}</span>
+      <span class="resumo-label">Sem Estoque</span>
+    </div>
+    <div class="resumo-item">
+      <span class="resumo-valor">${estoqueBaixo}</span>
+      <span class="resumo-label">Estoque Baixo</span>
+    </div>
+  `;
+}
+
+function gerarTabelaEstoque(produtos) {
+  return `
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>EAN</th>
+          <th>Produto</th>
+          <th>Categoria</th>
+          <th>Fornecedor</th>
+          <th>Estoque Atual</th>
+          <th>Estoque Mínimo</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${produtos.map(produto => `
+          <tr>
+            <td>${produto.id_produto || 'N/A'}</td>
+            <td>${produto.ean || 'N/A'}</td>
+            <td>${produto.produto || 'N/A'}</td>
+            <td>${produto.categoria || 'N/A'}</td>
+            <td>${produto.fornecedor || 'N/A'}</td>
+            <td class="${produto.status.classe}-texto">${produto.quantidade_atual}</td>
+            <td>${produto.estoque_minimo}</td>
+            <td class="${produto.status.classe}">${produto.status.texto}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+
+function determinarStatusEstoque(quantidade, estoqueMinimo = 5) {
+  if (quantidade <= 0) return { texto: 'Sem Estoque', classe: 'status-sem-estoque' };
+  if (quantidade <= estoqueMinimo * 0.5) return { texto: 'Crítico', classe: 'status-critico' };
+  if (quantidade <= estoqueMinimo) return { texto: 'Baixo', classe: 'status-baixo' };
+  return { texto: 'Normal', classe: 'status-normal' };
+}
 
 
 // Função para gerar relatório de movimentações
