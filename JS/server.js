@@ -13,7 +13,7 @@ app.use(express.static(__dirname + "/../"));
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "1234",
+  password: "cursoads",
   database: "estoque",
 });
 
@@ -1187,4 +1187,35 @@ app.use((err, req, res, next) => {
 // Iniciar o servidor
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
+});
+// GET - Produtos com informações de estoque
+app.get("/api/produtos/com-estoque", (req, res) => {
+  const query = `
+    SELECT 
+      p.id_produto,
+      p.ean,
+      p.produto,
+      p.categoria,
+      p.un,
+      p.fornecedor,
+      p.estoque_minimo,
+      COALESCE(
+        SUM(CASE WHEN m.tipo_movimentacao = 'entrada' THEN m.quantidade ELSE 0 END) -
+        SUM(CASE WHEN m.tipo_movimentacao = 'saida' THEN m.quantidade ELSE 0 END),
+        0
+      ) AS estoque_atual
+    FROM 
+      produtos p
+    LEFT JOIN 
+      movimentacoes m ON p.id_produto = m.id_produto
+    GROUP BY 
+      p.id_produto, p.ean, p.produto, p.categoria, p.un, p.fornecedor, p.estoque_minimo
+  `;
+  
+  db.query(query, (err, results) => {
+    if (err) {
+      return handleError(res, err, "Erro ao buscar produtos com estoque");
+    }
+    res.json(results);
+  });
 });
