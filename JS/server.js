@@ -13,7 +13,7 @@ app.use(express.static(__dirname + "/../"));
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "cursoads",
+  password: "1234",
   database: "estoque",
 });
 
@@ -698,9 +698,18 @@ app.post("/api/entradas", (req, res) => {
     nota_fiscal,
     valor_unitario,
     responsavel,
-    data_saida,
+    data_entrada,
   } = req.body;
 
+  console.log("ean:", ean);
+  console.log("produto:", produto);
+  console.log("quantidade:", quantidade);
+  console.log("fornecedor:", fornecedor);
+  console.log("nota_fiscal:", nota_fiscal);
+  console.log("valor_unitario:", valor_unitario);
+  console.log("responsavel:", responsavel);
+  console.log("data_entrada:", data_entrada);
+  
   // Validação básica
   if (
     !ean ||
@@ -710,13 +719,13 @@ app.post("/api/entradas", (req, res) => {
     !nota_fiscal ||
     !valor_unitario ||
     !responsavel ||
-    !data_saida
+    !data_entrada 
   ) {
     return res.status(400).json({ error: "Todos os campos são obrigatórios" });
   }
 
   const query =
-    "INSERT INTO entradas (ean, produto, quantidade, fornecedor, nota_fiscal, valor_unitario, responsavel, data_saida) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO entradas (ean, produto, quantidade, fornecedor, nota_fiscal, valor_unitario, responsavel, data_entrada) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
   db.query(
     query,
     [
@@ -727,7 +736,7 @@ app.post("/api/entradas", (req, res) => {
       nota_fiscal,
       valor_unitario,
       responsavel,
-      data_saida,
+      data_entrada,
     ],
     (err, results) => {
       if (err) {
@@ -752,7 +761,7 @@ app.put("/api/entradas/:ean", (req, res) => {
     nota_fiscal,
     valor_unitario,
     responsavel,
-    data_saida,
+    data_entrada,
   } = req.body;
 
   // Validação básica
@@ -763,13 +772,13 @@ app.put("/api/entradas/:ean", (req, res) => {
     !nota_fiscal ||
     !valor_unitario ||
     !responsavel ||
-    !data_saida
+    !data_entrada 
   ) {
     return res.status(400).json({ error: "Todos os campos são obrigatórios" });
   }
 
   const query =
-    "UPDATE entradas SET produto = ?, quantidade = ?, fornecedor = ?, nota_fiscal = ?, valor_unitario = ?, responsavel = ?, data_saida = ? WHERE ean = ?";
+    "UPDATE entradas SET produto = ?, quantidade = ?, fornecedor = ?, nota_fiscal = ?, valor_unitario = ?, responsavel = ?, data_entrada = ? WHERE ean = ?";
   db.query(
     query,
     [
@@ -779,7 +788,7 @@ app.put("/api/entradas/:ean", (req, res) => {
       nota_fiscal,
       valor_unitario,
       responsavel,
-      data_saida,
+      data_entrada,
       ean,
     ],
     (err, results) => {

@@ -53,8 +53,12 @@ function adicionarEntradaNaTabela(entrada) {
         <td>${entrada.responsavel || ''}</td>
         <td>${entrada.data_entrada ? formatarData(entrada.data_entrada) : ''}</td>
         <td class="actions">
-            <button class="btn-editar">Editar</button>
-            <button class="btn-excluir">Excluir</button>
+           <button class="btn-editar" data-id="${entrada.ean}">
+          <i class="fas fa-edit"></i>
+        </button>
+        <button class="btn-excluir" data-id="${entrada.ean}">
+          <i class="fas fa-trash-alt"></i>
+        </button>
         </td>
     `;
 
@@ -110,7 +114,7 @@ async function carregarProdutos() {
         const dados = await response.json();
         
         produtosLista = dados.map(item => ({
-            id: item.id_produto,
+            id: item.produto,
             nome: item.produto
         })).filter(item => item.id && item.nome);
 
@@ -121,7 +125,7 @@ async function carregarProdutos() {
         } else {
             produtosLista.sort((a, b) => a.nome.localeCompare(b.nome))
                        .forEach(produto => {
-                const option = new Option(produto.nome, produto.id);
+                const option = new Option(produto.nome, produto.nome);
                 select.add(option);
             });
         }
@@ -188,12 +192,13 @@ function abrirPopupEdicao(entrada) {
 
     const produtoSelect = document.getElementById('produtoEntrada');
     if (produtoSelect) {
-        produtoSelect.value = entrada.produto_id || '';
+        
+        produtoSelect.value = entrada.produto || '';
     }
 
     const fornecedorSelect = document.getElementById('fornecedorEntrada');
     if (fornecedorSelect) {
-        fornecedorSelect.value = entrada.fornecedor_id || '';
+        fornecedorSelect.value = entrada.fornecedor || '';
     }
 
     document.getElementById('popupTitle').textContent = 'Editar Entrada';
@@ -222,9 +227,9 @@ async function salvarEntrada(event) {
 
         const entradaData = {
             ean: form.eanEntrada.value.padStart(13, '0'),
-            produto_id: form.produtoEntrada.value,
+            produto: form.produtoEntrada.value,
             quantidade: parseInt(form.quantidadeEntrada.value),
-            fornecedor_id: form.fornecedorEntrada.value,
+            fornecedor: form.fornecedorEntrada.value,
             nota_fiscal: form.notaFiscalEntrada.value.replace(/\D/g, ''),
             valor_unitario: parseFloat(form.valorEntrada.value) || 0,
             responsavel: form.responsavelEntrada.value,
@@ -232,7 +237,7 @@ async function salvarEntrada(event) {
         };
 
         const url = isEditMode 
-            ? `http://localhost:3000/api/entradas/${entradaId}`
+            ? `http://localhost:3000/api/entradas/${entradaData.ean}`
             : 'http://localhost:3000/api/entradas';
             
         const method = isEditMode ? 'PUT' : 'POST';
@@ -270,7 +275,7 @@ async function excluirEntrada() {
     try {
         deleteBtn.disabled = true;
 
-        const response = await fetch(`http://localhost:3000/api/entradas/${currentRowToDelete.id}`, {
+        const response = await fetch(`http://localhost:3000/api/entradas/${currentRowToDelete.ean}`, {
             method: 'DELETE'
         });
 
@@ -374,6 +379,38 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
+  
+  // Carrega os produtos ao carregar a página
+  window.addEventListener("load", carregarProdutosNaTabela);
+
+  function salvarEntradaNoServidor(entrada) {
+    // Adaptar o objeto produto para o formato esperado pela API
+    const entradaParaAPI = {
+      ean: entrada.ean || "",
+      produto: entrada.produto, // Usando 'nome' do formulário para o campo 'produto' do banco
+      quantidade: entrada.quantidade,
+      fornecedor: entrada.fornecedor,
+      nota_fiscal: entrada.nota_fiscal,
+      valor_unitario: entrada.valor_unitario,
+      responsavel: entrada.responsavel,
+      data_entrada: entrada.data_entrada || new Date().toISOString().split('T')[0], // Data atual no formato YYYY-MM-DD
+    };
+  
+    // Enviar para o servidor usando fetch API
+    return fetch('http://localhost:3000/api/entradas', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(entradaParaAPI)
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Erro ao cadastrar entrada: ' + response.statusText);
+      }
+      return response.json();
+    });
+  }
 async function testarConexaoAPI() {
     try {
         const response = await fetch('http://localhost:3000/api/entradas', {
