@@ -36,9 +36,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Função para formatar CNPJ
-  function formatarCNPJ(cnpj) {
-    cnpj = cnpj.replace(/\D/g, '');
-    return cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
+  function formatarCNPJ(CNPJ) {
+    CNPJ = CNPJ.replace(/\D/g, '');
+    return CNPJ.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
   }
 
   // Função para formatar telefone
@@ -211,7 +211,8 @@ document.addEventListener("DOMContentLoaded", () => {
             cnpj,
             telefone,
             email,
-            endereco
+            endereco,
+            data_cadastro: new Date().toISOString().slice(0, 19).replace('T', ' ')
           })
         })
         .then(response => {
@@ -388,11 +389,15 @@ document.addEventListener("DOMContentLoaded", () => {
           novaLinha.innerHTML = `
   <td>${fornecedor.id_fornecedor}</td>
   <td>${fornecedor.nome}</td>
-  <td>${fornecedor.cnpj || ""}</td>
+  <td>${fornecedor.cnpj || fornecedor.CNPJ || ""}</td>
   <td>${fornecedor.telefone || ""}</td>
   <td>${fornecedor.email || ""}</td>
   <td>${fornecedor.endereco || ""}</td>
-  <td>-</td>
+  <td>${
+  fornecedor.data_fornecedor
+    ? new Date(fornecedor.data_fornecedor).toLocaleDateString('pt-BR')
+    : ""
+}</td>
   <td class="acoes-coluna">
     <button class="btn-editar" data-id="${fornecedor.id_fornecedor}">
       <i class="fas fa-edit"></i>
