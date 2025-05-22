@@ -465,13 +465,6 @@ function carregarProdutosNaTabela() {
       produtos.forEach((produto) => {
         const novaLinha = document.createElement("tr");
         novaLinha.innerHTML = `
-          <td>
-            ${
-              produto.foto
-                ? `<img src="${produto.foto}" alt="Foto do Produto" style="width: 50px; height: 50px; object-fit: cover;" />`
-                : "Sem Foto"
-            }
-          </td>
           <td>${produto.ean || 'N/A'}</td>
           <td>${produto.produto || produto.nome}</td>
           <td>${produto.categoria}</td>
