@@ -1,0 +1,483 @@
+/* Estilo geral */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #1c1429;
+  margin: 0;
+  padding: 0;
+  color: #333;
+  line-height: 1.6;
+}
+
+.container {
+  width: 95%;
+  max-width: 1200px;
+  margin: 20px auto;
+  background-color: white;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+header {
+  text-align: center;
+  margin: 20px 0 30px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+header h1 {
+  color: #1c1429;
+  font-size: 2.2rem;
+  margin: 0;
+}
+
+/* Navegação */
+nav {
+  background-color: rgba(0, 0, 0, 0.85);
+  border-radius: 8px;
+  margin-bottom: 30px;
+}
+
+nav ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+nav ul li {
+  flex: 1;
+  min-width: 120px;
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: white;
+  display: block;
+  text-align: center;
+  padding: 12px 10px;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+}
+
+nav ul li a:hover {
+  background-color: #575757;
+  transform: translateY(-2px);
+}
+
+nav ul li a i {
+  margin-right: 8px;
+}
+
+/* Conteúdo principal */
+main {
+  margin: 30px 0;
+}
+
+.product-info {
+  text-align: center;
+}
+
+.product-info h2 {
+  margin-bottom: 25px;
+  color: #1c1429;
+  font-size: 1.8rem;
+}
+
+/* Tabela de produtos */
+.table-container {
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 25px;
+  background-color: #f9f9f9;
+  overflow-x: auto;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.center-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 0.95rem;
+}
+
+.center-table th,
+.center-table td {
+  border: 1px solid #e0e0e0;
+  padding: 12px 15px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.center-table th {
+  background-color: #1c1429;
+  color: white;
+  font-weight: bold;
+  position: sticky;
+  top: 0;
+}
+
+.center-table tbody tr:nth-child(even) {
+  background-color: #f5f5f5;
+}
+
+.center-table tbody tr:hover {
+  background-color: #ebebeb;
+}
+
+/* Botão Novo Produto */
+.btn-novo-produto {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  float: right;
+  margin-top: -50px;
+}
+
+.btn-novo-produto:hover {
+  background-color: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-novo-produto:active {
+  transform: translateY(0);
+}
+
+/* Botões de ação na tabela */
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn-editar {
+  background-color: #1c1429;
+  color: green;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.btn-excluir {
+  background-color: #1c1429;
+  color: red;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.btn-editar:hover {
+  background-color: #0b7dda;
+  transform: translateY(-2px) scale(1.1);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.btn-excluir:hover {
+  background-color: #d32f2f;
+  transform: translateY(-2px) scale(1.1);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.btn-editar:active, .btn-excluir:active {
+  transform: translateY(0) scale(0.95);
+}
+
+/* Popups */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+}
+
+.popup {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.3s ease-out;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.popup h3 {
+  margin-top: 0;
+  font-size: 1.8rem;
+  color: #1c1429;
+  text-align: center;
+  padding-bottom: 15px;
+  border-bottom: 3px solid #4caf50;
+  margin-bottom: 25px;
+}
+
+.popup label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #555;
+}
+
+.popup input,
+.popup select {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.popup input:focus,
+.popup select:focus {
+  border-color: #4caf50;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+}
+
+.popup-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 25px;
+  gap: 15px;
+}
+
+.popup-buttons button {
+  padding: 12px 25px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex: 1;
+}
+
+.popup-buttons button[type="submit"] {
+  background-color: #4caf50;
+  color: white;
+}
+
+.popup-buttons button[type="button"] {
+  background-color: #757575;
+  color: white;
+}
+
+.popup-buttons button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.popup-buttons button:active {
+  transform: translateY(0);
+}
+
+/* Popup de confirmação */
+.popup-confirmacao-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup-confirmacao {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 450px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.popup-confirmacao i {
+  font-size: 3rem;
+  color: #4caf50;
+  margin-bottom: 15px;
+}
+
+.popup-confirmacao h3 {
+  margin: 0 0 15px;
+  font-size: 1.8rem;
+  color: #1c1429;
+}
+
+.popup-confirmacao p {
+  margin: 0 0 25px;
+  font-size: 1.1rem;
+  color: #555;
+}
+
+.popup-confirmacao button {
+  padding: 12px 30px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.popup-confirmacao button:hover {
+  background-color: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Popup de confirmação de exclusão */
+.popup-excluir {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 450px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.popup-excluir i.fa-exclamation-triangle {
+  font-size: 3rem;
+  color: #ff9800;
+  margin-bottom: 15px;
+}
+
+.popup-excluir h3 {
+  margin: 0 0 15px;
+  font-size: 1.8rem;
+  color: #1c1429;
+}
+
+.popup-excluir p {
+  margin: 0 0 25px;
+  font-size: 1.1rem;
+  color: #555;
+}
+
+.popup-botoes {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.popup-botoes .btn-excluir {
+  background-color: #f44336;
+  color: white;
+  padding: 12px 25px;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.popup-botoes .btn-cancelar {
+  background-color: #757575;
+  color: white;
+  padding: 12px 25px;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.popup-botoes .btn-excluir:hover {
+  background-color: #d32f2f;
+}
+
+.popup-botoes .btn-cancelar:hover {
+  background-color: #616161;
+}
+
+/* Animações */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .container {
+    width: 98%;
+    padding: 15px;
+  }
+  
+  nav ul li {
+    min-width: 100%;
+  }
+  
+  .btn-novo-produto {
+    float: none;
+    margin: 0 auto 20px;
+    display: block;
+    width: 100%;
+  }
+  
+  .center-table {
+    font-size: 0.9rem;
+  }
+  
+  .center-table th,
+  .center-table td {
+    padding: 8px 10px;
+  }
+  
+  .popup {
+    padding: 20px;
+  }
+  
+  .popup-buttons {
+    flex-direction: column;
+  }
+  
+  .popup-buttons button {
+    width: 100%;
+  }
+}

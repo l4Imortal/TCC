@@ -1,0 +1,466 @@
+/* Estilo geral */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #1c1429;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  width: 90%;
+  margin: 0 auto;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+header {
+  text-align: center;
+  margin: 20px 0;
+}
+
+nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem 0;
+  display: flex;
+  justify-content: space-around;
+  background-color: #333;
+  border-radius: 8px;
+  flex-wrap: wrap;
+}
+
+nav ul li {
+  flex: 1;
+  min-width: 100px;
+  text-align: center;
+}
+
+nav ul li a {
+  display: block;
+  padding: 0.75rem 1rem;
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+  font-size: 0.9rem;
+}
+
+nav ul li a:hover {
+  background-color: #555;
+}
+
+/* Estilo da tabela */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+table,
+th,
+td {
+  border: 1px solid #ddd;
+}
+
+th,
+td {
+  padding: 10px;
+  text-align: center;
+}
+
+th {
+  background-color: #333;
+  color: white;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* Estilo dos botões */
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.button-container h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  text-align: left;
+}
+
+#novoFornecedorBtn {
+  text-decoration: none;
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border-radius: 5px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+  display: inline-block;
+  border: none;
+}
+
+#novoFornecedorBtn:hover {
+  background-color: #45a049;
+}
+
+/* Estilo do contêiner da tabela */
+.table-container {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  overflow-x: auto;
+}
+
+/* Estilo dos ícones de ação */
+td a {
+  margin: 0 5px;
+  text-decoration: none;
+  color: #007bff;
+  font-weight: bold;
+}
+
+td a:hover {
+  text-decoration: underline;
+}
+
+td a img {
+  vertical-align: middle;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+td a img:hover {
+  transform: scale(1.2);
+}
+
+/* Estilo do popup */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: none;
+  z-index: 999;
+}
+
+.popup {
+  background-color: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  width: 500px;
+  max-width: 90%;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Estilo para o cabeçalho do popup */
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #4caf50;
+  padding-bottom: 10px;
+}
+
+.popup-header h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #333;
+}
+
+/* Estilo para o botão de fechar */
+.btn-fechar {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #555;
+}
+
+.btn-fechar:hover {
+  color: #f44336;
+}
+
+/* Estilo para os campos do formulário */
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #555;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+/* Estilos para os botões do formulário */
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn-salvar,
+.btn-cancelar,
+.btn-excluir {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-weight: bold;
+}
+
+.btn-salvar {
+  background-color: #4caf50;
+  color: white;
+}
+
+.btn-salvar:hover {
+  background-color: #45a049;
+}
+
+.btn-cancelar {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-cancelar:hover {
+  background-color: #5a6268;
+}
+
+.btn-excluir {
+  background-color: red;
+  color: black;
+}
+
+.btn-excluir:hover {
+  background-color: #e53935;
+}
+
+/* Ajuste para os botões de editar e excluir */
+.btn-editar,
+.btn-excluir {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 8px; /* Bordas arredondadas */
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Botão de editar (verde) */
+.btn-editar {
+  background-color: #4caf50; /* Verde */
+  color: white;
+}
+
+.btn-editar:hover {
+  background-color: #45a049; /* Verde mais escuro */
+  transform: scale(1.1); /* Efeito de zoom */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra ao passar o mouse */
+}
+
+/* Botão de excluir (vermelho) */
+.btn-excluir {
+  background-color: #dc3545; /* Vermelho */
+  color: white;
+}
+
+.btn-excluir:hover {
+  background-color: #c82333; /* Vermelho mais escuro */
+  transform: scale(1.1); /* Efeito de zoom */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra ao passar o mouse */
+}
+
+/* Ícones dentro dos botões */
+.btn-editar i,
+.btn-excluir i {
+  font-size: 1.2rem;
+  pointer-events: none; /* Evita cliques no ícone */
+}
+
+/* Estilo para o popup de confirmação */
+.popup-confirmacao .popup-header {
+  border-bottom-color: #f44336;
+}
+
+.popup-confirmacao .popup-header h2 {
+  color: #f44336;
+}
+
+.popup-content {
+  margin-bottom: 20px;
+}
+
+.popup-content p {
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+  color: #555;
+  text-align: center;
+}
+
+/* Estilo para os botões de ação na tabela */
+.acoes-coluna {
+  white-space: nowrap;
+}
+
+.btn-editar {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  background-color: #1c1429; /* Cor base roxa escura */
+  color: green; /* Ícone verde */
+  font-size: 16px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin: 0 4px;
+}
+
+/* Botão Excluir */
+.btn-excluir {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  background-color: #1c1429; /* Cor base roxa escura */
+  color: red; /* Ícone vermelho */
+  font-size: 16px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin: 0 4px;
+}
+
+.btn-editar i {
+  color: #007bff;
+}
+
+.btn-excluir i {
+  color: #dc3545;
+}
+
+.btn-editar i:hover {
+  color: #0056b3;
+}
+
+.btn-excluir i:hover {
+  color: #c82333;
+}
+
+/* Ajuste para os ícones de editar e excluir */
+.btn-editar i,
+.btn-excluir i {
+  font-size: 1.2rem;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+/* Cor padrão para o ícone de editar (verde) */
+.btn-editar i {
+  color: #4caf50;
+}
+
+/* Cor padrão para o ícone de excluir (vermelho) */
+.btn-excluir i {
+  color: #dc3545;
+}
+
+/* Cor ao passar o mouse no ícone de editar */
+.btn-editar i:hover {
+  color: #45a049;
+  transform: scale(1.2);
+}
+
+/* Cor ao passar o mouse no ícone de excluir */
+.btn-excluir i:hover {
+  color: #c82333;
+  transform: scale(1.2);
+}
+
+/* Formulário em duas colunas */
+.form-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 10px;
+}
+
+/* Responsividade para telas pequenas */
+@media (max-width: 768px) {
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .btn-salvar,
+  .btn-cancelar,
+  .btn-excluir {
+    margin-bottom: 10px;
+  }
+}
+
+/* Estilo para o botão de confirmar exclusão */
+#confirmDelete {
+  background-color: #dc3545; /* Vermelho */
+  color: white; /* Texto branco */
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#confirmDelete:hover {
+  background-color: #c82333; /* Vermelho mais escuro no hover */
+}
