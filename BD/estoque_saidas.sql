@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.42, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.30, for Win64 (x86_64)
 --
 -- Host: localhost    Database: estoque
 -- ------------------------------------------------------
--- Server version	8.0.42
+-- Server version	8.0.26
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -41,7 +41,7 @@ CREATE TABLE `saidas` (
 
 LOCK TABLES `saidas` WRITE;
 /*!40000 ALTER TABLE `saidas` DISABLE KEYS */;
-INSERT INTO `saidas` VALUES ('1111111111111','Camisa',50,'Mercado Livre','111.111.111',150.00,'Enzo','2025-05-12'),('22222222222','Calça Jeans',60,'Mercado Livre','222.222.222',80.00,'Mateus','2025-05-11'),('33333333333','Blusa Moletom',40,'Mercado Livre','333.333.333',100.00,'Enzo','2025-05-13'),('4444444444444','Camisa',21,'Mercado Livre','432',12.00,'sim','2025-05-16');
+INSERT INTO `saidas` VALUES ('4444444444444','Meia',100,'Mercado Livre','123.12',20.00,'Elvis','2025-05-22');
 /*!40000 ALTER TABLE `saidas` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -54,4 +54,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-16 19:03:35
+-- Dump completed on 2025-05-22 20:06:54

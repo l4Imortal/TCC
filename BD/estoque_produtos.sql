@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.42, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.30, for Win64 (x86_64)
 --
 -- Host: localhost    Database: estoque
 -- ------------------------------------------------------
--- Server version	8.0.42
+-- Server version	8.0.26
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -28,11 +28,11 @@ CREATE TABLE `produtos` (
   `produto` varchar(255) NOT NULL,
   `categoria` varchar(100) NOT NULL,
   `un` varchar(10) NOT NULL,
-  `data` datetime DEFAULT CURRENT_TIMESTAMP,
+  `data` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `fornecedor` varchar(255) NOT NULL,
   `estoque_minimo` int NOT NULL,
   PRIMARY KEY (`id_produto`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -41,7 +41,7 @@ CREATE TABLE `produtos` (
 
 LOCK TABLES `produtos` WRITE;
 /*!40000 ALTER TABLE `produtos` DISABLE KEYS */;
-INSERT INTO `produtos` VALUES (1,'1111111111111','Camisa','Camiseta','UN','2025-05-09 00:00:00','Mercado Livre',10),(2,'22222222222','Calça jeans','Calça','UN','2025-05-10 00:00:00','Mercado Livre',10),(3,'33333333333','Blusa Moletom','Blusa','UN','2025-05-11 00:00:00','Mercado Livre',10);
+INSERT INTO `produtos` VALUES (1,'1111111111111','Camisa','Camiseta','UN','2025-05-09 00:00:00','Mercado Livre',10),(2,'22222222222','Calça jeans','Calça','UN','2025-05-10 00:00:00','Mercado Livre',10),(3,'33333333333','Blusa Moletom','Blusa','UN','2025-05-11 00:00:00','Mercado Livre',10),(4,'4444444444444','Meia','Acessorio','UN','2025-05-22 00:00:00','Mercado Livre',50),(5,'5555555555555','Saia','Shorts','UN','2025-05-22 00:00:00','Amazon',40);
 /*!40000 ALTER TABLE `produtos` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -54,4 +54,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-16 19:03:34
+-- Dump completed on 2025-05-22 20:06:53

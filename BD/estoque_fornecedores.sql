@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.42, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.30, for Win64 (x86_64)
 --
 -- Host: localhost    Database: estoque
 -- ------------------------------------------------------
--- Server version	8.0.42
+-- Server version	8.0.26
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -29,8 +29,9 @@ CREATE TABLE `fornecedores` (
   `telefone` varchar(20) NOT NULL,
   `email` varchar(255) NOT NULL,
   `endereco` text NOT NULL,
+  `data_fornecedor` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_fornecedor`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -39,7 +40,7 @@ CREATE TABLE `fornecedores` (
 
 LOCK TABLES `fornecedores` WRITE;
 /*!40000 ALTER TABLE `fornecedores` DISABLE KEYS */;
-INSERT INTO `fornecedores` VALUES (1,'Mercado Livre','03.361.252/0001-34','(03) 36125-2000','mercadolivre@gmail.com','Avenida Maria Alvim Soares, Jardim Alvinópolis, Atibaia-SP, 12943120');
+INSERT INTO `fornecedores` VALUES (5,'Amazon','15.436.940/0001-03','(11) 99999-9999','amazon@gmail.com','Avenida Presidente Juscelino Kubitschek, Vila Nova Conceição, São Paulo-SP, 04543011','2025-05-22 20:02:58');
 /*!40000 ALTER TABLE `fornecedores` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -52,4 +53,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-16 19:03:34
+-- Dump completed on 2025-05-22 20:06:54
