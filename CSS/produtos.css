@@ -301,6 +301,26 @@ main {
   color: white;
 }
 
+.popup-buttons .btn-cadastrar,
+.popup-buttons .btn-salvar {
+  background-color: #4caf50;
+  color: white;
+}
+
+.popup-buttons .btn-cancelar {
+  background-color: #f44336;
+  color: white;
+}
+
+.popup-buttons .btn-cadastrar:hover,
+.popup-buttons .btn-salvar:hover {
+  background-color: #388e3c;
+}
+
+.popup-buttons .btn-cancelar:hover {
+  background-color: #d32f2f;
+}
+
 .popup-buttons button:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
