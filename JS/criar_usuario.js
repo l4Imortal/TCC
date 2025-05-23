@@ -39,9 +39,10 @@ async function salvarUsuario() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        login: username,
+        nome,
         email,
-        senha: password,
+        username,
+        password,
       }),
     });
 
@@ -50,8 +51,11 @@ async function salvarUsuario() {
       throw new Error(error.message || "Erro ao criar usuário");
     }
 
-    // Redirecionar imediatamente após sucesso
-    window.location.href = "gerenciar_usuarios.html";
+    // Exibir popup de confirmação
+    document.getElementById("confirmCadastroPopup").style.display = "flex";
+    document.getElementById("okConfirmBtn").onclick = function () {
+      window.location.href = "gerenciar_usuarios.html";
+    };
   } catch (error) {
     alert(error.message);
     console.error("Erro:", error);
