@@ -343,13 +343,39 @@ td a img:hover {
   white-space: nowrap;
 }
 
-.btn-editar,
-.btn-excluir {
-  background: none;
-  border: none;
+.btn-editar {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
   cursor: pointer;
-  margin: 0 5px;
-  font-size: 1rem;
+  transition: all 0.3s ease;
+  border: none;
+  background-color: #1c1429; /* Cor base roxa escura */
+  color: green; /* Ícone verde */
+  font-size: 16px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin: 0 4px;
+}
+
+/* Botão Excluir */
+.btn-excluir {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  background-color: #1c1429; /* Cor base roxa escura */
+  color: red; /* Ícone vermelho */
+  font-size: 16px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin: 0 4px;
 }
 
 .btn-editar i {

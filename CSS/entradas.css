@@ -4,6 +4,7 @@ body {
   background-color: #1c1429;
   margin: 0;
   padding: 0;
+  color: #333;
 }
 
 .container {
@@ -13,11 +14,14 @@ body {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  min-height: 100vh;
 }
 
 header {
   text-align: center;
   margin: 20px 0;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #f0f0f0;
 }
 
 nav ul {
@@ -61,6 +65,7 @@ main {
   border-radius: 8px;
   padding: 20px;
   background-color: #f9f9f9;
+  overflow-x: auto;
 }
 
 table {
@@ -71,15 +76,12 @@ table {
   overflow: hidden;
 }
 
-table,
-th,
-td {
+table, th, td {
   border: 1px solid #ddd;
 }
 
-th,
-td {
-  padding: 10px;
+th, td {
+  padding: 12px;
   text-align: center;
 }
 
@@ -87,6 +89,8 @@ th {
   background-color: #333;
   color: white;
   font-weight: bold;
+  position: sticky;
+  top: 0;
 }
 
 tbody tr:nth-child(even) {
@@ -103,10 +107,14 @@ tbody tr:hover {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .button-container h2 {
   margin: 0;
+  flex: 1;
+  min-width: 200px;
 }
 
 .button-container a {
@@ -118,68 +126,84 @@ tbody tr:hover {
   border: none;
   cursor: pointer;
   font-weight: bold;
+  transition: all 0.3s ease;
+  text-align: center;
 }
 
 .button-container a:hover {
   background-color: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
-/* Estilo dos ícones de ação */
-.edit-button,
-.delete-button {
-  display: inline-flex; /* Garante alinhamento consistente */
+/* Estilo dos botões de ação (editar e excluir) - VERSÃO CORRIGIDA */
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* Botão Editar */
+.btn-editar {
+  display: inline-flex;
   justify-content: center;
   align-items: center;
-  width: 40px; /* Largura padrão */
-  height: 40px; /* Altura padrão */
-  margin: 0 5px; /* Espaçamento entre os botões */
-  border: none; /* Remove bordas */
-  background: none; /* Remove fundo */
-  cursor: pointer; /* Mostra o cursor de clique */
-  transition: transform 0.2s ease, background-color 0.2s ease;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  background-color: #1c1429; /* Cor base roxa escura */
+  color: green; /* Ícone verde */
+  font-size: 16px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin: 0 4px;
 }
 
-.edit-button i,
-.delete-button i {
-  font-size: 1.5rem; /* Tamanho dos ícones */
-  transition: transform 0.2s ease, color 0.2s ease;
+/* Botão Excluir */
+.btn-excluir {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  background-color: #1c1429; /* Cor base roxa escura */
+  color: red; /* Ícone vermelho */
+  font-size: 16px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin: 0 4px;
 }
 
-.edit-button i {
-  color: #4caf50; /* Verde para o botão de editar */
+.edit-button {
+  background-color: #28a745;
 }
 
-.delete-button i {
-  color: #dc3545; /* Vermelho para o botão de exclusão */
+.delete-button {
+  background-color: #dc3545;
 }
 
-.edit-button:hover,
+.edit-button:hover {
+  background-color: #218838;
+  transform: translateY(-2px) scale(1.1);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
 .delete-button:hover {
-  transform: scale(1.1); /* Aumenta o tamanho ao passar o mouse */
-  background-color: rgba(0, 0, 0, 0.05); /* Adiciona um leve fundo no hover */
-  border-radius: 50%; /* Torna o botão circular no hover */
+  background-color: #c82333;
+  transform: translateY(-2px) scale(1.1);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
-.edit-button i:hover {
-  color: #45a049; /* Tom mais claro de verde no hover */
+.edit-button:active, .delete-button:active {
+  transform: translateY(0) scale(0.98);
 }
 
-.delete-button i:hover {
-  color: #c82333; /* Tom mais claro de vermelho no hover */
-}
-
-/* Remover bordas e espaçamento ao redor dos ícones */
-td .edit-button,
-td .delete-button {
-  margin: 0;
-  padding: 0;
-  display: inline-block;
-  background: none; /* Remove qualquer fundo */
-  border: none; /* Remove bordas */
-  outline: none; /* Remove o contorno ao focar */
-}
-
-/* Escurecimento da tela ao abrir o popup */
+/* Estilo dos popups */
 #popupOverlay {
   display: none;
   position: fixed;
@@ -187,11 +211,11 @@ td .delete-button {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Escurece a tela */
+  background-color: rgba(0, 0, 0, 0.5);
   z-index: 999;
+  backdrop-filter: blur(3px);
 }
 
-/* Estilo do popup */
 .popup {
   background-color: white;
   padding: 30px;
@@ -214,32 +238,33 @@ td .delete-button {
   font-size: 1.8rem;
   color: #333;
   text-align: center;
-  border-bottom: 3px solid #4caf50; /* Verde para o título */
+  border-bottom: 3px solid #4caf50;
   padding-bottom: 10px;
   margin-bottom: 20px;
 }
 
 .popup form {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* Duas colunas */
-  gap: 20px; /* Espaçamento entre os campos */
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
 }
 
 .popup .form-row {
-  display: contents; /* Permite que os campos sejam organizados no grid */
+  display: contents;
 }
 
 .popup .form-group {
   display: flex;
   flex-direction: column;
-  gap: 5px; /* Espaçamento entre o label e o campo */
+  gap: 5px;
 }
 
 .popup-buttons {
-  grid-column: span 2; /* Ocupa as duas colunas */
+  grid-column: span 2;
   display: flex;
   justify-content: space-between;
-  margin-top: 20px; /* Espaçamento acima dos botões */
+  margin-top: 20px;
+  gap: 15px;
 }
 
 .popup-buttons button {
@@ -248,33 +273,12 @@ td .delete-button {
   border-radius: 8px;
   font-size: 1rem;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition: all 0.3s ease;
   font-weight: bold;
-  width: 48%; /* Botões ocupam metade da largura */
+  flex: 1;
 }
 
-#salvarSaida {
-  background-color: #c82333; /* Vermelho para cadastrar */
-  color: white;
-}
-
-#salvarSaida:hover {
-  background-color: #b21f2d;
-  transform: scale(1.05);
-}
-
-#cancelarSaida {
-  background-color: #6c757d; /* Cinza para cancelar */
-  color: white;
-}
-
-#cancelarSaida:hover {
-  background-color: #5a6268;
-  transform: scale(1.05);
-}
-
-.popup input,
-.popup select {
+.popup input, .popup select {
   width: 100%;
   padding: 12px;
   margin-bottom: 20px;
@@ -282,34 +286,33 @@ td .delete-button {
   border-radius: 8px;
   font-size: 1rem;
   box-sizing: border-box;
+  transition: border-color 0.3s ease;
 }
 
-.popup input:focus,
-.popup select:focus {
+.popup input:focus, .popup select:focus {
   border-color: #4caf50;
   box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
   outline: none;
-  background-color: #ffffff;
 }
 
-#salvarEntrada {
-  background-color: #4caf50; /* Verde para cadastrar */
+#salvarEntrada, #salvarSaida {
+  background-color: #4caf50;
   color: white;
 }
 
-#salvarEntrada:hover {
+#salvarEntrada:hover, #salvarSaida:hover {
   background-color: #45a049;
-  transform: scale(1.05);
+  transform: translateY(-2px);
 }
 
-#cancelarEntrada {
-  background-color: #6c757d; /* Cinza para cancelar */
+#cancelarEntrada, #cancelarSaida {
+  background-color: #6c757d;
   color: white;
 }
 
-#cancelarEntrada:hover {
+#cancelarEntrada:hover, #cancelarSaida:hover {
   background-color: #5a6268;
-  transform: scale(1.05);
+  transform: translateY(-2px);
 }
 
 /* Estilo para o popup de exclusão */
@@ -327,7 +330,6 @@ td .delete-button {
   width: 90%;
   max-width: 500px;
   text-align: center;
-  font-family: Arial, sans-serif;
 }
 
 #deletePopup h3 {
@@ -351,6 +353,7 @@ td .delete-button {
   display: flex;
   justify-content: space-between;
   margin-top: 30px;
+  gap: 15px;
 }
 
 #deletePopup .button-group button {
@@ -360,8 +363,8 @@ td .delete-button {
   font-size: 1rem;
   font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  width: 48%;
+  transition: all 0.3s ease;
+  flex: 1;
 }
 
 #confirmDelete {
@@ -371,7 +374,7 @@ td .delete-button {
 
 #confirmDelete:hover {
   background-color: #c82333;
-  transform: scale(1.05);
+  transform: translateY(-2px);
 }
 
 #cancelDelete {
@@ -381,10 +384,9 @@ td .delete-button {
 
 #cancelDelete:hover {
   background-color: #5a6268;
-  transform: scale(1.05);
+  transform: translateY(-2px);
 }
 
-/* Ícone de aviso no popup de exclusão */
 #deletePopup::before {
   content: "⚠️";
   display: block;
@@ -394,14 +396,45 @@ td .delete-button {
 }
 
 /* Aplicando negrito a todos os textos importantes */
-h1,
-h2,
-h3,
-th,
-td,
-label,
-button,
-a {
-  font-family: Arial, sans-serif;
+h1, h2, h3, th, label, button, a {
   font-weight: bold;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .container {
+    width: 95%;
+    padding: 15px;
+  }
+  
+  nav ul li {
+    min-width: 80px;
+  }
+  
+  .popup form {
+    grid-template-columns: 1fr;
+  }
+  
+  .popup-buttons {
+    grid-column: span 1;
+    flex-direction: column;
+  }
+  
+  .popup-buttons button {
+    width: 100%;
+  }
+  
+  table {
+    font-size: 0.9rem;
+  }
+  
+  th, td {
+    padding: 8px;
+  }
+  
+  .edit-button, .delete-button {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
 }

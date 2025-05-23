@@ -126,23 +126,47 @@ td a:hover {
   text-decoration: underline;
 }
 
-.edit-button,
-.delete-button {
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 1.2rem;
-  padding: 5px;
-  transition: transform 0.2s ease, color 0.2s ease;
-}
+  .edit-button,
+  .delete-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 5px;
+    transition: transform 0.2s ease, color 0.2s ease;
+  }
 
 .edit-button i {
-  color: #4caf50; /* Verde para editar */
-}
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  background-color: #1c1429; /* Cor base roxa escura */
+  color: green; /* Ícone verde */
+  font-size: 16px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin: 0 4px;}
 
 .delete-button i {
-  color: #c82333; /* Vermelho para excluir */
-}
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  background-color: #1c1429; /* Cor base roxa escura */
+  color: red; /* Ícone vermelho */
+  font-size: 16px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin: 0 4px;}
 
 .edit-button:hover i {
   transform: scale(1.2);
@@ -317,7 +341,7 @@ footer {
 #confirmarSaida {
   display: block !important;
   background-color: #4caf50;
-  color: white;
+  color: red;
   padding: 12px;
   border: none;
   border-radius: 8px;
@@ -386,4 +410,138 @@ footer {
 
 .title-button-container #novaSaidaBtn {
   margin: 0; /* Remove margens do botão */
+}
+#confirmDelete {
+  background-color: #dc3545; /* Vermelho */
+  color: white; /* Texto branco */
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+/* ==================== */
+/* POPUP DE EDIÇÃO DE SAÍDA */
+/* ==================== */
+.popup-edicao-saida {
+  max-width: 600px;
+}
+
+.popup-edicao-saida .popup-header {
+  border-bottom: 2px solid #4caf50;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+.popup-edicao-saida .popup-header h3 {
+  color: #1c1429;
+  font-size: 1.8rem;
+  margin: 0;
+}
+
+/* Formulário de edição */
+.form-edicao-saida {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.form-group-edicao {
+  margin-bottom: 15px;
+}
+
+.form-group-edicao label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.form-group-edicao input,
+.form-group-edicao select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.form-group-edicao input:focus,
+.form-group-edicao select:focus {
+  border-color: #4caf50;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+}
+
+/* Grupo de formulário que ocupa duas colunas */
+.form-group-full {
+  grid-column: span 2;
+}
+
+/* Seção de ações */
+.edicao-actions {
+  grid-column: span 2;
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 10px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.btn-salvar-edicao {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 25px;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-salvar-edicao:hover {
+  background-color: #3e8e41;
+  transform: translateY(-2px);
+}
+
+.btn-cancelar-edicao {
+  background-color: #6c757d;
+  color: white;
+  padding: 10px 25px;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-cancelar-edicao:hover {
+  background-color: #5a6268;
+  transform: translateY(-2px);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .form-edicao-saida {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-group-full,
+  .edicao-actions {
+    grid-column: span 1;
+  }
+  
+  .edicao-actions {
+    flex-direction: column;
+  }
+  
+  .btn-salvar-edicao,
+  .btn-cancelar-edicao {
+    width: 100%;
+  }
 }
