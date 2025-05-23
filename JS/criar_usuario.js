@@ -18,7 +18,9 @@ async function salvarUsuario() {
   }
 
   if (!/^\S{4,}$/.test(username)) {
-    alert("O nome de usuário deve ter pelo menos 4 caracteres e não pode conter espaços!");
+    alert(
+      "O nome de usuário deve ter pelo menos 4 caracteres e não pode conter espaços!"
+    );
     return false;
   }
 
@@ -36,7 +38,11 @@ async function salvarUsuario() {
     const response = await fetch("http://localhost:3000/api/usuarios", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nome, email, username, password }),
+      body: JSON.stringify({
+        login: username,
+        email,
+        senha: password,
+      }),
     });
 
     if (!response.ok) {
@@ -46,7 +52,6 @@ async function salvarUsuario() {
 
     // Redirecionar imediatamente após sucesso
     window.location.href = "gerenciar_usuarios.html";
-    
   } catch (error) {
     alert(error.message);
     console.error("Erro:", error);
@@ -56,19 +61,23 @@ async function salvarUsuario() {
 }
 
 // Validação em tempo real da senha (opcional)
-document.getElementById("confirmPassword")?.addEventListener("input", function() {
-  const password = document.getElementById("password").value;
-  const confirmPassword = this.value;
-  const mismatchElement = document.getElementById("password-mismatch") || 
-                         document.createElement("small");
-  
-  if (!mismatchElement.id) {
-    mismatchElement.id = "password-mismatch";
-    mismatchElement.style.color = "red";
-    this.parentNode.appendChild(mismatchElement);
-  }
-  
-  mismatchElement.textContent = (password && confirmPassword && password !== confirmPassword) 
-    ? "As senhas não coincidem!" 
-    : "";
-});
+document
+  .getElementById("confirmPassword")
+  ?.addEventListener("input", function () {
+    const password = document.getElementById("password").value;
+    const confirmPassword = this.value;
+    const mismatchElement =
+      document.getElementById("password-mismatch") ||
+      document.createElement("small");
+
+    if (!mismatchElement.id) {
+      mismatchElement.id = "password-mismatch";
+      mismatchElement.style.color = "red";
+      this.parentNode.appendChild(mismatchElement);
+    }
+
+    mismatchElement.textContent =
+      password && confirmPassword && password !== confirmPassword
+        ? "As senhas não coincidem!"
+        : "";
+  });
