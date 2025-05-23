@@ -13,17 +13,19 @@ document.addEventListener("DOMContentLoaded", function () {
   // Função para carregar e exibir os usuários
   function carregarUsuarios() {
     // Limpar tabela antes de carregar novos dados
-    tabelaBody.innerHTML = '<tr><td colspan="4">Carregando usuários...</td></tr>';
+    tabelaBody.innerHTML =
+      '<tr><td colspan="4">Carregando usuários...</td></tr>';
 
     // Buscar usuários do backend
     fetch("http://localhost:3000/api/usuarios")
       .then((response) => response.json())
       .then((data) => {
         usuarios = data; // Armazena os usuários na variável global
-        tabelaBody.innerHTML = ''; // Limpa a mensagem de carregamento
+        tabelaBody.innerHTML = ""; // Limpa a mensagem de carregamento
 
         if (usuarios.length === 0) {
-          tabelaBody.innerHTML = '<tr><td colspan="4">Nenhum usuário cadastrado</td></tr>';
+          tabelaBody.innerHTML =
+            '<tr><td colspan="4">Nenhum usuário cadastrado</td></tr>';
           return;
         }
 
@@ -31,11 +33,15 @@ document.addEventListener("DOMContentLoaded", function () {
           const row = tabelaBody.insertRow();
           row.innerHTML = `
             <td>${index + 1}</td>
-            <td>${usuario.username}</td>
+            <td>${usuario.login}</td>
             <td>${usuario.email}</td>
             <td>
-              <button class="edit-button" data-id="${usuario.id_usuario}">Editar</button>
-              <button class="btn-excluir" data-id="${usuario.id_usuario}">Excluir</button>
+              <button class="edit-button" data-id="${
+                usuario.id_usuario
+              }">Editar</button>
+              <button class="btn-excluir" data-id="${
+                usuario.id_usuario
+              }">Excluir</button>
             </td>
           `;
         });
@@ -44,7 +50,8 @@ document.addEventListener("DOMContentLoaded", function () {
         atualizarContagemUsuarios();
       })
       .catch(() => {
-        tabelaBody.innerHTML = '<tr><td colspan="4">Erro ao carregar usuários</td></tr>';
+        tabelaBody.innerHTML =
+          '<tr><td colspan="4">Erro ao carregar usuários</td></tr>';
       });
   }
 
@@ -67,8 +74,8 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Event listeners para os ícones de mostrar/ocultar senha
-  document.querySelectorAll(".toggle-password").forEach(icon => {
-    icon.addEventListener("click", function() {
+  document.querySelectorAll(".toggle-password").forEach((icon) => {
+    icon.addEventListener("click", function () {
       const inputId = this.closest(".input-group").querySelector("input").id;
       togglePasswordVisibility(inputId);
     });
@@ -78,14 +85,14 @@ document.addEventListener("DOMContentLoaded", function () {
   tabelaBody.addEventListener("click", function (e) {
     if (e.target.classList.contains("edit-button")) {
       const userId = e.target.getAttribute("data-id");
-      const usuario = usuarios.find(u => u.id_usuario == userId);
+      const usuario = usuarios.find((u) => u.id_usuario == userId);
 
       if (!usuario) return;
 
       // Preencher o popup com os dados do usuário
       document.getElementById("editNome").value = usuario.nome || "";
       document.getElementById("editEmail").value = usuario.email;
-      document.getElementById("editUsername").value = usuario.username;
+      document.getElementById("editUsername").value = usuario.login;
       document.getElementById("editPassword").value = "";
       document.getElementById("editConfirmPassword").value = "";
 
@@ -98,7 +105,9 @@ document.addEventListener("DOMContentLoaded", function () {
         const updatedEmail = document.getElementById("editEmail").value;
         const updatedUsername = document.getElementById("editUsername").value;
         const updatedPassword = document.getElementById("editPassword").value;
-        const confirmPassword = document.getElementById("editConfirmPassword").value;
+        const confirmPassword = document.getElementById(
+          "editConfirmPassword"
+        ).value;
 
         if (updatedPassword && updatedPassword !== confirmPassword) {
           alert("As senhas não coincidem!");
@@ -109,7 +118,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const updateData = {
           nome: updatedNome,
           email: updatedEmail,
-          username: updatedUsername
+          username: updatedUsername,
         };
 
         // Incluir a senha apenas se foi alterada
@@ -121,7 +130,7 @@ document.addEventListener("DOMContentLoaded", function () {
         fetch(`http://localhost:3000/api/usuarios/${usuario.id_usuario}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(updateData)
+          body: JSON.stringify(updateData),
         })
           .then((res) => res.json())
           .then((result) => {
@@ -133,7 +142,7 @@ document.addEventListener("DOMContentLoaded", function () {
               document.getElementById("editPopup").style.display = "none";
             }
           })
-          .catch(error => {
+          .catch((error) => {
             console.error("Erro ao atualizar usuário:", error);
             alert("Erro ao atualizar usuário");
           });
@@ -151,24 +160,24 @@ document.addEventListener("DOMContentLoaded", function () {
     if (e.target.classList.contains("btn-excluir")) {
       e.preventDefault();
       const userId = e.target.getAttribute("data-id");
-      const usuario = usuarios.find(u => u.id_usuario == userId);
-      
+      const usuario = usuarios.find((u) => u.id_usuario == userId);
+
       if (!usuario) return;
 
-      document.getElementById("usuarioNome").textContent = usuario.username;
+      document.getElementById("usuarioNome").textContent = usuario.login;
       document.getElementById("confirmPopup").style.display = "flex";
 
       // Configurar o botão de confirmação
       const confirmBtn = document.getElementById("confirmDeleteBtn");
       confirmBtn.disabled = false;
-      
+
       // Remover event listeners anteriores para evitar múltiplas chamadas
       confirmBtn.replaceWith(confirmBtn.cloneNode(true));
       const newConfirmBtn = document.getElementById("confirmDeleteBtn");
-      
+
       newConfirmBtn.onclick = function () {
         fetch(`http://localhost:3000/api/usuarios/${usuario.id_usuario}`, {
-          method: "DELETE"
+          method: "DELETE",
         })
           .then((res) => {
             if (!res.ok) throw new Error("Erro ao excluir usuário");
@@ -179,7 +188,7 @@ document.addEventListener("DOMContentLoaded", function () {
             carregarUsuarios();
             document.getElementById("confirmPopup").style.display = "none";
           })
-          .catch(error => {
+          .catch((error) => {
             console.error("Erro ao excluir usuário:", error);
             alert("Erro ao excluir usuário");
           });

@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const row = tabelaBody.insertRow();
         row.innerHTML = `
           <td>${index + 1}</td>
-          <td>${usuario.username}</td>
+          <td>${usuario.login}</td>
           <td>${usuario.email}</td>
         `;
       });
