@@ -69,72 +69,55 @@ document.addEventListener("DOMContentLoaded", () => {
     fetchJson("http://localhost:3000/api/relatorios/estoque");
 
   async function atualizarContadores() {
-    console.log("Iniciando atualização dos contadores...");
-
     try {
-      // Buscar dados diretamente da API em vez de calcular localmente
+      // Buscar dados diretamente da API
       const produtos = await buscarProdutos();
-      const estoqueAtual = await buscarEstoqueAtual();
       const entradas = await buscarEntradas();
       const saidas = await buscarSaidas();
 
-      console.log("Dados recebidos:", {
-        produtos: produtos.length,
-        estoqueAtual: estoqueAtual.length,
-        entradas: entradas.length,
-        saidas: saidas.length,
-      });
-
-      // Calcular valores
-      const produtosCadastrados = produtos.length;
-      const totalItensEstoque = estoqueAtual.reduce(
-        (acc, p) => acc + extrairNumero(p.quantidade_atual),
-        0
-      );
-
-      let investimentoTotal = 0;
-      let retornoPrevisto = 0;
-
-      // Calcular valores financeiros
-      estoqueAtual.forEach((produto) => {
-        const qtdEstoque = extrairNumero(produto.quantidade_atual);
-        if (qtdEstoque <= 0) return;
-
-        // Buscar o preço médio de compra nas entradas
+      // Calcular estoque atual para cada produto (igual ao relatório)
+      const produtosComEstoque = produtos.map((produto) => {
         const entradasDoProduto = entradas.filter((e) => e.ean === produto.ean);
-        const precoMedioCompra =
-          entradasDoProduto.length > 0
-            ? entradasDoProduto.reduce(
-                (acc, e) => acc + extrairNumero(e.valor_unitario),
-                0
-              ) / entradasDoProduto.length
-            : 0;
+        const saidasDoProduto = saidas.filter((s) => s.ean === produto.ean);
 
-        // Calcular preço de venda (30% acima do preço de compra)
-        const precoVenda = precoMedioCompra * 1.3;
+        let totalEntradas = 0;
+        entradasDoProduto.forEach((e) => {
+          totalEntradas += parseInt(e.quantidade || 0);
+        });
 
-        investimentoTotal += qtdEstoque * precoMedioCompra;
-        retornoPrevisto += qtdEstoque * precoVenda;
+        let totalSaidas = 0;
+        saidasDoProduto.forEach((s) => {
+          totalSaidas += parseInt(s.quantidade || 0);
+        });
+
+        const estoqueAtual = totalEntradas - totalSaidas;
+
+        return {
+          ...produto,
+          quantidade_atual: estoqueAtual,
+        };
       });
 
-      const lucro = retornoPrevisto - investimentoTotal;
-      const margemLucro =
-        retornoPrevisto > 0 ? (lucro / retornoPrevisto) * 100 : 0;
+      // Totais para os cards
+      const totalProdutos = produtosComEstoque.length;
+      let totalItens = 0;
+      let produtosSemEstoque = 0;
+      let produtosEstoqueMinimo = 0;
 
-      console.log("Valores calculados:", {
-        produtosCadastrados,
-        totalItensEstoque,
-        investimentoTotal,
-        retornoPrevisto,
-        margemLucro,
+      produtosComEstoque.forEach((produto) => {
+        const quantidade = parseInt(produto.quantidade_atual || 0);
+        const estoqueMinimo = parseInt(produto.estoque_minimo || 5);
+
+        totalItens += Math.max(0, quantidade);
+        if (quantidade <= 0) produtosSemEstoque++;
+        else if (quantidade <= estoqueMinimo) produtosEstoqueMinimo++;
       });
 
-      // Atualizar apenas o texto dos cards, sem substituir os ícones
+      // Atualizar o card azul (produtos cadastrados e itens no estoque)
       const produtosCadastradosLink = document.getElementById(
         "produtosCadastradosLink"
       );
       if (produtosCadastradosLink) {
-        // Encontrar ou criar o elemento div para o conteúdo
         let contentDiv = produtosCadastradosLink.querySelector(".card-content");
         if (!contentDiv) {
           contentDiv = document.createElement("div");
@@ -142,15 +125,12 @@ document.addEventListener("DOMContentLoaded", () => {
           produtosCadastradosLink.appendChild(contentDiv);
         }
         contentDiv.innerHTML = `
-          <strong>${produtosCadastrados}</strong> produtos<br>
-          <strong>${totalItensEstoque}</strong> itens no estoque
+          <strong>${totalProdutos}</strong> produtos<br>
+          <strong>${totalItens}</strong> itens no estoque
         `;
       }
 
-      // Produtos com estoque zerado
-      const estoqueZeradoCount = estoqueAtual.filter(
-        (p) => extrairNumero(p.quantidade_atual) <= 0
-      ).length;
+      // Atualizar o card vermelho (produtos com estoque zerado)
       const estoqueZeradoLink = document.getElementById("estoqueZeradoLink");
       if (estoqueZeradoLink) {
         let contentDiv = estoqueZeradoLink.querySelector(".card-content");
@@ -160,18 +140,12 @@ document.addEventListener("DOMContentLoaded", () => {
           estoqueZeradoLink.appendChild(contentDiv);
         }
         contentDiv.innerHTML = `
-          <strong>${estoqueZeradoCount}</strong> produtos<br>
+          <strong>${produtosSemEstoque}</strong> produtos<br>
           com estoque zerado
         `;
       }
 
-      // Produtos no estoque mínimo
-      const estoqueMinimoCount = estoqueAtual.filter((p) => {
-        const qtd = extrairNumero(p.quantidade_atual);
-        const min = extrairNumero(p.estoque_minimo);
-        return qtd > 0 && qtd <= min;
-      }).length;
-
+      // Atualizar o card amarelo (produtos no estoque mínimo)
       const estoqueMinimoLink = document.getElementById("estoqueMinimoLink");
       if (estoqueMinimoLink) {
         let contentDiv = estoqueMinimoLink.querySelector(".card-content");
@@ -181,28 +155,13 @@ document.addEventListener("DOMContentLoaded", () => {
           estoqueMinimoLink.appendChild(contentDiv);
         }
         contentDiv.innerHTML = `
-          <strong>${estoqueMinimoCount}</strong> produtos<br>
+          <strong>${produtosEstoqueMinimo}</strong> produtos<br>
           no estoque mínimo
         `;
       }
 
-      // Adicionar card financeiro
-      const financeiroLink = document.getElementById("financeiroLink");
-      if (financeiroLink) {
-        let contentDiv = financeiroLink.querySelector(".card-content");
-        if (!contentDiv) {
-          contentDiv = document.createElement("div");
-          contentDiv.className = "card-content";
-          financeiroLink.appendChild(contentDiv);
-        }
-        contentDiv.innerHTML = `
-          Investimento: <strong>${formatarMoeda(investimentoTotal)}</strong><br>
-          Retorno: <strong>${formatarMoeda(retornoPrevisto)}</strong>
-        `;
-      }
-
-      // Carregar atividades recentes
-      carregarAtividadesRecentes(entradas, saidas);
+      // Carregar atividades recentes normalmente
+      carregarAtividadesRecentes(entradas, saidas, produtos);
     } catch (error) {
       console.error("Erro ao atualizar contadores:", error);
     }
