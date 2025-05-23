@@ -13,7 +13,7 @@ app.use(express.static(__dirname + "/../"));
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "1234",
+  password: "04012005",
   database: "estoque",
 });
 
@@ -709,7 +709,7 @@ app.post("/api/entradas", (req, res) => {
   console.log("valor_unitario:", valor_unitario);
   console.log("responsavel:", responsavel);
   console.log("data_entrada:", data_entrada);
-  
+
   // Validação básica
   if (
     !ean ||
@@ -719,7 +719,7 @@ app.post("/api/entradas", (req, res) => {
     !nota_fiscal ||
     !valor_unitario ||
     !responsavel ||
-    !data_entrada 
+    !data_entrada
   ) {
     return res.status(400).json({ error: "Todos os campos são obrigatórios" });
   }
@@ -772,7 +772,7 @@ app.put("/api/entradas/:ean", (req, res) => {
     !nota_fiscal ||
     !valor_unitario ||
     !responsavel ||
-    !data_entrada 
+    !data_entrada
   ) {
     return res.status(400).json({ error: "Todos os campos são obrigatórios" });
   }
@@ -1152,13 +1152,10 @@ app.post("/api/usuarios", (req, res) => {
 
 // GET - Listar todos os usuários
 app.get("/api/usuarios", (req, res) => {
-  db.query(
-    "SELECT id_usuario, nome, email, login AS username FROM usuario",
-    (err, results) => {
-      if (err) return handleError(res, err, "Erro ao buscar usuários");
-      res.json(results);
-    }
-  );
+  db.query("SELECT id_usuario, login , email FROM usuario", (err, results) => {
+    if (err) return handleError(res, err, "Erro ao buscar usuários");
+    res.json(results);
+  });
 });
 
 // Atualizar usuário
@@ -1220,7 +1217,7 @@ app.get("/api/produtos/com-estoque", (req, res) => {
     GROUP BY 
       p.id_produto, p.ean, p.produto, p.categoria, p.un, p.fornecedor, p.estoque_minimo
   `;
-  
+
   db.query(query, (err, results) => {
     if (err) {
       return handleError(res, err, "Erro ao buscar produtos com estoque");
