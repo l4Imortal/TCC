@@ -492,276 +492,212 @@ async function gerarRelatorioMovimentacoes() {
 }
 
 // Funções de exportação
-function exportarPDF() {
-  console.log('Iniciando impressão do documento...');
-  
-  if (!dadosRelatorioAtual || !Array.isArray(dadosRelatorioAtual) || dadosRelatorioAtual.length === 0) {
-    alert('Não há dados para exportar. Por favor, gere um relatório primeiro.');
+async function exportarPDF() {
+  if (!dadosRelatorioAtual?.length) {
+    alert('Não há dados para exportar. Gere o relatório primeiro.');
     return;
   }
-  
+
   try {
-    // Criar um elemento de estilo para impressão
-    const estiloImpressao = document.createElement('style');
-    estiloImpressao.id = 'estilo-impressao-temporario';
-    estiloImpressao.innerHTML = `
-      @media print {
-        /* Ocultar elementos que não devem ser impressos */
-        header, nav, footer, .sidebar, .tab-buttons, .actions-container, 
-        .filter-container, button, .no-print, input, select {
-          display: none !important;
-        }
-        
-        /* Configurações gerais da página */
-        @page {
-          size: A4;
-          margin: 2cm 1.5cm;
-        }
-        
-        /* Garantir que o fundo seja branco */
-        body, html {
-          background-color: white !important;
-          margin: 0 !important;
-          padding: 0 !important;
-          font-family: 'Arial', sans-serif !important;
-          color: #000000 !important;
-          -webkit-print-color-adjust: exact !important;
-          print-color-adjust: exact !important;
-        }
-        
-        /* Estilizar o conteúdo do relatório */
-        .report-preview {
-          padding: 0 !important;
-          width: 100% !important;
-          box-shadow: none !important;
-        }
-        
-        /* Tabela em estilo formal */
-        table {
-          width: 100% !important;
-          border-collapse: collapse !important;
-          margin-top: 20px !important;
-          border: 1px solid #000 !important;
-        }
-        
-        th {
-          background-color: #f2f2f2 !important;
-          color: #000 !important;
-          font-weight: bold !important;
-          padding: 10px 8px !important;
-          text-align: left !important;
-          border: 1px solid #000 !important;
-          font-size: 10pt !important;
-          text-transform: uppercase !important;
-        }
-        
-        td {
-          padding: 8px !important;
-          border: 1px solid #000 !important;
-          font-size: 10pt !important;
-          vertical-align: top !important;
-        }
-        
-        tr:nth-child(even) {
-          background-color: #f9f9f9 !important;
-        }
-        
-        /* Status com cores mais discretas */
-        .status-sem-estoque {
-          color: #8b0000 !important;
-          font-weight: bold !important;
-        }
-        
-        .status-critico {
-          color: #8b4513 !important;
-          font-weight: bold !important;
-        }
-        
-        .status-baixo {
-          color: #b8860b !important;
-          font-weight: bold !important;
-        }
-        
-        .status-normal {
-          color: #006400 !important;
-        }
-        
-        .tipo-entrada {
-          color: #006400 !important;
-          font-weight: bold !important;
-        }
-        
-        .tipo-saida {
-          color: #8b0000 !important;
-          font-weight: bold !important;
-        }
-        
-        /* Mostrar apenas a aba ativa */
-        .tab-content {
-          display: block !important;
-        }
-        
-        .tab-pane {
-          display: none !important;
-        }
-        
-        .tab-pane.active {
-          display: block !important;
-        }
-      }
-    `;
+    // Mostrar loading
+    Swal.fire({
+      title: 'Gerando PDF',
+      html: 'Aguarde enquanto preparamos seu documento...',
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading()
+    });
+
+    // Criar PDF
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm'
+    });
+
+    // Adicionar conteúdo básico
+    doc.setFont('helvetica');
+    doc.setFontSize(16);
+    doc.text('Relatório de Estoque', 105, 15, { align: 'center' });
     
-    // Adicionar o estilo ao documento
-    document.head.appendChild(estiloImpressao);
+    doc.setFontSize(10);
+    doc.text(`Data: ${new Date().toLocaleDateString()}`, 15, 25);
+
+    // Criar tabela
+    const headers = [['EAN', 'Produto', 'Quantidade', 'Status']];
+    const data = dadosRelatorioAtual.map(item => [
+      item.ean || '',
+      item.produto || '',
+      item.quantidade_atual || 0,
+      determinarStatusEstoque(item.quantidade_atual, item.estoque_minimo).texto
+    ]);
+
+    doc.autoTable({
+      head: headers,
+      body: data,
+      startY: 30,
+      styles: { fontSize: 8 },
+      headStyles: { fillColor: [41, 128, 185] }
+    });
+
+    // Salvar PDF
+    doc.save(`relatorio_estoque_${new Date().toISOString().slice(0,10)}.pdf`);
     
-    // Adicionar um cabeçalho corporativo temporário
-    const cabecalhoImpressao = document.createElement('div');
-    cabecalhoImpressao.id = 'cabecalho-impressao-temporario';
-    cabecalhoImpressao.className = 'print-only';
-    cabecalhoImpressao.style.display = 'none';
-    
-    // Determinar o título do relatório
-    const tituloRelatorio = relatorioAtual === 'estoque' ? 'RELATÓRIO DE ESTOQUE' : 'RELATÓRIO DE MOVIMENTAÇÕES';
-    const dataAtual = formatarData(new Date());
-    
-    cabecalhoImpressao.innerHTML = `
-      <div style="text-align: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #000;">
-        <h2 style="margin: 0; font-size: 16pt; text-transform: uppercase; font-weight: bold;">SISTEMA DE GESTÃO DE ESTOQUE</h2>
-        <h3 style="margin: 10px 0; font-size: 14pt; text-transform: uppercase; font-weight: bold;">${tituloRelatorio}</h3>
-        <p style="margin: 5px 0; font-size: 10pt;">CNPJ: 00.000.000/0001-00</p>
-        <p style="margin: 5px 0; font-size: 10pt;">Endereço: Av. Principal, 1000 - Centro - CEP 00000-000</p>
-        <p style="margin: 5px 0; font-size: 10pt;">Data de emissão: ${dataAtual}</p>
-      </div>
-    `;
-    
-    // Adicionar um rodapé formal temporário
-    const rodapeImpressao = document.createElement('div');
-    rodapeImpressao.id = 'rodape-impressao-temporario';
-    rodapeImpressao.className = 'print-only';
-    rodapeImpressao.style.display = 'none';
-    rodapeImpressao.innerHTML = `
-      <div style="margin-top: 30px; border-top: 1px solid #000; padding-top: 10px;">
-        <table style="width: 100%; border: none !important;">
-          <tr style="background: none !important;">
-            <td style="border: none !important; text-align: left; font-size: 9pt; padding: 0 !important;">
-              Documento gerado em: ${dataAtual}
-            </td>
-            <td style="border: none !important; text-align: right; font-size: 9pt; padding: 0 !important;">
-              Página 1 de 1
-            </td>
-          </tr>
-        </table>
-        <p style="text-align: center; font-size: 9pt; margin-top: 10px;">
-          Este documento é válido apenas com assinatura e carimbo.
-        </p>
-        <div style="margin-top: 30px; display: flex; justify-content: space-between;">
-          <div style="width: 45%; border-top: 1px solid #000; text-align: center; padding-top: 5px; font-size: 9pt;">
-            Responsável pela emissão
-          </div>
-          <div style="width: 45%; border-top: 1px solid #000; text-align: center; padding-top: 5px; font-size: 9pt;">
-            Conferência
-          </div>
-        </div>
-      </div>
-    `;
-    
-    // Adicionar resumo para relatório de estoque
-    let resumoHTML = '';
-    if (relatorioAtual === 'estoque') {
-      const totalProdutos = dadosRelatorioAtual.length;
-      let totalItens = 0;
-      let produtosComEstoqueBaixo = 0;
-      let produtosSemEstoque = 0;
-      
-      dadosRelatorioAtual.forEach(produto => {
-        const quantidade = parseInt(produto.quantidade_atual || 0);
-        const estoqueMinimo = parseInt(produto.estoque_minimo || 5);
-        
-        totalItens += quantidade > 0 ? quantidade : 0;
-        
-        if (quantidade <= 0) {
-          produtosSemEstoque++;
-        } else if (quantidade <= estoqueMinimo) {
-          produtosComEstoqueBaixo++;
-        }
-      });
-      
-      resumoHTML = `
-        <div style="margin-bottom: 25px; border: 1px solid #000; padding: 15px; background-color: #f9f9f9;">
-          <div style="display: flex; justify-content: space-between; text-align: center;">
-            <div style="flex: 1; padding: 10px 5px; border-right: 1px solid #ccc;">
-              <span style="font-size: 14pt; font-weight: bold; display: block; margin-bottom: 5px;">${totalProdutos}</span>
-              <span style="font-size: 9pt; text-transform: uppercase;">Produtos</span>
-            </div>
-            <div style="flex: 1; padding: 10px 5px; border-right: 1px solid #ccc;">
-              <span style="font-size: 14pt; font-weight: bold; display: block; margin-bottom: 5px;">${totalItens}</span>
-              <span style="font-size: 9pt; text-transform: uppercase;">Itens em Estoque</span>
-            </div>
-            <div style="flex: 1; padding: 10px 5px; border-right: 1px solid #ccc;">
-              <span style="font-size: 14pt; font-weight: bold; display: block; margin-bottom: 5px;">${produtosSemEstoque}</span>
-              <span style="font-size: 9pt; text-transform: uppercase;">Sem Estoque</span>
-            </div>
-            <div style="flex: 1; padding: 10px 5px;">
-              <span style="font-size: 14pt; font-weight: bold; display: block; margin-bottom: 5px;">${produtosComEstoqueBaixo}</span>
-              <span style="font-size: 9pt; text-transform: uppercase;">Estoque Baixo</span>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-    
-    const resumoContainer = document.createElement('div');
-    resumoContainer.id = 'resumo-impressao-temporario';
-    resumoContainer.className = 'print-only';
-    resumoContainer.style.display = 'none';
-    resumoContainer.innerHTML = resumoHTML;
-    
-    // Obter o container do relatório
-    const containerRelatorio = document.querySelector(`#${relatorioAtual}-tab .report-preview`);
-    
-    // Inserir o cabeçalho no início do container
-    containerRelatorio.insertBefore(cabecalhoImpressao, containerRelatorio.firstChild);
-    
-    // Inserir o resumo após o cabeçalho (se for relatório de estoque)
-    if (relatorioAtual === 'estoque') {
-      containerRelatorio.insertBefore(resumoContainer, cabecalhoImpressao.nextSibling);
-    }
-    
-    // Adicionar o rodapé ao final do container
-    containerRelatorio.appendChild(rodapeImpressao);
-    
-    // Mostrar elementos para impressão
-    cabecalhoImpressao.style.display = 'block';
-    rodapeImpressao.style.display = 'block';
-    if (relatorioAtual === 'estoque') {
-      resumoContainer.style.display = 'block';
-    }
-    
-    // Imprimir a página
-    window.print();
-    
-    // Remover os elementos temporários após a impressão
-    setTimeout(() => {
-      const estiloTemp = document.getElementById('estilo-impressao-temporario');
-      if (estiloTemp) estiloTemp.remove();
-      
-      const cabecalhoTemp = document.getElementById('cabecalho-impressao-temporario');
-      if (cabecalhoTemp) cabecalhoTemp.remove();
-      
-      const resumoTemp = document.getElementById('resumo-impressao-temporario');
-      if (resumoTemp) resumoTemp.remove();
-      
-      const rodapeTemp = document.getElementById('rodape-impressao-temporario');
-      if (rodapeTemp) rodapeTemp.remove();
-      
-      console.log('Elementos temporários de impressão removidos');
-    }, 1000);
-    
-    console.log('Impressão iniciada com sucesso');
+    // Fechar loading
+    Swal.close();
     
   } catch (error) {
-    console.error('Erro ao preparar documento para impressão:', error);
-    alert(`Erro ao preparar documento para impressão: ${error.message}`);
+    console.error('Erro ao gerar PDF:', error);
+    Swal.fire('Erro', 'Não foi possível gerar o PDF', 'error');
+  }
+}
+
+// Funções auxiliares
+async function carregarBibliotecasPDF() {
+  if (!window.jspdf || !window.jspdf.jsPDF) {
+    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+  }
+  if (!window.jspdf || !window.jspdf.autoTable) {
+    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js');
+  }
+}
+
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = src;
+    script.onload = resolve;
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+}
+
+async function adicionarCabecalhoPDF(doc, margin, contentWidth) {
+  // Adicionar logo (se disponível)
+  try {
+    const logoResponse = await fetch('/assets/img/logo.png');
+    if (logoResponse.ok) {
+      const logoData = await logoResponse.blob();
+      const logoUrl = URL.createObjectURL(logoData);
+      doc.addImage(logoUrl, 'PNG', margin.left, margin.top, 30, 15);
+    }
+  } catch (e) {
+    console.log('Logo não encontrado, continuando sem logo...');
+  }
+
+  // Informações da empresa
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'bold');
+  doc.text('NOME DA EMPRESA', margin.left + 35, margin.top + 8);
+  
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.text('CNPJ: 00.000.000/0001-00', margin.left + 35, margin.top + 14);
+  doc.text('Endereço: Av. Principal, 1000 - Centro - CEP 00000-000', margin.left + 35, margin.top + 20);
+  
+  // Linha divisória
+  doc.setDrawColor(200);
+  doc.setLineWidth(0.5);
+  doc.line(margin.left, margin.top + 25, margin.left + contentWidth, margin.top + 25);
+}
+
+async function adicionarResumoEstoquePDF(doc, margin, contentWidth) {
+  const totalProdutos = dadosRelatorioAtual.length;
+  let totalItens = 0;
+  let valorTotalEstoque = 0;
+  let produtosComEstoqueBaixo = 0;
+  let produtosSemEstoque = 0;
+  
+  dadosRelatorioAtual.forEach(produto => {
+    const quantidade = parseInt(produto.quantidade_atual || 0);
+    const estoqueMinimo = parseInt(produto.estoque_minimo || 5);
+    const valorUnitario = parseFloat(produto.valor_unitario || 0);
+    
+    totalItens += quantidade > 0 ? quantidade : 0;
+    valorTotalEstoque += quantidade * valorUnitario;
+    
+    if (quantidade <= 0) {
+      produtosSemEstoque++;
+    } else if (quantidade <= estoqueMinimo) {
+      produtosComEstoqueBaixo++;
+    }
+  });
+  
+  // Configurações do bloco de resumo
+  const resumoY = margin.top + 40;
+  const colWidth = contentWidth / 4;
+  
+  doc.setFillColor(241, 243, 245);
+  doc.rect(margin.left, resumoY, contentWidth, 20, 'F');
+  
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'bold');
+  doc.text('RESUMO DO ESTOQUE', margin.left + 5, resumoY + 8);
+  
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  
+  // Total de Produtos
+  doc.setFillColor(52, 152, 219);
+  doc.rect(margin.left, resumoY + 15, colWidth, 15, 'F');
+  doc.setTextColor(255);
+  doc.text('TOTAL DE PRODUTOS', margin.left + colWidth/2, resumoY + 22, { align: 'center' });
+  doc.setFontSize(12);
+  doc.text(totalProdutos.toString(), margin.left + colWidth/2, resumoY + 28, { align: 'center' });
+  
+  // Itens em Estoque
+  doc.setFillColor(46, 204, 113);
+  doc.rect(margin.left + colWidth, resumoY + 15, colWidth, 15, 'F');
+  doc.text('ITENS EM ESTOQUE', margin.left + colWidth + colWidth/2, resumoY + 22, { align: 'center' });
+  doc.setFontSize(12);
+  doc.text(totalItens.toString(), margin.left + colWidth + colWidth/2, resumoY + 28, { align: 'center' });
+  
+  // Valor Total
+  doc.setFillColor(155, 89, 182);
+  doc.rect(margin.left + colWidth*2, resumoY + 15, colWidth, 15, 'F');
+  doc.text('VALOR TOTAL', margin.left + colWidth*2 + colWidth/2, resumoY + 22, { align: 'center' });
+  doc.setFontSize(12);
+  doc.text(formatarMoeda(valorTotalEstoque), margin.left + colWidth*2 + colWidth/2, resumoY + 28, { align: 'center' });
+  
+  // Produtos com Estoque Baixo
+  doc.setFillColor(230, 126, 34);
+  doc.rect(margin.left + colWidth*3, resumoY + 15, colWidth, 15, 'F');
+  doc.text('ESTOQUE BAIXO', margin.left + colWidth*3 + colWidth/2, resumoY + 22, { align: 'center' });
+  doc.setFontSize(12);
+  doc.text(produtosComEstoqueBaixo.toString(), margin.left + colWidth*3 + colWidth/2, resumoY + 28, { align: 'center' });
+  
+  // Resetar cores
+  doc.setTextColor(40);
+  doc.setFillColor(255, 255, 255);
+}
+
+function formatarStatusEstoque(quantidade, estoqueMinimo) {
+  const qtd = parseInt(quantidade || 0);
+  const min = parseInt(estoqueMinimo || 5);
+  
+  if (qtd <= 0) return 'SEM ESTOQUE';
+  if (qtd <= min * 0.3) return 'CRÍTICO';
+  if (qtd <= min) return 'BAIXO';
+  return 'NORMAL';
+}
+
+function formatarMoeda(valor) {
+  return parseFloat(valor || 0).toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL'
+  });
+}
+
+function formatarData(data, formato = 'DD/MM/YYYY') {
+  if (!data) return '';
+  const date = new Date(data);
+  
+  if (formato === 'DD/MM/YYYY') {
+    return date.toLocaleDateString('pt-BR');
+  } else {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 }
 
