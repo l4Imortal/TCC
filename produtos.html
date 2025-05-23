@@ -16,14 +16,29 @@
         <h1>Produtos - StoQ</h1>
       </header>
       <nav>
-<ul>
-  <li><a href="index.html"><i class="fas fa-house"></i> Página Inicial</a></li>
-  <li><a href="fornecedores.html"><i class="fas fa-truck"></i> Fornecedores</a></li>
-  <li><a href="entradas.html"><i class="fas fa-arrow-down"></i> Entradas</a></li>
-  <li><a href="saidas.html"><i class="fas fa-arrow-up"></i> Saídas</a></li>
-  <li><a href="relatorios.html"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
-</ul>
-
+        <ul>
+          <li>
+            <a href="index.html"><i class="fas fa-house"></i> Página Inicial</a>
+          </li>
+          <li>
+            <a href="fornecedores.html"
+              ><i class="fas fa-truck"></i> Fornecedores</a
+            >
+          </li>
+          <li>
+            <a href="entradas.html"
+              ><i class="fas fa-arrow-down"></i> Entradas</a
+            >
+          </li>
+          <li>
+            <a href="saidas.html"><i class="fas fa-arrow-up"></i> Saídas</a>
+          </li>
+          <li>
+            <a href="relatorios.html"
+              ><i class="fas fa-chart-bar"></i> Relatórios</a
+            >
+          </li>
+        </ul>
       </nav>
       <main>
         <section class="product-info">
@@ -37,7 +52,8 @@
             <table class="center-table">
               <thead>
                 <tr>
-                  <!-- <th>Foto</th> --> <!-- Removido -->
+                  <!-- <th>Foto</th> -->
+                  <!-- Removido -->
                   <th>EAN</th>
                   <th>Produto</th>
                   <th>Categoria</th>
@@ -117,8 +133,10 @@
             required
           /><br /><br />
 
-          <button type="submit">Cadastrar</button>
-          <button type="button" id="btnFecharPopup">Cancelar</button>
+          <div class="popup-buttons">
+            <button type="submit" class="btn-salvar">Salvar</button>
+            <button type="button" class="btn-cancelar">Cancelar</button>
+          </div>
         </form>
       </div>
     </div>
@@ -224,8 +242,10 @@
             required
           /><br /><br />
 
-          <button type="submit">Salvar Alterações</button>
-          <button type="button" id="btnFecharEditarPopup">Cancelar</button>
+          <div class="popup-buttons">
+            <button type="submit" class="btn-salvar">Salvar Alterações</button>
+            <button type="button" id="btnFecharEditarPopup" class="btn-cancelar">Cancelar</button>
+          </div>
         </form>
       </div>
     </div>
