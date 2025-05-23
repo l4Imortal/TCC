@@ -258,7 +258,9 @@ async function salvarEntrada(event) {
       produto: form.produtoEntrada.value,
       quantidade: parseInt(form.quantidadeEntrada.value),
       fornecedor: form.fornecedorEntrada.value,
-      nota_fiscal: form.notaFiscalEntrada.value.replace(/\D/g, ""),
+      nota_fiscal: form.notaFiscalEntrada.value
+        .replace(/\D/g, "")
+        .padStart(9, "0"), // <-- aqui!
       valor_unitario:
         parseFloat(form.valorEntrada.value.replace(",", ".")) || 0,
       responsavel: form.responsavelEntrada.value,
@@ -423,6 +425,24 @@ document.addEventListener("DOMContentLoaded", async () => {
   } catch (error) {
     console.error("Erro ao carregar dados iniciais:", error);
     showError("Erro ao carregar dados iniciais: " + error.message);
+  }
+
+  // Formatar o campo "Nota Fiscal" enquanto o usuário digita (igual ao de saidas.js)
+  const notaFiscalEntrada = document.getElementById("notaFiscalEntrada");
+  if (notaFiscalEntrada) {
+    notaFiscalEntrada.addEventListener("input", (e) => {
+      let valor = e.target.value.replace(/\D/g, ""); // Remove caracteres não numéricos
+      valor = valor.slice(0, 9); // Limita a 9 dígitos numéricos
+
+      // Adiciona os pontos no formato apenas se houver dígitos suficientes
+      if (valor.length >= 7) {
+        valor = valor.replace(/(\d{3})(\d{3})(\d{3})/, "$1.$2.$3");
+      } else if (valor.length >= 4) {
+        valor = valor.replace(/(\d{3})(\d{1,3})/, "$1.$2");
+      }
+
+      e.target.value = valor; // Atualiza o valor do campo com o formato
+    });
   }
 });
 
