@@ -263,6 +263,16 @@ footer {
 
 .password-container {
   position: relative;
+  color: #00000000; /* Cor invisível para o ícone de senha */
+  width: 100%;
+}
+.form-row.password-row {
+  display: block; /* Muda de flex para block */
+}
+
+.form-row.password-row .form-group {
+  margin-bottom: 15px; /* Adiciona espaçamento entre os campos */
+  width: 100%; /* Garante que cada campo ocupe toda a largura */
 }
 
 .password-container input {
@@ -270,17 +280,33 @@ footer {
   padding-right: 40px; /* Espaço para o ícone */
 }
 
+/* Botão transparente com ícone visível ao passar o mouse */
 .toggle-password {
   position: absolute;
   top: 50%;
   right: 10px;
   transform: translateY(-50%);
   cursor: pointer;
-  color: #888;
+  background: transparent;
+  border: none;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.password-container:hover .toggle-password {
+  opacity: 0.7;
 }
 
 .toggle-password:hover {
-  color: #333;
+  opacity: 1;
+}
+
+.toggle-password i {
+  color: #666;
+  font-size: 18px;
 }
 
 .popup-actions {
@@ -302,12 +328,12 @@ footer {
 }
 
 .popup-save-button {
-  background: #e53935; /* Vermelho para o botão de excluir */
+  background: green; /* Vermelho para o botão de excluir */
   color: #fff;
 }
 
 .popup-save-button:hover {
-  background: #b71c1c;
+  background: green;
   transform: scale(1.05);
 }
 
@@ -354,4 +380,56 @@ footer {
 
 .popup-delete-actions .popup-save-button:hover {
   background: #b71c1c;
+}
+
+/* Estilo para o campo de senha atual */
+#currentPasswordDisplay {
+  background-color: #f5f5f5;
+  color: #555;
+  cursor: not-allowed;
+}
+
+/* Ajustes para os campos de senha */
+.password-container {
+  position: relative;
+}
+
+.password-container input {
+  padding-right: 35px;
+  width: 100%;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #666;
+}
+
+.toggle-password:hover {
+  color: #333;
+}
+
+/* Ajustes para o layout do formulário */
+.form-row {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.form-group {
+  flex: 1;
+}
+
+.popup-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+saveEditBtn {
+  background-color: #4caf50; /* Verde para salvar */
+  color: white;
 }
