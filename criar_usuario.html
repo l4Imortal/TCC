@@ -1,59 +1,100 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Criar Usuário - Controle de Estoque</title>
   <link rel="stylesheet" href="CSS/criar_usuario.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
   <div class="container">
-    <header>
-      <h1>Criar Usuário - Controle de Estoque</h1>
+    <header class="form-header">
+      <h1><i class="fas fa-user-plus"></i> Criar Usuário - Controle de Estoque</h1>
     </header>
-    <main>
+    
+    <main class="form-main">
       <section class="create-user-form">
         <div class="form-info">
-          <p>Preencha todos os campos obrigatórios para criar um novo usuário no sistema. Os campos marcados com <span class="required">*</span> são obrigatórios.</p>
+          <p><i class="fas fa-info-circle"></i> Preencha todos os campos obrigatórios para criar um novo usuário no sistema. Os campos marcados com <span class="required">*</span> são obrigatórios.</p>
         </div>
         
-        <form id="userForm" onsubmit="return salvarUsuario()">
+        <form id="userForm" onsubmit="salvarUsuario(event)" class="user-form">
           <div class="form-group">
-            <label for="nome">Nome Completo:</label>
-            <input type="text" id="nome" name="nome" required />
+            <label for="nome">
+              <i class="fas fa-user"></i> Nome Completo: <span class="required">*</span>
+            </label>
+            <input type="text" id="nome" name="nome" required placeholder="Digite o nome completo" />
           </div>
           
           <div class="form-group">
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required />
+            <label for="email">
+              <i class="fas fa-envelope"></i> Email: <span class="required">*</span>
+            </label>
+            <input type="email" id="email" name="email" required placeholder="exemplo@dominio.com" />
           </div>
           
           <div class="form-group">
-            <label for="username">Nome de Usuário:</label>
-            <input type="text" id="username" name="username" required />
+            <label for="username">
+              <i class="fas fa-at"></i> Nome de Usuário: <span class="required">*</span>
+            </label>
+            <input type="text" id="username" name="username" required placeholder="Mínimo 4 caracteres" />
           </div>
           
-          <div class="form-group">
-            <label for="password">Senha:</label>
-            <input type="password" id="password" name="password" required />
+          <div class="form-group password-container">
+            <label for="password">
+              <i class="fas fa-lock"></i> Senha: <span class="required">*</span>
+            </label>
+            <div class="password-input-wrapper">
+              <input type="password" id="password" name="password" required placeholder="Mínimo 6 caracteres" />
+              <button type="button" class="toggle-password" onclick="togglePassword('password')" aria-label="Mostrar senha">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
           </div>
           
-          <div class="form-group">
-            <label for="confirmPassword">Confirmar Senha:</label>
-            <input type="password" id="confirmPassword" name="confirmPassword" required />
+          <div class="form-group password-container">
+            <label for="confirmPassword">
+              <i class="fas fa-lock"></i> Confirmar Senha: <span class="required">*</span>
+            </label>
+            <div class="password-input-wrapper">
+              <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="Confirme sua senha" />
+              <button type="button" class="toggle-password" onclick="togglePassword('confirmPassword')" aria-label="Mostrar senha">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+            <small id="password-mismatch" class="error-message"></small>
           </div>
           
-          <div class="button-group">
-            <button type="submit" onclick="window.location.href='gerenciar_usuarios.html'">
-  Criar Usuário
-</button>
-            <button type="button" onclick="window.location.href='gerenciar_usuarios.html'">Cancelar</button>
+          <div class="form-actions">
+            <button type="submit" id="submitBtn" class="submit-button">
+              <span id="submitText"><i class="fas fa-save"></i> Criar Usuário</span>
+              <span id="submitSpinner" class="spinner" style="display: none;"></span>
+            </button>
+            <button type="button" class="cancel-button" onclick="window.location.href='gerenciar_usuarios.html'">
+              <i class="fas fa-times"></i> Cancelar
+            </button>
           </div>
         </form>
       </section>
     </main>
   </div>
+
+  <!-- Popup de confirmação -->
+  <div id="confirmCadastroPopup" class="popup-overlay">
+    <div class="popup-content">
+      <div class="popup-icon">
+        <i class="fas fa-check-circle success-icon"></i>
+      </div>
+      <h3>Usuário cadastrado com sucesso!</h3>
+      <div class="popup-actions">
+        <button id="okConfirmBtn" class="popup-button">
+          <i class="fas fa-check"></i> OK
+        </button>
+      </div>
+    </div>
+  </div>
   
-  <script src="JS/criar_usuario.js"></script>
+  <script src="JS/criar_usuario.js" defer></script>
 </body>
 </html>
