@@ -77,63 +77,94 @@ button {
   background-color: #45a049;
 }
 
-/* Botão de edição */
-.edit-button {
-  background-color: #4caf50; /* Verde padrão */
-  color: #fff; /* Texto branco */
-  border: none;
-  border-radius: 6px;
-  padding: 6px 16px;
-  font-size: 14px;
+/* NOVOS ESTILOS PARA OS BOTÕES DE EDITAR E EXCLUIR */
+.edit-button,
+.btn-editar {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
   cursor: pointer;
-  font-weight: 400;
-  transition: background-color 0.2s, transform 0.2s;
-}
-
-/* Hover para o botão de edição */
-.edit-button:hover {
-  background-color: #388e3c; /* Verde mais escuro no hover */
-  transform: scale(1.05); /* Efeito de escala no hover */
-}
-
-/* Botão de edição desativado */
-.edit-button:disabled {
-  background-color: #ccc; /* Cinza para botões desativados */
-  color: #fff;
-  cursor: not-allowed;
-  opacity: 0.7;
+  transition: all 0.3s ease;
+  border: none;
+  background-color: #1c1429; /* Cor base roxa escura */
+  font-size: 16px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin: 0 4px;
+  padding: 0;
 }
 
 .delete-button,
 .btn-excluir {
-  padding: 6px 16px;
-  font-size: 14px;
-  border: none;
-  border-radius: 6px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
   cursor: pointer;
-  font-weight: 400;
-  transition: background-color 0.2s, transform 0.2s;
+  transition: all 0.3s ease;
+  border: none;
+  background-color: #1c1429; /* Cor base roxa escura */
+  font-size: 16px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin: 0 4px;
+  padding: 0;
 }
 
-.delete-button,
-.btn-excluir {
-  background: #e53935;
-  color: #fff;
+/* Ícones dentro dos botões */
+.edit-button i,
+.btn-editar i {
+  color: #4caf50; /* Verde para editar */
+  font-size: 1.2rem;
+  transition: transform 0.2s ease, color 0.2s ease;
+  pointer-events: none; /* Evita cliques no ícone */
 }
 
-.delete-button:hover,
-.btn-excluir:hover {
-  background: #b71c1c;
-  transform: scale(1.05);
+.delete-button i,
+.btn-excluir i {
+  color: #dc3545; /* Vermelho para excluir */
+  font-size: 1.2rem;
+  transition: transform 0.2s ease, color 0.2s ease;
+  pointer-events: none; /* Evita cliques no ícone */
 }
 
+/* Efeitos hover */
+.edit-button:hover i,
+.btn-editar:hover i {
+  color: #45a049; /* Verde mais escuro */
+  transform: scale(1.2);
+}
+
+.delete-button:hover i,
+.btn-excluir:hover i {
+  color: #c82333; /* Vermelho mais escuro */
+  transform: scale(1.2);
+}
+
+/* Estados desabilitados */
 .edit-button:disabled,
 .delete-button:disabled,
+.btn-editar:disabled,
 .btn-excluir:disabled {
   background-color: #ccc;
-  color: #fff;
   cursor: not-allowed;
   opacity: 0.7;
+}
+
+.edit-button:disabled i,
+.delete-button:disabled i,
+.btn-editar:disabled i,
+.btn-excluir:disabled i {
+  color: #666;
+}
+
+/* Estilo para a coluna de ações */
+.acoes-coluna {
+  white-space: nowrap;
+  text-align: center;
 }
 
 .user-table {
@@ -263,16 +294,6 @@ footer {
 
 .password-container {
   position: relative;
-  color: #00000000; /* Cor invisível para o ícone de senha */
-  width: 100%;
-}
-.form-row.password-row {
-  display: block; /* Muda de flex para block */
-}
-
-.form-row.password-row .form-group {
-  margin-bottom: 15px; /* Adiciona espaçamento entre os campos */
-  width: 100%; /* Garante que cada campo ocupe toda a largura */
 }
 
 .password-container input {
@@ -328,12 +349,12 @@ footer {
 }
 
 .popup-save-button {
-  background: green; /* Vermelho para o botão de excluir */
+  background: green; /* Verde para salvar */
   color: #fff;
 }
 
 .popup-save-button:hover {
-  background: green;
+  background: #45a049;
   transform: scale(1.05);
 }
 
@@ -389,29 +410,6 @@ footer {
   cursor: not-allowed;
 }
 
-/* Ajustes para os campos de senha */
-.password-container {
-  position: relative;
-}
-
-.password-container input {
-  padding-right: 35px;
-  width: 100%;
-}
-
-.toggle-password {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-  color: #666;
-}
-
-.toggle-password:hover {
-  color: #333;
-}
-
 /* Ajustes para o layout do formulário */
 .form-row {
   display: flex;
@@ -429,7 +427,28 @@ footer {
   gap: 10px;
   margin-top: 20px;
 }
-saveEditBtn {
+
+.saveEditBtn {
   background-color: #4caf50; /* Verde para salvar */
   color: white;
+}
+
+/* Responsividade para telas pequenas */
+@media (max-width: 768px) {
+  .edit-button,
+  .delete-button,
+  .btn-editar,
+  .btn-excluir {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+    margin: 0 2px;
+  }
+  
+  .edit-button i,
+  .delete-button i,
+  .btn-editar i,
+  .btn-excluir i {
+    font-size: 1rem;
+  }
 }
