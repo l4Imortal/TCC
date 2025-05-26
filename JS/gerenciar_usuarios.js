@@ -49,10 +49,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 <td>${index + 1}</td>
                 <td>${usuario.login || usuario.username || ''}</td>
                 <td>${usuario.email || ''}</td>
-                <td>
-                    <button class="edit-button" data-id="${usuario.id_usuario || usuario.id}">Editar</button>
-                    <button class="btn-excluir" data-id="${usuario.id_usuario || usuario.id}">Excluir</button>
-                </td>
+                <td class="acoes-coluna">
+  <button class="edit-button" data-id="${usuario.id_usuario || usuario.id}" title="Editar usuário">
+    <i class="fas fa-edit"></i>
+  </button>
+  <button class="btn-excluir" data-id="${usuario.id_usuario || usuario.id}" title="Excluir usuário">
+    <i class="fas fa-trash"></i>
+  </button>
+</td>
+
             `;
         });
     }
