@@ -10,7 +10,7 @@ O **StoQ** é um sistema web desenvolvido para auxiliar na organização e contr
 - Registro de entradas de produtos no estoque
 - Dashboard com visão geral
 - Administração de usuários do sistema
-- Interface amigável com menu lateral interativo
+- Interface amigável com menu interativo
 - Filtro de busca em tempo real nas tabelas
 
 ---
