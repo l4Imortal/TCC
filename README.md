@@ -29,8 +29,13 @@ Adiciona interatividade ao sistema, como:
 - Filtros de pesquisa
 - Confirmação de ações como exclusão de registros
 
-### 🔹 Font Awesome
-Biblioteca de ícones incorporada via CDN para tornar a interface mais intuitiva e visualmente agradável.
+### 🔹 Node.js
+Permite usar JavaScript no backend (lado do servidor), fora do navegador.
+Você pode criar APIs, bancos de dados, autenticação, lógica de negócio etc.
+
+### 🔹 Express.js
+É um framework para Node.js que facilita a criação de servidores e APIs.
+Deixa tudo mais rápido e organizado, com rotas, middlewares e respostas HTTP simples.
 
 ### 🔹 Estrutura Modular
 Cada funcionalidade possui sua própria página HTML (`index.html`, `entradas.html`, `gerenciar_usuarios.html`), facilitando a organização do código.
