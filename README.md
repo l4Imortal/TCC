@@ -49,7 +49,7 @@ As páginas são independentes e conectadas via links no menu. Isso permite maio
 
 ### 🎛️ Interatividade com JavaScript
 
-- **Menu lateral:** alternância de classes para expandir/recolher.
+- **Menu :** alternância de classes para expandir/recolher.
 - **Filtro de busca:** aplicação de filtro em tempo real sem recarregar a página.
 - **Confirmação de ações:** uso de `confirm()` para validar ações sensíveis.
 
