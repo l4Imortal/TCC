@@ -52,7 +52,7 @@ As páginas são independentes e conectadas via links no menu. Isso permite maio
 O projeto utiliza IDs e classes bem definidos, possibilitando manipulação precisa via CSS e JS.
 
 ### 💾 Armazenamento
-Conectado diretamente no banco de dados MySQLS, utulizando o Node.js.
+Conectado diretamente no banco de dados MySQLS, utilizando o Node.js.
 
 ### 📈 Escalabilidade
 A arquitetura modular e o uso de padrões claros permitem que novas funcionalidades sejam adicionadas com facilidade.
