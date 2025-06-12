@@ -25,7 +25,7 @@ Utilizado para a estilização dos elementos HTML. Define cores, fontes, layouts
 
 ### 🔹 JavaScript (JS)
 Adiciona interatividade ao sistema, como:
-- Abertura e fechamento do menu lateral
+- Abertura e fechamento dos popups.
 - Filtros de pesquisa
 - Confirmação de ações como exclusão de registros
 
@@ -40,7 +40,7 @@ Cada funcionalidade possui sua própria página HTML (`index.html`, `entradas.ht
 ## ⚙️ Explicação Técnica do Funcionamento
 
 ### 🧭 Navegação e Estrutura
-As páginas são independentes e conectadas via links no menu lateral. Isso permite maior organização e facilita a expansão do sistema.
+As páginas são independentes e conectadas via links no menu. Isso permite maior organização e facilita a expansão do sistema.
 
 ### 🎛️ Interatividade com JavaScript
 
@@ -52,7 +52,7 @@ As páginas são independentes e conectadas via links no menu lateral. Isso perm
 O projeto utiliza IDs e classes bem definidos, possibilitando manipulação precisa via CSS e JS.
 
 ### 💾 Armazenamento
-Atualmente, o sistema é estático, ou seja, os dados são fixos e utilizados apenas para fins ilustrativos. Está preparado para futuras integrações com APIs e bancos de dados.
+Conectado diretamente no banco de dados MySQLS, utulizando o Node.js.
 
 ### 📈 Escalabilidade
 A arquitetura modular e o uso de padrões claros permitem que novas funcionalidades sejam adicionadas com facilidade.
